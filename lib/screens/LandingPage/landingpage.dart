@@ -33,7 +33,7 @@ class LandingPage extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          stops: [0.5, 0.9],
+          stops: const [0.5, 0.9],
           colors: [
             constantColors.darkColor,
             constantColors.blueGreyColor,
