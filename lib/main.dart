@@ -2,7 +2,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/LandingPage/landingHelpers.dart';
+import 'package:mared_social/screens/LandingPage/landingServices.dart';
+import 'package:mared_social/screens/LandingPage/landingUtils.dart';
 import 'package:mared_social/screens/splashscreens/splashscreen.dart';
+import 'package:mared_social/services/FirebaseOpertaion.dart';
+import 'package:mared_social/services/authentication.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -29,6 +33,10 @@ class MyApp extends StatelessWidget {
       ),
       providers: [
         ChangeNotifierProvider(create: (_) => LandingHelpers()),
+        ChangeNotifierProvider(create: (_) => LandingUtils()),
+        ChangeNotifierProvider(create: (_) => FirebaseOperations()),
+        ChangeNotifierProvider(create: (_) => Authentication()),
+        ChangeNotifierProvider(create: (_) => LandingService()),
       ],
     );
   }
