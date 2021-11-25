@@ -6,13 +6,19 @@ import 'package:mared_social/services/authentication.dart';
 import 'package:provider/provider.dart';
 
 class FirebaseOperations with ChangeNotifier {
+  UploadTask? imageUploadTask;
+  late String initUserEmail, initUserName, initUserImage;
+
+  String get getInitUserImage => initUserImage;
+  String get getInitUserEmail => initUserEmail;
+  String get getInitUserName => initUserName;
+
   Future uploadUserAvatar(BuildContext context) async {
-    UploadTask imageUploadTask;
     Reference imageReference = FirebaseStorage.instance.ref().child(
         "userProfileAvatar/${Provider.of<LandingUtils>(context, listen: false).getUserAvatar.path}/${TimeOfDay.now()}");
     imageUploadTask = imageReference.putFile(
         Provider.of<LandingUtils>(context, listen: false).getUserAvatar);
-    await imageUploadTask.whenComplete(
+    await imageUploadTask!.whenComplete(
       () {
         print("Image uploaded!");
       },
@@ -31,5 +37,20 @@ class FirebaseOperations with ChangeNotifier {
         .collection("users")
         .doc(Provider.of<Authentication>(context, listen: false).getUserId)
         .set(data);
+  }
+
+  Future initUserData(BuildContext context) async {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+        .get()
+        .then((doc) {
+      print("fetching user data");
+      initUserName = doc['username'];
+      initUserEmail = doc['useremail'];
+      initUserImage = doc['userimage'];
+      print(initUserName);
+      notifyListeners();
+    });
   }
 }

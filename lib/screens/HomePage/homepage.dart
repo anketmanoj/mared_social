@@ -1,15 +1,52 @@
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/screens/Chatroom/chatroom.dart';
+import 'package:mared_social/screens/Feed/feed.dart';
+import 'package:mared_social/screens/HomePage/homepageHelpers.dart';
+import 'package:mared_social/screens/Profile/profile.dart';
+import 'package:mared_social/services/FirebaseOpertaion.dart';
+import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
-  HomePage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   ConstantColors constantColors = ConstantColors();
+  final PageController homepageController = PageController();
+  int pageIndex = 0;
+
+  @override
+  void initState() {
+    Provider.of<FirebaseOperations>(context, listen: false)
+        .initUserData(context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: constantColors.redColor,
+      backgroundColor: constantColors.darkColor,
+      body: PageView(
+        controller: homepageController,
+        children: [
+          Feed(),
+          Chatroom(),
+          Profile(),
+        ],
+        physics: const NeverScrollableScrollPhysics(),
+        onPageChanged: (page) {
+          setState(() {
+            pageIndex = page;
+          });
+        },
+      ),
+      bottomNavigationBar: Provider.of<HomepageHelpers>(context, listen: false)
+          .bottomNavBar(context, pageIndex, homepageController),
     );
   }
 }
