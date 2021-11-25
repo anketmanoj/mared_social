@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/screens/LandingPage/landingpage.dart';
 import 'package:mared_social/screens/Profile/profileHelpers.dart';
 import 'package:mared_social/services/authentication.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class Profile extends StatelessWidget {
@@ -21,7 +23,10 @@ class Profile extends StatelessWidget {
             )),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Provider.of<ProfileHelpers>(context, listen: false)
+                  .logOutDialog(context);
+            },
             icon: Icon(
               EvaIcons.logOutOutline,
               color: constantColors.greenColor,
@@ -76,6 +81,12 @@ class Profile extends StatelessWidget {
                     children: [
                       Provider.of<ProfileHelpers>(context, listen: false)
                           .headerProfile(context, snapshot),
+                      Provider.of<ProfileHelpers>(context, listen: false)
+                          .divider(),
+                      Provider.of<ProfileHelpers>(context, listen: false)
+                          .middleProfile(context, snapshot),
+                      Provider.of<ProfileHelpers>(context, listen: false)
+                          .footerProfile(context, snapshot),
                     ],
                   );
                 }

@@ -22,8 +22,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    Provider.of<FirebaseOperations>(context, listen: false)
-        .initUserData(context);
+    Future.delayed(Duration.zero, () {
+      Provider.of<FirebaseOperations>(context, listen: false)
+          .initUserData(context);
+    });
     super.initState();
   }
 
