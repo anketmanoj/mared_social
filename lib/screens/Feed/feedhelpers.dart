@@ -93,7 +93,7 @@ class FeedHelpers with ChangeNotifier {
     return ListView(
       children: snapshot.data!.docs.map((DocumentSnapshot documentSnapshot) {
         return SizedBox(
-          height: MediaQuery.of(context).size.height * 0.61,
+          height: MediaQuery.of(context).size.height * 0.65,
           width: MediaQuery.of(context).size.width,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -258,6 +258,22 @@ class FeedHelpers with ChangeNotifier {
                               width: 0,
                             ),
                     ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 16.0,
+                ),
+                child: SizedBox(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width,
+                  child: Text(
+                    documentSnapshot['description'],
+                    style: TextStyle(
+                      color: constantColors.whiteColor,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
               ),

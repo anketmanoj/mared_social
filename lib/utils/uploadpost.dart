@@ -22,6 +22,7 @@ class UploadPost with ChangeNotifier {
   late UploadTask imagePostUploadTask;
 
   TextEditingController captionController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
 
   Future pickUploadPostImage(BuildContext context, ImageSource source) async {
     final uploadPostImageVal = await picker.pickImage(source: source);
@@ -250,20 +251,51 @@ class UploadPost with ChangeNotifier {
                   ],
                 ),
               ),
-              Container(
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: SizedBox(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: SizedBox(
+                          height: 50,
+                          width: 330,
+                          child: TextField(
+                            keyboardType: TextInputType.text,
+                            maxLines: 1,
+                            textCapitalization: TextCapitalization.words,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(50)
+                            ],
+                            maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                            maxLength: 50,
+                            controller: captionController,
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: "Give your picture a title...",
+                              hintStyle: TextStyle(
+                                color: constantColors.whiteColor,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    SizedBox(
-                      height: 30,
-                      width: 30,
-                      child: Image.asset("assets/icons/sunflower.png"),
-                    ),
-                    Container(
-                      height: 110,
-                      width: 5,
-                      color: constantColors.blueColor,
-                    ),
                     Padding(
                       padding: const EdgeInsets.only(left: 8.0),
                       child: SizedBox(
@@ -278,7 +310,7 @@ class UploadPost with ChangeNotifier {
                           ],
                           maxLengthEnforcement: MaxLengthEnforcement.enforced,
                           maxLength: 200,
-                          controller: captionController,
+                          controller: descriptionController,
                           style: TextStyle(
                             color: constantColors.whiteColor,
                             fontSize: 16,
@@ -326,6 +358,7 @@ class UploadPost with ChangeNotifier {
                             .getInitUserEmail,
                     'postimage':
                         uploadPostImageUrl, //or chnage to getUploadPostImageUrl
+                    'description': descriptionController.text,
                   }).whenComplete(() {
                     Navigator.pop(context);
                   });
