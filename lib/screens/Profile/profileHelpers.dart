@@ -245,8 +245,24 @@ class ProfileHelpers with ChangeNotifier {
       padding: const EdgeInsets.all(8.0),
       child: Container(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset("assets/images/empty.png"),
+            Container(
+              child: Image.asset("assets/images/empty.png"),
+              height: 100,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              "No posts yet",
+              style: TextStyle(
+                color: constantColors.whiteColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
           ],
         ),
         height: MediaQuery.of(context).size.height * 0.55,

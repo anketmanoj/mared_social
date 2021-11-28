@@ -6,8 +6,11 @@ class Authentication with ChangeNotifier {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
-  late String userUid;
+  late String userUid, googleUsername, googleUseremail, googleUserImage;
   String get getUserId => userUid;
+  String get getgoogleUsername => googleUsername;
+  String get getgoogleUseremail => googleUseremail;
+  String get getgoogleUserImage => googleUserImage;
 
   Future loginIntoAccount(String email, String password) async {
     UserCredential userCredential = await firebaseAuth
@@ -50,7 +53,10 @@ class Authentication with ChangeNotifier {
     assert(user!.uid != null);
 
     userUid = user!.uid;
-    print("Google sign in => ${userUid}");
+    googleUseremail = user.email!;
+    googleUsername = user.displayName!;
+    googleUserImage = user.photoURL!;
+    print("Google sign in => ${userUid} || ${user.email}");
 
     notifyListeners();
   }

@@ -8,6 +8,7 @@ import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/screens/LandingPage/landingServices.dart';
 import 'package:mared_social/screens/LandingPage/landingUtils.dart';
+import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -92,6 +93,25 @@ class LandingHelpers with ChangeNotifier {
                         await Provider.of<Authentication>(context,
                                 listen: false)
                             .signInWithgoogle();
+
+                        print("creating collection");
+
+                        await Provider.of<FirebaseOperations>(context,
+                                listen: false)
+                            .createUserCollection(context, {
+                          'useruid': Provider.of<Authentication>(context,
+                                  listen: false)
+                              .getUserId,
+                          'useremail': Provider.of<Authentication>(context,
+                                  listen: false)
+                              .getgoogleUseremail,
+                          'username': Provider.of<Authentication>(context,
+                                  listen: false)
+                              .getgoogleUsername,
+                          'userimage': Provider.of<Authentication>(context,
+                                  listen: false)
+                              .getgoogleUserImage,
+                        });
 
                         Navigator.pushReplacement(
                             context,
