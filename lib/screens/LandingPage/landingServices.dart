@@ -116,15 +116,57 @@ class LandingService with ChangeNotifier {
                 children: snapshot.data!.docs
                     .map((DocumentSnapshot documentSnapshot) {
                   return ListTile(
-                    trailing: IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        FontAwesomeIcons.trashAlt,
-                        color: constantColors.redColor,
+                    trailing: Container(
+                      width: 120,
+                      height: 50,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          IconButton(
+                            onPressed: () async {
+                              try {
+                                await Provider.of<Authentication>(context,
+                                        listen: false)
+                                    .loginIntoAccount(
+                                        documentSnapshot['useremail'],
+                                        documentSnapshot['userpassword']);
+
+                                Navigator.pushReplacement(
+                                  context,
+                                  PageTransition(
+                                      child: HomePage(),
+                                      type: PageTransitionType.bottomToTop),
+                                );
+                              } catch (e) {
+                                CoolAlert.show(
+                                  context: context,
+                                  type: CoolAlertType.error,
+                                  title: "Sign In Failed",
+                                  text: e.toString(),
+                                );
+                              }
+                            },
+                            icon: Icon(
+                              FontAwesomeIcons.check,
+                              color: constantColors.blueColor,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              Provider.of<FirebaseOperations>(context,
+                                      listen: false)
+                                  .deleteUserData(documentSnapshot['useruid']);
+                            },
+                            icon: Icon(
+                              FontAwesomeIcons.trashAlt,
+                              color: constantColors.redColor,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     leading: CircleAvatar(
-                      backgroundColor: constantColors.transperant,
+                      backgroundColor: constantColors.darkColor,
                       backgroundImage:
                           NetworkImage(documentSnapshot['userimage']),
                     ),
@@ -132,7 +174,7 @@ class LandingService with ChangeNotifier {
                       documentSnapshot['useremail'],
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: constantColors.greenColor,
+                        color: constantColors.whiteColor,
                         fontSize: 12,
                       ),
                     ),
@@ -371,6 +413,7 @@ class LandingService with ChangeNotifier {
                             await Provider.of<FirebaseOperations>(context,
                                     listen: false)
                                 .createUserCollection(context, {
+                              'userpassword': userPasswordController.text,
                               'useruid': Provider.of<Authentication>(context,
                                       listen: false)
                                   .getUserId,

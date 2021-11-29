@@ -10,6 +10,7 @@ import 'package:mared_social/screens/Profile/profileHelpers.dart';
 import 'package:mared_social/screens/splashscreens/splashscreen.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
+import 'package:mared_social/utils/postoptions.dart';
 import 'package:mared_social/utils/uploadpost.dart';
 import 'package:provider/provider.dart';
 
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ProfileHelpers()),
         ChangeNotifierProvider(create: (_) => UploadPost()),
         ChangeNotifierProvider(create: (_) => FeedHelpers()),
+        ChangeNotifierProvider(create: (_) => PostFunctions()),
       ],
     );
   }

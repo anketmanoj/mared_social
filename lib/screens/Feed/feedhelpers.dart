@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/services/authentication.dart';
+import 'package:mared_social/utils/postoptions.dart';
 import 'package:mared_social/utils/uploadpost.dart';
 import 'package:provider/provider.dart';
 
@@ -74,7 +76,7 @@ class FeedHelpers with ChangeNotifier {
               }
             },
           ),
-          height: MediaQuery.of(context).size.height,
+          height: MediaQuery.of(context).size.height * 0.77,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             color: constantColors.darkColor.withOpacity(0.5),
@@ -104,11 +106,25 @@ class FeedHelpers with ChangeNotifier {
                 child: Row(
                   children: [
                     GestureDetector(
-                      child: CircleAvatar(
-                        backgroundColor: constantColors.blueGreyColor,
-                        radius: 20,
-                        backgroundImage:
-                            NetworkImage(documentSnapshot['userimage']),
+                      child: SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: CachedNetworkImage(
+                            fit: BoxFit.cover,
+                            imageUrl: documentSnapshot['userimage'],
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) => Container(
+                              height: 100,
+                              width: 100,
+                              child: CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          ),
+                        ),
                       ),
                     ),
                     Padding(
@@ -125,7 +141,7 @@ class FeedHelpers with ChangeNotifier {
                                 style: TextStyle(
                                   color: constantColors.greenColor,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                 ),
                               ),
                             ),
@@ -156,92 +172,191 @@ class FeedHelpers with ChangeNotifier {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.46,
-                  width: MediaQuery.of(context).size.width,
-                  child: FittedBox(
-                    child: Image.network(
-                      documentSnapshot['postimage'],
-                      scale: 2,
+                padding: const EdgeInsets.only(top: 16.0),
+                child: InkWell(
+                  onDoubleTap: () {
+                    print("Adding like...");
+                    Provider.of<PostFunctions>(context, listen: false).addLike(
+                      context: context,
+                      postID: documentSnapshot['postid'],
+                      subDocId:
+                          Provider.of<Authentication>(context, listen: false)
+                              .getUserId,
+                    );
+                  },
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.46,
+                    width: MediaQuery.of(context).size.width,
+                    child: CachedNetworkImage(
+                      fit: BoxFit.contain,
+                      imageUrl: documentSnapshot['postimage'],
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) => Container(
+                        height: 100,
+                        width: 100,
+                        child: CircularProgressIndicator(
+                            value: downloadProgress.progress),
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
                     ),
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 0.0),
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
+                  padding: const EdgeInsets.only(left: 16.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      SizedBox(
-                        width: 80,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            GestureDetector(
-                              child: Icon(
-                                FontAwesomeIcons.heart,
-                                color: constantColors.redColor,
-                                size: 22,
-                              ),
+                      InkWell(
+                        onTap: () {
+                          Provider.of<PostFunctions>(context, listen: false)
+                              .showLikes(
+                                  context: context,
+                                  postId: documentSnapshot['postid']);
+                        },
+                        child: StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection("posts")
+                                .doc(documentSnapshot['postid'])
+                                .collection('likes')
+                                .snapshots(),
+                            builder: (context, likeSnap) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else {
+                                return SizedBox(
+                                  width: 60,
+                                  height: 50,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Icon(
+                                          likeSnap.data!.docs.any((element) =>
+                                                  element.id ==
+                                                  Provider.of<Authentication>(
+                                                          context,
+                                                          listen: false)
+                                                      .getUserId)
+                                              ? EvaIcons.heart
+                                              : EvaIcons.heartOutline,
+                                          color: constantColors.redColor,
+                                          size: 18,
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 8.0),
+                                          child: Text(
+                                            likeSnap.data!.docs.length
+                                                .toString(),
+                                            style: TextStyle(
+                                              color: constantColors.whiteColor,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }
+                            }),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Provider.of<PostFunctions>(context, listen: false)
+                              .showCommentsSheet(
+                                  snapshot: documentSnapshot,
+                                  context: context,
+                                  postId: documentSnapshot['postid']);
+                        },
+                        child: SizedBox(
+                          width: 60,
+                          height: 50,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  FontAwesomeIcons.comment,
+                                  color: constantColors.blueColor,
+                                  size: 16,
+                                ),
+                                StreamBuilder<QuerySnapshot>(
+                                    stream: FirebaseFirestore.instance
+                                        .collection("posts")
+                                        .doc(documentSnapshot['postid'])
+                                        .collection('comments')
+                                        .snapshots(),
+                                    builder: (context, commentSnap) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      } else {
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 8.0),
+                                          child: Text(
+                                            commentSnap.data!.docs.length
+                                                .toString(),
+                                            style: TextStyle(
+                                              color: constantColors.whiteColor,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    }),
+                              ],
                             ),
-                            Text(
-                              "0",
-                              style: TextStyle(
-                                color: constantColors.whiteColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                      SizedBox(
-                        width: 80,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            GestureDetector(
-                              child: Icon(
-                                FontAwesomeIcons.comment,
-                                color: constantColors.blueColor,
-                                size: 22,
-                              ),
+                      InkWell(
+                        onTap: () {
+                          Provider.of<PostFunctions>(context, listen: false)
+                              .showRewards(context);
+                        },
+                        child: SizedBox(
+                          width: 60,
+                          height: 50,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  FontAwesomeIcons.award,
+                                  color: constantColors.yellowColor,
+                                  size: 16,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    "0",
+                                    style: TextStyle(
+                                      color: constantColors.whiteColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              "0",
-                              style: TextStyle(
-                                color: constantColors.whiteColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        width: 80,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            GestureDetector(
-                              child: Icon(
-                                FontAwesomeIcons.award,
-                                color: constantColors.yellowColor,
-                                size: 22,
-                              ),
-                            ),
-                            Text(
-                              "0",
-                              style: TextStyle(
-                                color: constantColors.whiteColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                       const Spacer(),
@@ -264,6 +379,7 @@ class FeedHelpers with ChangeNotifier {
               Padding(
                 padding: const EdgeInsets.only(
                   left: 16.0,
+                  top: 5,
                 ),
                 child: SizedBox(
                   height: 40,

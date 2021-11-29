@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
+import 'package:nanoid/nanoid.dart';
 import 'package:provider/provider.dart';
 
 class UploadPost with ChangeNotifier {
@@ -340,8 +341,10 @@ class UploadPost with ChangeNotifier {
                   ),
                 ),
                 onPressed: () async {
+                  String postId = nanoid(14).toString();
                   Provider.of<FirebaseOperations>(context, listen: false)
-                      .uploadPostData(captionController.text, {
+                      .uploadPostData(postId, {
+                    'postid': postId,
                     'caption': captionController.text,
                     'username':
                         Provider.of<FirebaseOperations>(context, listen: false)
