@@ -71,4 +71,12 @@ class FirebaseOperations with ChangeNotifier {
         .doc(commentId)
         .delete();
   }
+
+  Future addAward({required String postId, required dynamic data}) async {
+    return FirebaseFirestore.instance
+        .collection("posts")
+        .doc(postId)
+        .collection("awards")
+        .add(data);
+  }
 }

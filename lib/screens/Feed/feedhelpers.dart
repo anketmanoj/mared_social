@@ -293,33 +293,34 @@ class FeedHelpers with ChangeNotifier {
                                   size: 16,
                                 ),
                                 StreamBuilder<QuerySnapshot>(
-                                    stream: FirebaseFirestore.instance
-                                        .collection("posts")
-                                        .doc(documentSnapshot['postid'])
-                                        .collection('comments')
-                                        .snapshots(),
-                                    builder: (context, commentSnap) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return const Center(
-                                          child: CircularProgressIndicator(),
-                                        );
-                                      } else {
-                                        return Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 8.0),
-                                          child: Text(
-                                            commentSnap.data!.docs.length
-                                                .toString(),
-                                            style: TextStyle(
-                                              color: constantColors.whiteColor,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
-                                            ),
+                                  stream: FirebaseFirestore.instance
+                                      .collection("posts")
+                                      .doc(documentSnapshot['postid'])
+                                      .collection('comments')
+                                      .snapshots(),
+                                  builder: (context, commentSnap) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    } else {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 8.0),
+                                        child: Text(
+                                          commentSnap.data!.docs.length
+                                              .toString(),
+                                          style: TextStyle(
+                                            color: constantColors.whiteColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
                                           ),
-                                        );
-                                      }
-                                    }),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
                               ],
                             ),
                           ),
@@ -328,7 +329,9 @@ class FeedHelpers with ChangeNotifier {
                       InkWell(
                         onTap: () {
                           Provider.of<PostFunctions>(context, listen: false)
-                              .showRewards(context);
+                              .showRewards(
+                                  context: context,
+                                  postId: documentSnapshot['postid']);
                         },
                         child: SizedBox(
                           width: 60,
@@ -345,13 +348,34 @@ class FeedHelpers with ChangeNotifier {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(left: 8.0),
-                                  child: Text(
-                                    "0",
-                                    style: TextStyle(
-                                      color: constantColors.whiteColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    ),
+                                  child: StreamBuilder<QuerySnapshot>(
+                                    stream: FirebaseFirestore.instance
+                                        .collection("posts")
+                                        .doc(documentSnapshot['postid'])
+                                        .collection('awards')
+                                        .snapshots(),
+                                    builder: (context, awardSnap) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      } else {
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 8.0),
+                                          child: Text(
+                                            awardSnap.data!.docs.length
+                                                .toString(),
+                                            style: TextStyle(
+                                              color: constantColors.whiteColor,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
                                   ),
                                 ),
                               ],

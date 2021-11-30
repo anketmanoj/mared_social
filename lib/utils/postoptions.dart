@@ -482,7 +482,10 @@ class PostFunctions with ChangeNotifier {
     );
   }
 
-  showRewards(BuildContext context) {
+  showRewards({
+    required BuildContext context,
+    required String postId,
+  }) {
     return showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -544,12 +547,35 @@ class PostFunctions with ChangeNotifier {
                             scrollDirection: Axis.horizontal,
                             children: awardSnap.data!.docs
                                 .map((DocumentSnapshot awardDocSnap) {
-                              return Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: SizedBox(
-                                  height: 50,
-                                  width: 50,
-                                  child: Image.network(awardDocSnap['image']),
+                              return InkWell(
+                                onTap: () async {
+                                  print("rewarding user...");
+                                  await Provider.of<FirebaseOperations>(context,
+                                          listen: false)
+                                      .addAward(postId: postId, data: {
+                                    'username': Provider.of<FirebaseOperations>(
+                                            context,
+                                            listen: false)
+                                        .getInitUserName,
+                                    'userimage':
+                                        Provider.of<FirebaseOperations>(context,
+                                                listen: false)
+                                            .getInitUserImage,
+                                    'useruid': Provider.of<Authentication>(
+                                            context,
+                                            listen: false)
+                                        .getUserId,
+                                    'time': Timestamp.now(),
+                                    'award': awardDocSnap['image'],
+                                  });
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: Image.network(awardDocSnap['image']),
+                                  ),
                                 ),
                               );
                             }).toList());
