@@ -94,6 +94,9 @@ class FeedHelpers with ChangeNotifier {
       BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
     return ListView(
       children: snapshot.data!.docs.map((DocumentSnapshot documentSnapshot) {
+        Provider.of<PostFunctions>(context, listen: false)
+            .showTimeAgo(documentSnapshot['time']);
+
         return SizedBox(
           height: MediaQuery.of(context).size.height * 0.65,
           width: MediaQuery.of(context).size.width,
@@ -148,24 +151,58 @@ class FeedHelpers with ChangeNotifier {
                             SizedBox(
                               child: RichText(
                                 text: TextSpan(
-                                    text: documentSnapshot['username'],
-                                    style: TextStyle(
-                                      color: constantColors.blueColor,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
+                                  text: documentSnapshot['username'],
+                                  style: TextStyle(
+                                    color: constantColors.blueColor,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text:
+                                          " , ${Provider.of<PostFunctions>(context, listen: false).getImageTimePosted.toString()}",
+                                      style: TextStyle(
+                                        color: constantColors.lightColor
+                                            .withOpacity(0.8),
+                                      ),
                                     ),
-                                    children: <TextSpan>[
-                                      TextSpan(
-                                          text: " , 12 hours ago",
-                                          style: TextStyle(
-                                            color: constantColors.lightColor
-                                                .withOpacity(0.8),
-                                          )),
-                                    ]),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
                         ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.2,
+                      height: MediaQuery.of(context).size.height * 0.045,
+                      child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection("posts")
+                            .doc(documentSnapshot['postid'])
+                            .collection("awards")
+                            .snapshots(),
+                        builder: (context, awardSnaps) {
+                          if (awardSnaps.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else {
+                            return ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: awardSnaps.data!.docs
+                                  .map((DocumentSnapshot awardDocSnaps) {
+                                return SizedBox(
+                                  height: 30,
+                                  width: 30,
+                                  child: Image.network(awardDocSnaps['award']),
+                                );
+                              }).toList(),
+                            );
+                          }
+                        },
                       ),
                     ),
                   ],
@@ -388,7 +425,18 @@ class FeedHelpers with ChangeNotifier {
                                   .getUserId ==
                               documentSnapshot['useruid']
                           ? IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Provider.of<PostFunctions>(context,
+                                        listen: false)
+                                    .showPostOptions(
+                                        context: context,
+                                        postId: documentSnapshot['postid']);
+
+                                Provider.of<PostFunctions>(context,
+                                        listen: false)
+                                    .getImageDescription(
+                                        documentSnapshot['description']);
+                              },
                               icon: Icon(EvaIcons.moreVertical,
                                   color: constantColors.whiteColor),
                             )

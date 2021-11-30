@@ -62,6 +62,13 @@ class FirebaseOperations with ChangeNotifier {
     return FirebaseFirestore.instance.collection('users').doc(userUid).delete();
   }
 
+  Future deletePostData({String? postId}) async {
+    return await FirebaseFirestore.instance
+        .collection("posts")
+        .doc(postId)
+        .delete();
+  }
+
   Future deleteUserComment(
       {required String postId, required String commentId}) async {
     return FirebaseFirestore.instance
@@ -78,5 +85,12 @@ class FirebaseOperations with ChangeNotifier {
         .doc(postId)
         .collection("awards")
         .add(data);
+  }
+
+  Future updateDescription(
+      {required String postId, String? description}) async {
+    return FirebaseFirestore.instance.collection("posts").doc(postId).update({
+      'description': description,
+    });
   }
 }

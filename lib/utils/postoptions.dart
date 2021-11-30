@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
@@ -7,10 +8,172 @@ import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:nanoid/nanoid.dart';
 import 'package:provider/provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class PostFunctions with ChangeNotifier {
   TextEditingController commentController = TextEditingController();
   ConstantColors constantColors = ConstantColors();
+  late String imageTimePosted;
+  String get getImageTimePosted => imageTimePosted;
+  TextEditingController updateDescriptionController = TextEditingController();
+
+  getImageDescription(dynamic description) {
+    updateDescriptionController.text = description;
+  }
+
+  showTimeAgo(dynamic timeData) {
+    Timestamp time = timeData;
+    DateTime dateTime = time.toDate();
+    imageTimePosted = timeago.format(dateTime);
+    print(imageTimePosted);
+    notifyListeners();
+  }
+
+  showPostOptions({required BuildContext context, required String postId}) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.1,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: constantColors.blueGreyColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(12),
+              topRight: Radius.circular(12),
+            ),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 150),
+                child: Divider(
+                  thickness: 4,
+                  color: constantColors.whiteColor,
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  StreamBuilder<DocumentSnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection("posts")
+                          .doc(postId)
+                          .snapshots(),
+                      builder: (context, postDocSnap) {
+                        if (postDocSnap.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else {
+                          return MaterialButton(
+                            color: constantColors.blueColor,
+                            child: Text("Edit Caption",
+                                style: TextStyle(
+                                  color: constantColors.whiteColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                )),
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return Container(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.3,
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration: BoxDecoration(
+                                      color: constantColors.blueGreyColor,
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(12),
+                                        topRight: Radius.circular(12),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 300,
+                                            height: 50,
+                                            child: TextField(
+                                              controller:
+                                                  updateDescriptionController,
+                                              style: TextStyle(
+                                                color:
+                                                    constantColors.whiteColor,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ),
+                                          FloatingActionButton(
+                                            backgroundColor:
+                                                constantColors.greenColor,
+                                            child: Icon(
+                                              FontAwesomeIcons.fileUpload,
+                                              color: constantColors.whiteColor,
+                                            ),
+                                            onPressed: () {
+                                              Provider.of<FirebaseOperations>(
+                                                      context,
+                                                      listen: false)
+                                                  .updateDescription(
+                                                      postId: postId,
+                                                      description:
+                                                          updateDescriptionController
+                                                              .text);
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        }
+                      }),
+                  MaterialButton(
+                    color: constantColors.redColor,
+                    child: Text("Delete Post",
+                        style: TextStyle(
+                          color: constantColors.whiteColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        )),
+                    onPressed: () {
+                      // Navigator.pop(context);
+                      CoolAlert.show(
+                        context: context,
+                        type: CoolAlertType.warning,
+                        confirmBtnText: "Delete",
+                        cancelBtnText: "Keep Post",
+                        showCancelBtn: true,
+                        title: "Delete this post?",
+                        onConfirmBtnTap: () async {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          await Provider.of<FirebaseOperations>(context,
+                                  listen: false)
+                              .deletePostData(postId: postId);
+                        },
+                        onCancelBtnTap: () {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   Future addLike({
     required BuildContext context,
