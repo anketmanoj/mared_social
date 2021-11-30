@@ -79,51 +79,90 @@ class PostFunctions with ChangeNotifier {
                               showModalBottomSheet(
                                 context: context,
                                 builder: (context) {
-                                  return Container(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.3,
-                                    width: MediaQuery.of(context).size.width,
-                                    decoration: BoxDecoration(
-                                      color: constantColors.blueGreyColor,
-                                      borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(12),
-                                        topRight: Radius.circular(12),
+                                  return Padding(
+                                    padding: EdgeInsets.only(
+                                        bottom: MediaQuery.of(context)
+                                            .viewInsets
+                                            .bottom),
+                                    child: Container(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.3,
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: BoxDecoration(
+                                        color: constantColors.blueGreyColor,
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(12),
+                                          topRight: Radius.circular(12),
+                                        ),
                                       ),
-                                    ),
-                                    child: Center(
-                                      child: Row(
+                                      child: Column(
                                         children: [
-                                          Container(
-                                            width: 300,
-                                            height: 50,
-                                            child: TextField(
-                                              controller:
-                                                  updateDescriptionController,
-                                              style: TextStyle(
-                                                color:
-                                                    constantColors.whiteColor,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ),
-                                          FloatingActionButton(
-                                            backgroundColor:
-                                                constantColors.greenColor,
-                                            child: Icon(
-                                              FontAwesomeIcons.fileUpload,
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 150),
+                                            child: Divider(
+                                              thickness: 4,
                                               color: constantColors.whiteColor,
                                             ),
-                                            onPressed: () {
-                                              Provider.of<FirebaseOperations>(
-                                                      context,
-                                                      listen: false)
-                                                  .updateDescription(
-                                                      postId: postId,
-                                                      description:
-                                                          updateDescriptionController
-                                                              .text);
-                                            },
+                                          ),
+                                          SizedBox(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.05,
+                                          ),
+                                          Center(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8.0),
+                                                  child: SizedBox(
+                                                    width: 300,
+                                                    height: 50,
+                                                    child: TextField(
+                                                      maxLines: 5,
+                                                      controller:
+                                                          updateDescriptionController,
+                                                      style: TextStyle(
+                                                        color: constantColors
+                                                            .whiteColor,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                FloatingActionButton(
+                                                  backgroundColor:
+                                                      constantColors.greenColor,
+                                                  child: Icon(
+                                                    FontAwesomeIcons.fileUpload,
+                                                    color: constantColors
+                                                        .whiteColor,
+                                                  ),
+                                                  onPressed: () {
+                                                    Provider.of<FirebaseOperations>(
+                                                            context,
+                                                            listen: false)
+                                                        .updateDescription(
+                                                            postId: postId,
+                                                            description:
+                                                                updateDescriptionController
+                                                                    .text)
+                                                        .whenComplete(() {
+                                                      Navigator.pop(context);
+                                                      Navigator.pop(context);
+                                                    });
+                                                  },
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
