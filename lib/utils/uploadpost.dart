@@ -364,6 +364,8 @@ class UploadPost with ChangeNotifier {
                     'description': descriptionController.text,
                   }).whenComplete(() {
                     Navigator.pop(context);
+                    Navigator.pop(context);
+                    Navigator.pop(context);
                   });
                 },
                 color: constantColors.blueColor,

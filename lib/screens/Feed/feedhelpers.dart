@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/postoptions.dart';
 import 'package:mared_social/utils/uploadpost.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class FeedHelpers with ChangeNotifier {
@@ -109,6 +111,19 @@ class FeedHelpers with ChangeNotifier {
                 child: Row(
                   children: [
                     GestureDetector(
+                      onTap: () {
+                        if (documentSnapshot['useruid'] !=
+                            Provider.of<Authentication>(context, listen: false)
+                                .getUserId) {
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  child: AltProfile(
+                                    userUid: documentSnapshot['useruid'],
+                                  ),
+                                  type: PageTransitionType.bottomToTop));
+                        }
+                      },
                       child: SizedBox(
                         height: 40,
                         width: 40,
@@ -174,35 +189,44 @@ class FeedHelpers with ChangeNotifier {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.2,
-                      height: MediaQuery.of(context).size.height * 0.045,
-                      child: StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection("posts")
-                            .doc(documentSnapshot['postid'])
-                            .collection("awards")
-                            .snapshots(),
-                        builder: (context, awardSnaps) {
-                          if (awardSnaps.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          } else {
-                            return ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: awardSnaps.data!.docs
-                                  .map((DocumentSnapshot awardDocSnaps) {
-                                return SizedBox(
-                                  height: 30,
-                                  width: 30,
-                                  child: Image.network(awardDocSnaps['award']),
-                                );
-                              }).toList(),
-                            );
-                          }
-                        },
+                    InkWell(
+                      onTap: () {
+                        Provider.of<PostFunctions>(context, listen: false)
+                            .showAwardsPresenter(
+                                context: context,
+                                postId: documentSnapshot['postid']);
+                      },
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.2,
+                        height: MediaQuery.of(context).size.height * 0.045,
+                        child: StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection("posts")
+                              .doc(documentSnapshot['postid'])
+                              .collection("awards")
+                              .snapshots(),
+                          builder: (context, awardSnaps) {
+                            if (awardSnaps.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              return ListView(
+                                scrollDirection: Axis.horizontal,
+                                children: awardSnaps.data!.docs
+                                    .map((DocumentSnapshot awardDocSnaps) {
+                                  return SizedBox(
+                                    height: 30,
+                                    width: 30,
+                                    child:
+                                        Image.network(awardDocSnaps['award']),
+                                  );
+                                }).toList(),
+                              );
+                            }
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -261,51 +285,42 @@ class FeedHelpers with ChangeNotifier {
                                 .collection('likes')
                                 .snapshots(),
                             builder: (context, likeSnap) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              } else {
-                                return SizedBox(
-                                  width: 60,
-                                  height: 50,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Icon(
-                                          likeSnap.data!.docs.any((element) =>
-                                                  element.id ==
-                                                  Provider.of<Authentication>(
-                                                          context,
-                                                          listen: false)
-                                                      .getUserId)
-                                              ? EvaIcons.heart
-                                              : EvaIcons.heartOutline,
-                                          color: constantColors.redColor,
-                                          size: 18,
-                                        ),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 8.0),
-                                          child: Text(
-                                            likeSnap.data!.docs.length
-                                                .toString(),
-                                            style: TextStyle(
-                                              color: constantColors.whiteColor,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
-                                            ),
+                              return SizedBox(
+                                width: 60,
+                                height: 50,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Icon(
+                                        likeSnap.data!.docs.any((element) =>
+                                                element.id ==
+                                                Provider.of<Authentication>(
+                                                        context,
+                                                        listen: false)
+                                                    .getUserId)
+                                            ? EvaIcons.heart
+                                            : EvaIcons.heartOutline,
+                                        color: constantColors.redColor,
+                                        size: 18,
+                                      ),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 8.0),
+                                        child: Text(
+                                          likeSnap.data!.docs.length.toString(),
+                                          style: TextStyle(
+                                            color: constantColors.whiteColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                );
-                              }
+                                ),
+                              );
                             }),
                       ),
                       InkWell(
@@ -336,26 +351,18 @@ class FeedHelpers with ChangeNotifier {
                                       .collection('comments')
                                       .snapshots(),
                                   builder: (context, commentSnap) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    } else {
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: Text(
-                                          commentSnap.data!.docs.length
-                                              .toString(),
-                                          style: TextStyle(
-                                            color: constantColors.whiteColor,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14,
-                                          ),
+                                    return Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: Text(
+                                        commentSnap.data!.docs.length
+                                            .toString(),
+                                        style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
                                         ),
-                                      );
-                                    }
+                                      ),
+                                    );
                                   },
                                 ),
                               ],
@@ -392,26 +399,19 @@ class FeedHelpers with ChangeNotifier {
                                         .collection('awards')
                                         .snapshots(),
                                     builder: (context, awardSnap) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return const Center(
-                                          child: CircularProgressIndicator(),
-                                        );
-                                      } else {
-                                        return Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 8.0),
-                                          child: Text(
-                                            awardSnap.data!.docs.length
-                                                .toString(),
-                                            style: TextStyle(
-                                              color: constantColors.whiteColor,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
-                                            ),
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 8.0),
+                                        child: Text(
+                                          awardSnap.data!.docs.length
+                                              .toString(),
+                                          style: TextStyle(
+                                            color: constantColors.whiteColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
                                           ),
-                                        );
-                                      }
+                                        ),
+                                      );
                                     },
                                   ),
                                 ),

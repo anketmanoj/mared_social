@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
@@ -42,10 +43,25 @@ class HomepageHelpers with ChangeNotifier {
                 CustomNavigationBarItem(
                     icon: const Icon(EvaIcons.messageCircle)),
                 CustomNavigationBarItem(
-                  icon: CircleAvatar(
-                    radius: 35,
-                    backgroundColor: constantColors.blueGreyColor,
-                    backgroundImage: NetworkImage(snapshot.data!['userimage']),
+                  icon: SizedBox(
+                    height: 35,
+                    width: 35,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: CachedNetworkImage(
+                        fit: BoxFit.cover,
+                        imageUrl: snapshot.data!['userimage'],
+                        progressIndicatorBuilder:
+                            (context, url, downloadProgress) => Container(
+                          height: 40,
+                          width: 40,
+                          child: CircularProgressIndicator(
+                              value: downloadProgress.progress),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                      ),
+                    ),
                   ),
                 ),
               ],

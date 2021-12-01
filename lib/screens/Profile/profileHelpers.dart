@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/LandingPage/landingpage.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:page_transition/page_transition.dart';
@@ -26,14 +28,29 @@ class ProfileHelpers with ChangeNotifier {
             child: Padding(
               padding: const EdgeInsets.only(top: 16.0),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
                     onTap: () {},
-                    child: CircleAvatar(
-                      backgroundColor: constantColors.transperant,
-                      radius: 60,
-                      backgroundImage:
-                          NetworkImage(snapshot.data!['userimage']),
+                    child: SizedBox(
+                      height: 100,
+                      width: 100,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                        child: CachedNetworkImage(
+                          fit: BoxFit.cover,
+                          imageUrl: snapshot.data!['userimage'],
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) => Container(
+                            height: 40,
+                            width: 40,
+                            child: CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        ),
+                      ),
                     ),
                   ),
                   Padding(
@@ -86,60 +103,116 @@ class ProfileHelpers with ChangeNotifier {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: constantColors.darkColor,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        height: 70,
-                        width: 80,
-                        child: Column(
-                          children: [
-                            Text(
-                              "0",
-                              style: TextStyle(
-                                color: constantColors.whiteColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 28,
+                      InkWell(
+                        onTap: () {
+                          checkFollowerSheet(
+                            context: context,
+                            userDocSnap: snapshot,
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: constantColors.darkColor,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          height: 70,
+                          width: 80,
+                          child: Column(
+                            children: [
+                              StreamBuilder<QuerySnapshot>(
+                                  stream: FirebaseFirestore.instance
+                                      .collection("users")
+                                      .doc(snapshot.data!['useruid'])
+                                      .collection("followers")
+                                      .snapshots(),
+                                  builder: (context, followerSnap) {
+                                    if (followerSnap.hasData) {
+                                      return Text(
+                                        followerSnap.data!.docs.length
+                                            .toString(),
+                                        style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 28,
+                                        ),
+                                      );
+                                    } else {
+                                      return Text(
+                                        "0",
+                                        style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 28,
+                                        ),
+                                      );
+                                    }
+                                  }),
+                              Text(
+                                "Followers",
+                                style: TextStyle(
+                                  color: constantColors.whiteColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
                               ),
-                            ),
-                            Text(
-                              "Followers",
-                              style: TextStyle(
-                                color: constantColors.whiteColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: constantColors.darkColor,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        height: 70,
-                        width: 80,
-                        child: Column(
-                          children: [
-                            Text(
-                              "0",
-                              style: TextStyle(
-                                color: constantColors.whiteColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 28,
+                      InkWell(
+                        onTap: () {
+                          checkFollowingSheet(
+                            context: context,
+                            userDocSnap: snapshot,
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: constantColors.darkColor,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          height: 70,
+                          width: 80,
+                          child: Column(
+                            children: [
+                              StreamBuilder<QuerySnapshot>(
+                                  stream: FirebaseFirestore.instance
+                                      .collection("users")
+                                      .doc(snapshot.data!['useruid'])
+                                      .collection("following")
+                                      .snapshots(),
+                                  builder: (context, followingSnap) {
+                                    if (followingSnap.hasData) {
+                                      return Text(
+                                        followingSnap.data!.docs.length
+                                            .toString(),
+                                        style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 28,
+                                        ),
+                                      );
+                                    } else {
+                                      return Text(
+                                        "0",
+                                        style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 28,
+                                        ),
+                                      );
+                                    }
+                                  }),
+                              Text(
+                                "Following",
+                                style: TextStyle(
+                                  color: constantColors.whiteColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
                               ),
-                            ),
-                            Text(
-                              "Following",
-                              style: TextStyle(
-                                color: constantColors.whiteColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -234,6 +307,57 @@ class ProfileHelpers with ChangeNotifier {
               color: constantColors.darkColor.withOpacity(0.4),
               borderRadius: BorderRadius.circular(15),
             ),
+            child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(snapshot.data!['useruid'])
+                    .collection("following")
+                    .snapshots(),
+                builder: (context, followingSnap) {
+                  if (followingSnap.hasData) {
+                    return ListView(
+                      scrollDirection: Axis.horizontal,
+                      children:
+                          followingSnap.data!.docs.map((followingDocSnap) {
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: SizedBox(
+                            height: 60,
+                            width: 60,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(30),
+                              child: CachedNetworkImage(
+                                fit: BoxFit.cover,
+                                imageUrl: followingDocSnap['userimage'],
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        Container(
+                                  height: 40,
+                                  width: 40,
+                                  child: CircularProgressIndicator(
+                                      value: downloadProgress.progress),
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  } else {
+                    return Center(
+                      child: Text(
+                        "No Recent Followers",
+                        style: TextStyle(
+                          color: constantColors.whiteColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 28,
+                        ),
+                      ),
+                    );
+                  }
+                }),
           ),
         ],
       ),
@@ -308,6 +432,262 @@ class ProfileHelpers with ChangeNotifier {
         decorationColor: constantColors.redColor,
       ),
       onCancelBtnTap: () => Navigator.pop(context),
+    );
+  }
+
+  checkFollowingSheet(
+      {required BuildContext context, required dynamic userDocSnap}) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.75,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: constantColors.blueGreyColor,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(userDocSnap.data!['useruid'])
+                  .collection("following")
+                  .snapshots(),
+              builder: (context, followingSnap) {
+                if (followingSnap.hasData) {
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0, top: 8),
+                        child: Container(
+                          width: 100,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: constantColors.whiteColor,
+                            ),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Following",
+                              style: TextStyle(
+                                color: constantColors.blueColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        width: MediaQuery.of(context).size.width,
+                        child: ListView(
+                          children:
+                              followingSnap.data!.docs.map((followingDocSnap) {
+                            return ListTile(
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                    context,
+                                    PageTransition(
+                                        child: AltProfile(
+                                          userUid: followingDocSnap['useruid'],
+                                        ),
+                                        type: PageTransitionType.bottomToTop));
+                              },
+                              trailing: MaterialButton(
+                                color: constantColors.blueColor,
+                                child: Text(
+                                  "Unfollow",
+                                  style: TextStyle(
+                                    color: constantColors.whiteColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                onPressed: () {},
+                              ),
+                              leading: Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: SizedBox(
+                                  height: 60,
+                                  width: 60,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(30),
+                                    child: CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      imageUrl: followingDocSnap['userimage'],
+                                      progressIndicatorBuilder:
+                                          (context, url, downloadProgress) =>
+                                              Container(
+                                        height: 40,
+                                        width: 40,
+                                        child: CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.error),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              title: Text(
+                                followingDocSnap['username'],
+                                style: TextStyle(
+                                  color: constantColors.blueColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              subtitle: Text(
+                                followingDocSnap['useremail'],
+                                style: TextStyle(
+                                  color: constantColors.yellowColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  return Text(
+                    "${userDocSnap.data!['useruid']} is not following anyone",
+                    style: TextStyle(
+                      color: constantColors.whiteColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 28,
+                    ),
+                  );
+                }
+              }),
+        );
+      },
+    );
+  }
+
+  checkFollowerSheet(
+      {required BuildContext context, required dynamic userDocSnap}) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.75,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: constantColors.blueGreyColor,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(userDocSnap.data!['useruid'])
+                  .collection("followers")
+                  .snapshots(),
+              builder: (context, followerSnap) {
+                if (followerSnap.hasData) {
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0, top: 8),
+                        child: Container(
+                          width: 100,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: constantColors.whiteColor,
+                            ),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Followers",
+                              style: TextStyle(
+                                color: constantColors.blueColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        width: MediaQuery.of(context).size.width,
+                        child: ListView(
+                          children:
+                              followerSnap.data!.docs.map((followerDocSnap) {
+                            return ListTile(
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                    context,
+                                    PageTransition(
+                                        child: AltProfile(
+                                          userUid: followerDocSnap['useruid'],
+                                        ),
+                                        type: PageTransitionType.bottomToTop));
+                              },
+                              leading: Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: SizedBox(
+                                  height: 60,
+                                  width: 60,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(30),
+                                    child: CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      imageUrl: followerDocSnap['userimage'],
+                                      progressIndicatorBuilder:
+                                          (context, url, downloadProgress) =>
+                                              Container(
+                                        height: 40,
+                                        width: 40,
+                                        child: CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.error),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              title: Text(
+                                followerDocSnap['username'],
+                                style: TextStyle(
+                                  color: constantColors.blueColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              subtitle: Text(
+                                followerDocSnap['useremail'],
+                                style: TextStyle(
+                                  color: constantColors.yellowColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  return Text(
+                    "${userDocSnap.data!['useruid']} is not following anyone",
+                    style: TextStyle(
+                      color: constantColors.whiteColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 28,
+                    ),
+                  );
+                }
+              }),
+        );
+      },
     );
   }
 }
