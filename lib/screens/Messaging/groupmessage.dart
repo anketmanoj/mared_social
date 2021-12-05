@@ -5,6 +5,7 @@ import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/screens/Messaging/groupmessagehelper.dart';
 import 'package:mared_social/services/authentication.dart';
+import 'package:nanoid/nanoid.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
@@ -101,6 +102,11 @@ class GroupMessage extends StatelessWidget {
                 width: MediaQuery.of(context).size.width,
                 duration: const Duration(seconds: 1),
                 curve: Curves.bounceIn,
+                child: Provider.of<GroupMessageHelper>(context, listen: false)
+                    .showMessages(
+                        context: context,
+                        documentSnapshot: documentSnapshot,
+                        adminUserUid: documentSnapshot['useruid']),
               ),
               Padding(
                 padding: EdgeInsets.only(
@@ -142,12 +148,15 @@ class GroupMessage extends StatelessWidget {
                         mini: true,
                         backgroundColor: constantColors.blueColor,
                         onPressed: () {
+                          String messageId = nanoid(14).toString();
                           Provider.of<GroupMessageHelper>(context,
                                   listen: false)
                               .sendMessage(
-                                  context: context,
-                                  documentSnapshot: documentSnapshot,
-                                  messagecontroller: messageController);
+                            context: context,
+                            documentSnapshot: documentSnapshot,
+                            messagecontroller: messageController,
+                            messageId: messageId,
+                          );
                         },
                         child: Icon(
                           Icons.send_sharp,

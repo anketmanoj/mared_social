@@ -127,4 +127,14 @@ class FirebaseOperations with ChangeNotifier {
         .doc(chatroomName)
         .set(chatroomData);
   }
+
+  Future deleteMessage(
+      {required String chatroomId, required String messageId}) async {
+    return FirebaseFirestore.instance
+        .collection("chatrooms")
+        .doc(chatroomId)
+        .collection("messages")
+        .doc(messageId)
+        .delete();
+  }
 }
