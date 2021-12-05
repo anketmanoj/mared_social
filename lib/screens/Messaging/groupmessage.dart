@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
@@ -9,13 +11,44 @@ import 'package:nanoid/nanoid.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
-class GroupMessage extends StatelessWidget {
+class GroupMessage extends StatefulWidget {
   final DocumentSnapshot documentSnapshot;
 
   GroupMessage({Key? key, required this.documentSnapshot}) : super(key: key);
 
+  @override
+  State<GroupMessage> createState() => _GroupMessageState();
+}
+
+class _GroupMessageState extends State<GroupMessage> {
   ConstantColors constantColors = ConstantColors();
   TextEditingController messageController = TextEditingController();
+
+  @override
+  void initState() {
+    Provider.of<GroupMessageHelper>(context, listen: false)
+        .checkIfJoined(
+            context: context,
+            chatroomId: widget.documentSnapshot.id,
+            chatroomAdminUid: widget.documentSnapshot['useruid'])
+        .whenComplete(() async {
+      if (Provider.of<GroupMessageHelper>(context, listen: false)
+              .getHasMemberJoined ==
+          false) {
+        Timer(
+          const Duration(milliseconds: 10),
+          () =>
+              Provider.of<GroupMessageHelper>(context, listen: false).askToJoin(
+            context: context,
+            roomname: widget.documentSnapshot['roomname'],
+            chatroomId: widget.documentSnapshot.id,
+          ),
+        );
+      }
+    });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +60,7 @@ class GroupMessage extends StatelessWidget {
             icon: Icon(EvaIcons.logInOutline, color: constantColors.redColor),
           ),
           Provider.of<Authentication>(context, listen: false).getUserId ==
-                  documentSnapshot['useruid']
+                  widget.documentSnapshot['useruid']
               ? IconButton(
                   onPressed: () {},
                   icon: Icon(
@@ -61,7 +94,8 @@ class GroupMessage extends StatelessWidget {
             children: [
               CircleAvatar(
                 backgroundColor: constantColors.darkColor,
-                backgroundImage: NetworkImage(documentSnapshot['roomAvatar']),
+                backgroundImage:
+                    NetworkImage(widget.documentSnapshot['roomAvatar']),
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0),
@@ -70,20 +104,40 @@ class GroupMessage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      documentSnapshot['roomname'],
+                      widget.documentSnapshot['roomname'],
                       style: TextStyle(
                         color: constantColors.whiteColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
-                    Text(
-                      "2 Members",
-                      style: TextStyle(
-                        color: constantColors.greenColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection("chatrooms")
+                          .doc(widget.documentSnapshot.id)
+                          .collection("members")
+                          .snapshots(),
+                      builder: (context, memberSnaps) {
+                        if (!memberSnaps.hasData) {
+                          return Text(
+                            "0 Members",
+                            style: TextStyle(
+                              color: constantColors.greenColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          );
+                        } else {
+                          return Text(
+                            "${memberSnaps.data!.docs.length} Members",
+                            style: TextStyle(
+                              color: constantColors.greenColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -105,8 +159,8 @@ class GroupMessage extends StatelessWidget {
                 child: Provider.of<GroupMessageHelper>(context, listen: false)
                     .showMessages(
                         context: context,
-                        documentSnapshot: documentSnapshot,
-                        adminUserUid: documentSnapshot['useruid']),
+                        documentSnapshot: widget.documentSnapshot,
+                        adminUserUid: widget.documentSnapshot['useruid']),
               ),
               Padding(
                 padding: EdgeInsets.only(
@@ -153,7 +207,7 @@ class GroupMessage extends StatelessWidget {
                                   listen: false)
                               .sendMessage(
                             context: context,
-                            documentSnapshot: documentSnapshot,
+                            documentSnapshot: widget.documentSnapshot,
                             messagecontroller: messageController,
                             messageId: messageId,
                           );

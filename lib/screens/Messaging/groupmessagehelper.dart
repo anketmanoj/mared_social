@@ -3,11 +3,15 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class GroupMessageHelper with ChangeNotifier {
+  bool hasMemberJoined = false;
+  bool get getHasMemberJoined => hasMemberJoined;
   ConstantColors constantColors = ConstantColors();
   showMessages(
       {required BuildContext context,
@@ -183,5 +187,110 @@ class GroupMessageHelper with ChangeNotifier {
       'userimage': Provider.of<FirebaseOperations>(context, listen: false)
           .getInitUserImage,
     });
+  }
+
+  Future checkIfJoined(
+      {required BuildContext context,
+      required String chatroomId,
+      required String chatroomAdminUid}) async {
+    return FirebaseFirestore.instance
+        .collection("chatrooms")
+        .doc(chatroomId)
+        .collection("members")
+        .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+        .get()
+        .then((value) {
+      hasMemberJoined = false;
+      print("Inital state  => $hasMemberJoined");
+      if (value['joined'] != null) {
+        hasMemberJoined = value['joined'];
+        print("Final state => $hasMemberJoined");
+        notifyListeners();
+      }
+      if (Provider.of<Authentication>(context, listen: false).getUserId ==
+          chatroomAdminUid) {
+        hasMemberJoined = true;
+        notifyListeners();
+      }
+    });
+  }
+
+  askToJoin(
+      {required BuildContext context,
+      required String roomname,
+      required String chatroomId}) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: constantColors.darkColor,
+          title: Text(
+            "Join $roomname",
+            style: TextStyle(
+              color: constantColors.whiteColor,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          actions: [
+            MaterialButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context,
+                    PageTransition(
+                        child: HomePage(),
+                        type: PageTransitionType.bottomToTop));
+              },
+              child: Text(
+                "No",
+                style: TextStyle(
+                  color: constantColors.whiteColor,
+                  fontSize: 14,
+                  decoration: TextDecoration.underline,
+                  decorationColor: constantColors.whiteColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            MaterialButton(
+              color: constantColors.greenColor,
+              onPressed: () async {
+                await FirebaseFirestore.instance
+                    .collection("chatrooms")
+                    .doc(chatroomId)
+                    .collection("members")
+                    .doc(Provider.of<Authentication>(context, listen: false)
+                        .getUserId)
+                    .set({
+                  'joined': true,
+                  'username':
+                      Provider.of<FirebaseOperations>(context, listen: false)
+                          .getInitUserName,
+                  'userimage':
+                      Provider.of<FirebaseOperations>(context, listen: false)
+                          .getInitUserImage,
+                  'useremail':
+                      Provider.of<FirebaseOperations>(context, listen: false)
+                          .getInitUserEmail,
+                  'useruid': Provider.of<Authentication>(context, listen: false)
+                      .getUserId,
+                  'time': Timestamp.now(),
+                }).whenComplete(() {
+                  Navigator.pop(context);
+                });
+              },
+              child: Text(
+                "Yes",
+                style: TextStyle(
+                  color: constantColors.whiteColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
