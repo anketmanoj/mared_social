@@ -56,6 +56,7 @@ class AltProfile extends StatelessWidget {
                     Provider.of<AltProfileHelper>(context, listen: false)
                         .footerProfile(
                       context: context,
+                      userUid: userUid,
                       snapshot: userDocSnap,
                     ),
                   ],
