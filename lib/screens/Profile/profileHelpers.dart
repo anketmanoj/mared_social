@@ -1,3 +1,4 @@
+// ignore: file_names
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
@@ -23,7 +24,7 @@ class ProfileHelpers with ChangeNotifier {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Container(
+          SizedBox(
             height: 220,
             width: 180,
             child: Padding(

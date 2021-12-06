@@ -2,14 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
-import 'package:mared_social/screens/LandingPage/landingpage.dart';
 import 'package:mared_social/screens/Profile/profileHelpers.dart';
 import 'package:mared_social/services/authentication.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class Profile extends StatelessWidget {
-  ConstantColors constantColors = ConstantColors();
+  final ConstantColors constantColors = ConstantColors();
+
+  Profile({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(

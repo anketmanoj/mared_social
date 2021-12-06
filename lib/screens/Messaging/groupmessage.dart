@@ -53,10 +53,17 @@ class _GroupMessageState extends State<GroupMessage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: constantColors.darkColor,
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Provider.of<GroupMessageHelper>(context, listen: false)
+                  .leaveTheRoom(
+                context: context,
+                documentSnapshot: widget.documentSnapshot,
+              );
+            },
             icon: Icon(EvaIcons.logInOutline, color: constantColors.redColor),
           ),
           Provider.of<Authentication>(context, listen: false).getUserId ==
@@ -118,7 +125,7 @@ class _GroupMessageState extends State<GroupMessage> {
                           .collection("members")
                           .snapshots(),
                       builder: (context, memberSnaps) {
-                        if (!memberSnaps.hasData) {
+                        if (memberSnaps.data!.docs.isEmpty) {
                           return Text(
                             "0 Members",
                             style: TextStyle(
@@ -170,6 +177,14 @@ class _GroupMessageState extends State<GroupMessage> {
                   child: Row(
                     children: [
                       InkWell(
+                        onTap: () {
+                          Provider.of<GroupMessageHelper>(context,
+                                  listen: false)
+                              .showSticker(
+                            context: context,
+                            chatroomId: widget.documentSnapshot.id,
+                          );
+                        },
                         child: CircleAvatar(
                           backgroundColor: constantColors.transperant,
                           backgroundImage:
@@ -201,9 +216,9 @@ class _GroupMessageState extends State<GroupMessage> {
                       FloatingActionButton(
                         mini: true,
                         backgroundColor: constantColors.blueColor,
-                        onPressed: () {
+                        onPressed: () async {
                           String messageId = nanoid(14).toString();
-                          Provider.of<GroupMessageHelper>(context,
+                          await Provider.of<GroupMessageHelper>(context,
                                   listen: false)
                               .sendMessage(
                             context: context,
@@ -211,6 +226,13 @@ class _GroupMessageState extends State<GroupMessage> {
                             messagecontroller: messageController,
                             messageId: messageId,
                           );
+
+                          await Provider.of<GroupMessageHelper>(context,
+                                  listen: false)
+                              .updateTime(
+                                  documentSnapshot: widget.documentSnapshot);
+
+                          messageController.clear();
                         },
                         child: Icon(
                           Icons.send_sharp,

@@ -1,8 +1,9 @@
+// ignore: file_names
 import 'package:flutter/material.dart';
 
 class ConstantColors {
-  final Color lightColor = Color(0xff6c788a);
-  final Color darkColor = Color(0xFF100E20);
+  final Color lightColor = const Color(0xff6c788a);
+  final Color darkColor = const Color(0xFF100E20);
   final Color blueColor = Colors.lightBlueAccent.shade400;
   final Color lightBlueColor = Colors.lightBlueAccent.shade200;
   final Color redColor = Colors.red;

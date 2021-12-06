@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,6 +12,7 @@ import 'package:mared_social/services/authentication.dart';
 import 'package:nanoid/nanoid.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ChatroomHelpers with ChangeNotifier {
   ConstantColors constantColors = ConstantColors();
@@ -149,16 +151,68 @@ class ChatroomHelpers with ChangeNotifier {
                           documentSnapshot['userimage'],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          documentSnapshot['username'],
-                          style: TextStyle(
-                            color: constantColors.whiteColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                      Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(
+                              documentSnapshot['username'],
+                              style: TextStyle(
+                                color: constantColors.whiteColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                        ),
+                          Provider.of<Authentication>(context, listen: false)
+                                      .getUserId ==
+                                  documentSnapshot['useruid']
+                              ? Padding(
+                                  padding: const EdgeInsets.only(left: 16.0),
+                                  child: MaterialButton(
+                                    color: constantColors.redColor,
+                                    child: Text(
+                                      "Delete Chat",
+                                      style: TextStyle(
+                                        color: constantColors.whiteColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      CoolAlert.show(
+                                        context: context,
+                                        type: CoolAlertType.warning,
+                                        backgroundColor:
+                                            constantColors.darkColor,
+                                        title:
+                                            "Delete ${documentSnapshot['roomname']}?",
+                                        text:
+                                            "Are you sure you want to delete the group chat?",
+                                        showCancelBtn: true,
+                                        cancelBtnText: "No",
+                                        confirmBtnText: "Yes",
+                                        onCancelBtnTap: () =>
+                                            Navigator.pop(context),
+                                        onConfirmBtnTap: () {
+                                          FirebaseFirestore.instance
+                                              .collection("chatrooms")
+                                              .doc(documentSnapshot.id)
+                                              .delete()
+                                              .whenComplete(() {
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
+                                          });
+                                        },
+                                      );
+                                    },
+                                  ),
+                                )
+                              : const SizedBox(
+                                  height: 0,
+                                  width: 0,
+                                ),
+                        ],
                       ),
                     ],
                   ),
@@ -335,7 +389,10 @@ class ChatroomHelpers with ChangeNotifier {
 
   showChatrooms({required BuildContext context}) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection("chatrooms").snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection("chatrooms")
+          .orderBy('time', descending: true)
+          .snapshots(),
       builder: (context, chatroomSnaps) {
         if (!chatroomSnaps.hasData) {
           return Center(
@@ -371,20 +428,45 @@ class ChatroomHelpers with ChangeNotifier {
                   ),
                 ),
                 trailing: Text(
-                  "2 hours ago",
+                  timeago
+                      .format((documentSnapshot['time'] as Timestamp).toDate()),
                   style: TextStyle(
-                    color: constantColors.whiteColor,
-                    fontSize: 10,
-                  ),
-                ),
-                subtitle: Text(
-                  "Last message",
-                  style: TextStyle(
-                    color: constantColors.whiteColor,
-                    fontSize: 14,
+                    color: constantColors.greenColor,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                subtitle: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("chatrooms")
+                        .doc(documentSnapshot.id)
+                        .collection("messages")
+                        .orderBy('time', descending: true)
+                        .limit(1)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.data!.docs.isNotEmpty) {
+                        return Text(
+                          snapshot.data!.docs[0]['message']
+                                  .toString()
+                                  .isNotEmpty
+                              ? "${snapshot.data!.docs[0]['username']}: ${snapshot.data!.docs[0]['message']}"
+                              : "${snapshot.data!.docs[0]['username']}: Sticker",
+                          style: TextStyle(
+                            color: constantColors.greenColor,
+                            fontSize: 10,
+                          ),
+                        );
+                      } else {
+                        return Text(
+                          "",
+                          style: TextStyle(
+                            color: constantColors.whiteColor,
+                            fontSize: 10,
+                          ),
+                        );
+                      }
+                    }),
                 leading: CircleAvatar(
                   backgroundColor: constantColors.transperant,
                   backgroundImage: NetworkImage(documentSnapshot['roomAvatar']),
