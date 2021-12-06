@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfileHelper.dart';
+import 'package:mared_social/screens/Categories/categoryHelpers.dart';
 import 'package:mared_social/screens/Chatroom/chatroom_helpers.dart';
 import 'package:mared_social/screens/Feed/feedhelpers.dart';
 import 'package:mared_social/screens/HomePage/homepageHelpers.dart';
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AltProfileHelper()),
         ChangeNotifierProvider(create: (_) => ChatroomHelpers()),
         ChangeNotifierProvider(create: (_) => GroupMessageHelper()),
+        ChangeNotifierProvider(create: (_) => CategoryHelper()),
       ],
     );
   }

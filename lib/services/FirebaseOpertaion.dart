@@ -137,4 +137,20 @@ class FirebaseOperations with ChangeNotifier {
         .doc(messageId)
         .delete();
   }
+
+  List<String> catNames = [
+    'Sports',
+    'Services',
+    'Events',
+    'Homemade',
+    'Furniture',
+    'Education',
+    'Fashion & Beauty',
+    'Electronics',
+    'Business & Industry',
+    'Healthcare',
+    'Jobs',
+    'Real Estate',
+    'Automobiles'
+  ];
 }

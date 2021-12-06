@@ -1,6 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/screens/Categories/category.dart';
 import 'package:mared_social/screens/Chatroom/chatroom.dart';
 import 'package:mared_social/screens/Feed/feed.dart';
 import 'package:mared_social/screens/HomePage/homepageHelpers.dart';
@@ -37,6 +38,7 @@ class _HomePageState extends State<HomePage> {
         controller: homepageController,
         children: [
           Feed(),
+          CategoryScreen(),
           Chatroom(),
           Profile(),
         ],

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
@@ -40,6 +41,8 @@ class HomepageHelpers with ChangeNotifier {
               backgroundColor: const Color(0xff040307),
               items: [
                 CustomNavigationBarItem(icon: const Icon(EvaIcons.home)),
+                CustomNavigationBarItem(
+                    icon: const Icon(EvaIcons.keypadOutline)),
                 CustomNavigationBarItem(
                     icon: const Icon(EvaIcons.messageCircle)),
                 CustomNavigationBarItem(
