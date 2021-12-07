@@ -10,8 +10,9 @@ import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  final int pageRoute;
-  const HomePage({Key? key, required this.pageRoute}) : super(key: key);
+  const HomePage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -19,6 +20,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   ConstantColors constantColors = ConstantColors();
+  final PageController homepageController = PageController();
 
   int pageIndex = 0;
 
@@ -33,8 +35,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    PageController homepageController =
-        PageController(initialPage: widget.pageRoute);
     return Scaffold(
       backgroundColor: constantColors.darkColor,
       body: PageView(

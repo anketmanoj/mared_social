@@ -35,10 +35,8 @@ class HomepageHelpers with ChangeNotifier {
               iconSize: 30,
               onTap: (val) {
                 index = val;
-                pageController.animateToPage(
+                pageController.jumpToPage(
                   index,
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeIn,
                 );
                 notifyListeners();
               },
