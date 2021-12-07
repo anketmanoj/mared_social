@@ -158,8 +158,9 @@ class StoryWidgets {
                           FontAwesomeIcons.check,
                           color: constantColors.whiteColor,
                         ),
-                        onPressed: () {
-                          Provider.of<StoriesHelper>(context, listen: false)
+                        onPressed: () async {
+                          await Provider.of<StoriesHelper>(context,
+                                  listen: false)
                               .uploadStoryImage(context: context)
                               .whenComplete(() async {
                             try {
@@ -340,5 +341,9 @@ class StoryWidgets {
         );
       },
     );
+  }
+
+  addToHighlights({required BuildContext context, required String storyImage}) {
+    return Container();
   }
 }

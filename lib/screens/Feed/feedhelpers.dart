@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
+import 'package:mared_social/screens/Stories/stories.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/postoptions.dart';
 import 'package:mared_social/utils/uploadpost.dart';
@@ -61,11 +62,88 @@ class FeedHelpers with ChangeNotifier {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.1,
+              height: MediaQuery.of(context).size.height * 0.15,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 color: constantColors.darkColor,
                 borderRadius: BorderRadius.circular(12),
+              ),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("stories")
+                    .orderBy('time', descending: true)
+                    .snapshots(),
+                builder: (context, storiesSnaps) {
+                  if (!storiesSnaps.hasData) {
+                    return Center(
+                      child: Text(
+                        "No Stories Yet",
+                        style: TextStyle(
+                          color: constantColors.whiteColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    );
+                  } else {
+                    return ListView.builder(
+                      itemCount: storiesSnaps.data!.docs.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                  child: Stories(
+                                      documentSnapshot:
+                                          storiesSnaps.data!.docs[index]),
+                                  type: PageTransitionType.bottomToTop),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Stack(
+                              children: [
+                                Container(
+                                  height: 105,
+                                  width: 105,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: constantColors.blueColor,
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  child: SizedBox(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(50),
+                                      child: CachedNetworkImage(
+                                        fit: BoxFit.cover,
+                                        imageUrl: storiesSnaps.data!.docs[index]
+                                            ['userimage'],
+                                        progressIndicatorBuilder:
+                                            (context, url, downloadProgress) =>
+                                                Container(
+                                          height: 50,
+                                          width: 50,
+                                          child: CircularProgressIndicator(
+                                              value: downloadProgress.progress),
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(Icons.error),
+                                      ),
+                                    ),
+                                    height: 100,
+                                    width: 100,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
               ),
             ),
           ),
