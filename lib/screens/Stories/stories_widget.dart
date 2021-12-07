@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
@@ -17,6 +18,7 @@ import 'package:provider/provider.dart';
 
 class StoryWidgets {
   final ConstantColors constantColors = ConstantColors();
+  TextEditingController storyHighlightTitleController = TextEditingController();
 
   addStory({required BuildContext context}) {
     return showModalBottomSheet(
@@ -343,7 +345,144 @@ class StoryWidgets {
     );
   }
 
-  addToHighlights({required BuildContext context, required String storyImage}) {
-    return Container();
+  addToHighlights(
+      {required BuildContext context,
+      required String storyImage,
+      required String storyId}) {
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.5,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              color: constantColors.blueGreyColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 150),
+                  child: Divider(
+                    thickness: 4,
+                    color: constantColors.whiteColor,
+                  ),
+                ),
+                Text(
+                  "Add to Existing Highlights",
+                  style: TextStyle(
+                    color: constantColors.yellowColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.12,
+                  width: MediaQuery.of(context).size.width,
+                ),
+                Text(
+                  "Create New Highlight",
+                  style: TextStyle(
+                    color: constantColors.yellowColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.15,
+                  width: MediaQuery.of(context).size.width,
+                  child: Center(
+                    child: SizedBox(
+                      height: 100,
+                      width: 100,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(25),
+                        child: CachedNetworkImage(
+                          fit: BoxFit.cover,
+                          imageUrl: storyImage,
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) => Container(
+                            height: 40,
+                            width: 40,
+                            child: CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.12,
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: TextField(
+                          textCapitalization: TextCapitalization.sentences,
+                          controller: storyHighlightTitleController,
+                          style: TextStyle(
+                            color: constantColors.whiteColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: "Highlight Title...",
+                            hintStyle: TextStyle(
+                              color: constantColors.blueColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                      FloatingActionButton(
+                        backgroundColor: constantColors.blueColor,
+                        onPressed: () {
+                          if (storyHighlightTitleController.text.isNotEmpty) {
+                            String highlightId = nanoid(14).toString();
+                            Provider.of<StoriesHelper>(context, listen: false)
+                                .addStoryToNewHighlight(
+                                    context: context,
+                                    userUid: Provider.of<Authentication>(
+                                            context,
+                                            listen: false)
+                                        .getUserId,
+                                    highLightName:
+                                        storyHighlightTitleController.text,
+                                    storyImage: storyImage,
+                                    storyId: storyId,
+                                    highlightId: highlightId);
+                          } else {
+                            CoolAlert.show(
+                              context: context,
+                              type: CoolAlertType.warning,
+                              title: "Highlight Title Missing",
+                              text: "Please Add A Title For Your Highlight",
+                            );
+                          }
+                        },
+                        child: Icon(
+                          FontAwesomeIcons.check,
+                          color: constantColors.whiteColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }

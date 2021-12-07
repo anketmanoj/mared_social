@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
+import 'package:mared_social/screens/Stories/stories_widget.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -37,6 +38,8 @@ class _StoriesState extends State<Stories> {
   // }
 
   ConstantColors constantColors = ConstantColors();
+  final StoryWidgets storyWidgets = StoryWidgets();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,32 +60,35 @@ class _StoriesState extends State<Stories> {
             children: [
               SingleChildScrollView(
                 physics: const NeverScrollableScrollPhysics(),
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(30),
-                          child: CachedNetworkImage(
-                            fit: BoxFit.contain,
-                            imageUrl: widget.documentSnapshot['image'],
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) => Container(
-                              height: 40,
-                              width: 40,
-                              child: CircularProgressIndicator(
-                                  value: downloadProgress.progress),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height,
+                          width: MediaQuery.of(context).size.width,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(30),
+                            child: CachedNetworkImage(
+                              fit: BoxFit.contain,
+                              imageUrl: widget.documentSnapshot['image'],
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) => Container(
+                                height: 40,
+                                width: 40,
+                                child: CircularProgressIndicator(
+                                    value: downloadProgress.progress),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
                             ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -241,7 +247,13 @@ class _StoriesState extends State<Stories> {
                                               color: constantColors.whiteColor,
                                             ),
                                             onPressed: () {
-                                              // * here
+                                              storyWidgets.addToHighlights(
+                                                context: context,
+                                                storyImage: widget
+                                                    .documentSnapshot['image'],
+                                                storyId:
+                                                    widget.documentSnapshot.id,
+                                              );
                                             },
                                             label: Text(
                                               "Add to highlights",
