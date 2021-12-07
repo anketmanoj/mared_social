@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
+import 'package:mared_social/screens/Stories/stories_helper.dart';
 import 'package:mared_social/screens/Stories/stories_widget.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:page_transition/page_transition.dart';
@@ -16,29 +17,33 @@ import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class Stories extends StatefulWidget {
-  final DocumentSnapshot documentSnapshot;
+  final AsyncSnapshot<QuerySnapshot> querySnapshot;
+  int snapIndex;
 
-  const Stories({Key? key, required this.documentSnapshot}) : super(key: key);
+  Stories({Key? key, required this.querySnapshot, required this.snapIndex})
+      : super(key: key);
   @override
   State<Stories> createState() => _StoriesState();
 }
 
 class _StoriesState extends State<Stories> {
-  // @override
-  // void initState() {
-  //   Timer(
-  //       Duration(seconds: 15),
-  //       () => Navigator.pushReplacement(
-  //             context,
-  //             PageTransition(
-  //                 child: const HomePage(),
-  //                 type: PageTransitionType.topToBottom),
-  //           ));
-  //   super.initState();
-  // }
-
   ConstantColors constantColors = ConstantColors();
   final StoryWidgets storyWidgets = StoryWidgets();
+  CountDownController countDownController = CountDownController();
+  int indexCheck = 0;
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    setState(() {
+      indexCheck = widget.snapIndex;
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +51,9 @@ class _StoriesState extends State<Stories> {
       backgroundColor: constantColors.darkColor,
       body: SafeArea(
         child: GestureDetector(
+          onLongPressEnd: (details) {
+            countDownController.resume();
+          },
           onPanUpdate: (update) {
             if (update.delta.dx > 0) {
               Navigator.pushReplacement(
@@ -55,6 +63,9 @@ class _StoriesState extends State<Stories> {
                     type: PageTransitionType.topToBottom),
               );
             }
+          },
+          onLongPress: () {
+            countDownController.pause();
           },
           child: Stack(
             children: [
@@ -74,7 +85,8 @@ class _StoriesState extends State<Stories> {
                             borderRadius: BorderRadius.circular(30),
                             child: CachedNetworkImage(
                               fit: BoxFit.contain,
-                              imageUrl: widget.documentSnapshot['image'],
+                              imageUrl: widget.querySnapshot.data!
+                                  .docs[widget.snapIndex]['image'],
                               progressIndicatorBuilder:
                                   (context, url, downloadProgress) => Container(
                                 height: 40,
@@ -89,6 +101,36 @@ class _StoriesState extends State<Stories> {
                         ),
                       ],
                     ),
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 0,
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      widget.snapIndex = widget.snapIndex + 1;
+                    });
+                    countDownController.restart();
+                  },
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width / 2,
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 0,
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      widget.snapIndex = widget.snapIndex - 1;
+                    });
+                    countDownController.restart();
+                  },
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width / 2,
                   ),
                 ),
               ),
@@ -108,7 +150,8 @@ class _StoriesState extends State<Stories> {
                           borderRadius: BorderRadius.circular(25),
                           child: CachedNetworkImage(
                             fit: BoxFit.cover,
-                            imageUrl: widget.documentSnapshot['userimage'],
+                            imageUrl: widget.querySnapshot.data!
+                                .docs[widget.snapIndex]['userimage'],
                             progressIndicatorBuilder:
                                 (context, url, downloadProgress) => Container(
                               height: 40,
@@ -133,7 +176,8 @@ class _StoriesState extends State<Stories> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                widget.documentSnapshot['username'],
+                                widget.querySnapshot.data!
+                                    .docs[widget.snapIndex]['username'],
                                 style: TextStyle(
                                   color: constantColors.whiteColor,
                                   fontWeight: FontWeight.bold,
@@ -141,7 +185,8 @@ class _StoriesState extends State<Stories> {
                                 ),
                               ),
                               Text(
-                                timeago.format((widget.documentSnapshot['time']
+                                timeago.format((widget.querySnapshot.data!
+                                            .docs[widget.snapIndex]['time']
                                         as Timestamp)
                                     .toDate()),
                                 style: TextStyle(
@@ -158,7 +203,8 @@ class _StoriesState extends State<Stories> {
                         visible:
                             Provider.of<Authentication>(context, listen: false)
                                     .getUserId ==
-                                widget.documentSnapshot['useruid'],
+                                widget.querySnapshot.data!
+                                    .docs[widget.snapIndex]['useruid'],
                         child: InkWell(
                           onTap: () {},
                           child: SizedBox(
@@ -189,6 +235,19 @@ class _StoriesState extends State<Stories> {
                         height: 30,
                         width: 30,
                         child: CircularCountDownTimer(
+                          onComplete: () async {
+                            for (var i = widget.snapIndex;
+                                i < widget.querySnapshot.data!.docs.length;
+                                i++) {
+                              setState(() {
+                                widget.snapIndex = i;
+                              });
+                              print("index == ${widget.snapIndex}");
+                              await Future.delayed(const Duration(seconds: 15));
+                            }
+                          },
+                          autoStart: true,
+                          controller: countDownController,
                           isTimerTextShown: false,
                           width: 20,
                           height: 20,
@@ -201,7 +260,8 @@ class _StoriesState extends State<Stories> {
                         visible:
                             Provider.of<Authentication>(context, listen: false)
                                     .getUserId ==
-                                widget.documentSnapshot['useruid'],
+                                widget.querySnapshot.data!
+                                    .docs[widget.snapIndex]['useruid'],
                         child: IconButton(
                           onPressed: () {
                             showModalBottomSheet(
@@ -250,9 +310,15 @@ class _StoriesState extends State<Stories> {
                                               storyWidgets.addToHighlights(
                                                 context: context,
                                                 storyImage: widget
-                                                    .documentSnapshot['image'],
-                                                storyId:
-                                                    widget.documentSnapshot.id,
+                                                        .querySnapshot
+                                                        .data!
+                                                        .docs[widget.snapIndex]
+                                                    ['image'],
+                                                storyId: widget
+                                                    .querySnapshot
+                                                    .data!
+                                                    .docs[widget.snapIndex]
+                                                    .id,
                                               );
                                             },
                                             label: Text(
@@ -293,7 +359,10 @@ class _StoriesState extends State<Stories> {
                                                         .instance
                                                         .collection("stories")
                                                         .doc(widget
-                                                            .documentSnapshot
+                                                            .querySnapshot
+                                                            .data!
+                                                            .docs[widget
+                                                                .snapIndex]
                                                             .id)
                                                         .delete()
                                                         .whenComplete(() async {
@@ -307,7 +376,10 @@ class _StoriesState extends State<Stories> {
                                                               .getUserId)
                                                           .collection("stories")
                                                           .doc(widget
-                                                              .documentSnapshot
+                                                              .querySnapshot
+                                                              .data!
+                                                              .docs[widget
+                                                                  .snapIndex]
                                                               .id)
                                                           .delete()
                                                           .whenComplete(() {

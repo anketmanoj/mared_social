@@ -74,7 +74,7 @@ class FeedHelpers with ChangeNotifier {
                     .orderBy('time', descending: true)
                     .snapshots(),
                 builder: (context, storiesSnaps) {
-                  if (!storiesSnaps.hasData) {
+                  if (storiesSnaps.data!.docs.length == 0) {
                     return Center(
                       child: Text(
                         "No Stories Yet",
@@ -92,12 +92,15 @@ class FeedHelpers with ChangeNotifier {
                       itemBuilder: (context, index) {
                         return InkWell(
                           onTap: () {
+                            print(
+                                "number of docs === ${storiesSnaps.data!.docs.length} || index number === $index");
                             Navigator.pushReplacement(
                               context,
                               PageTransition(
                                   child: Stories(
-                                      documentSnapshot:
-                                          storiesSnaps.data!.docs[index]),
+                                    querySnapshot: storiesSnaps,
+                                    snapIndex: index,
+                                  ),
                                   type: PageTransitionType.bottomToTop),
                             );
                           },

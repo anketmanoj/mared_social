@@ -43,11 +43,17 @@ class StoriesHelper with ChangeNotifier {
     await imageUploadTask.whenComplete(() {
       print("story image uploaded");
     });
-    imageReference.getDownloadURL().then((url) {
+    await imageReference.getDownloadURL().then((url) {
       storyImageUrl = url;
       print(storyImageUrl);
     });
     notifyListeners();
+  }
+
+  Iterable<int> range(int low, int high) sync* {
+    for (int i = low; i < high; ++i) {
+      yield i;
+    }
   }
 
   Future addStoryToNewHighlight({

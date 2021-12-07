@@ -85,8 +85,9 @@ class StoryWidgets {
                           FontAwesomeIcons.camera,
                           color: constantColors.whiteColor,
                         ),
-                        onPressed: () {
-                          Provider.of<StoriesHelper>(context, listen: false)
+                        onPressed: () async {
+                          await Provider.of<StoriesHelper>(context,
+                                  listen: false)
                               .selectStoryImage(
                             context: context,
                             source: ImageSource.camera,
