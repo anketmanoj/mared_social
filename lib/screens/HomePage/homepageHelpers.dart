@@ -35,7 +35,11 @@ class HomepageHelpers with ChangeNotifier {
               iconSize: 30,
               onTap: (val) {
                 index = val;
-                pageController.jumpToPage(val);
+                pageController.animateToPage(
+                  index,
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeIn,
+                );
                 notifyListeners();
               },
               backgroundColor: const Color(0xff040307),
