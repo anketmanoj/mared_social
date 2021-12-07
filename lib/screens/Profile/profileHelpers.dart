@@ -8,6 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/LandingPage/landingpage.dart';
+import 'package:mared_social/screens/Stories/stories_widget.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/postoptions.dart';
 import 'package:page_transition/page_transition.dart';
@@ -15,6 +16,7 @@ import 'package:provider/provider.dart';
 
 class ProfileHelpers with ChangeNotifier {
   ConstantColors constantColors = ConstantColors();
+  final StoryWidgets storyWidgets = StoryWidgets();
 
   Widget headerProfile(
       BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -33,26 +35,40 @@ class ProfileHelpers with ChangeNotifier {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
-                    onTap: () {},
-                    child: SizedBox(
-                      height: 100,
-                      width: 100,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(30),
-                        child: CachedNetworkImage(
-                          fit: BoxFit.cover,
-                          imageUrl: snapshot.data!['userimage'],
-                          progressIndicatorBuilder:
-                              (context, url, downloadProgress) => Container(
-                            height: 40,
-                            width: 40,
-                            child: CircularProgressIndicator(
-                                value: downloadProgress.progress),
+                    onTap: () {
+                      storyWidgets.addStory(context: context);
+                    },
+                    child: Stack(
+                      children: [
+                        SizedBox(
+                          height: 100,
+                          width: 100,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(30),
+                            child: CachedNetworkImage(
+                              fit: BoxFit.cover,
+                              imageUrl: snapshot.data!['userimage'],
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) => Container(
+                                height: 40,
+                                width: 40,
+                                child: CircularProgressIndicator(
+                                    value: downloadProgress.progress),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                            ),
                           ),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
                         ),
-                      ),
+                        Positioned(
+                          bottom: 10,
+                          right: 10,
+                          child: Icon(
+                            FontAwesomeIcons.plusCircle,
+                            color: constantColors.whiteColor,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Padding(

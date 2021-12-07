@@ -56,38 +56,53 @@ class FeedHelpers with ChangeNotifier {
 
   Widget feedBody(BuildContext context) {
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 8.0),
-        child: Container(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection("posts")
-                .orderBy('time', descending: true)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: SizedBox(
-                    height: 500,
-                    width: 400,
-                    child: Lottie.asset("assets/animations/loading.json"),
-                  ),
-                );
-              } else {
-                return loadPosts(context, snapshot);
-              }
-            },
-          ),
-          height: MediaQuery.of(context).size.height * 0.77,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            color: constantColors.darkColor.withOpacity(0.5),
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(18),
-              topRight: Radius.circular(18),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.1,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: constantColors.darkColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.only(top: 4.0),
+            child: Container(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("posts")
+                    .orderBy('time', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: SizedBox(
+                        height: 500,
+                        width: 400,
+                        child: Lottie.asset("assets/animations/loading.json"),
+                      ),
+                    );
+                  } else {
+                    return loadPosts(context, snapshot);
+                  }
+                },
+              ),
+              height: MediaQuery.of(context).size.height * 0.77,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: constantColors.darkColor.withOpacity(0.5),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(18),
+                  topRight: Radius.circular(18),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
