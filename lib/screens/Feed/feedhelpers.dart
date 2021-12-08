@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/Stories/stories.dart';
+import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/postoptions.dart';
 import 'package:mared_social/utils/uploadpost.dart';
@@ -55,99 +57,202 @@ class FeedHelpers with ChangeNotifier {
     );
   }
 
+  final List<String> imgList = [
+    'https://firebasestorage.googleapis.com/v0/b/maredsocial-79a7b.appspot.com/o/homeBannerAds%2FI-Pace-Banner-.jpeg?alt=media&token=58ef89fa-8ef1-496d-ad33-c432d176bd31',
+    'https://firebasestorage.googleapis.com/v0/b/maredsocial-79a7b.appspot.com/o/homeBannerAds%2F9618972704798.jpeg?alt=media&token=b669c502-257a-454c-b75a-57c00e114c08',
+    'https://firebasestorage.googleapis.com/v0/b/maredsocial-79a7b.appspot.com/o/homeBannerAds%2Fdoublefest-banner.jpeg?alt=media&token=7fae91b5-e7d7-4fb2-a9a9-b779d8010d1a',
+    'https://firebasestorage.googleapis.com/v0/b/maredsocial-79a7b.appspot.com/o/homeBannerAds%2Fthe-must-have-bodybuilding-supplements-banner.jpeg?alt=media&token=ed35f54b-8d02-42e2-ba98-69e40a49c204',
+  ];
+  int _current = 0;
+  final CarouselController _controller = CarouselController();
+
   Widget feedBody(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.15,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                color: constantColors.darkColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection("stories")
-                    .orderBy('time', descending: true)
-                    .snapshots(),
-                builder: (context, storiesSnaps) {
-                  if (storiesSnaps.data!.docs.length == 0) {
-                    return Center(
-                      child: Text(
-                        "No Stories Yet",
-                        style: TextStyle(
-                          color: constantColors.whiteColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    );
-                  } else {
-                    return ListView.builder(
-                      itemCount: storiesSnaps.data!.docs.length,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () {
-                            print(
-                                "number of docs === ${storiesSnaps.data!.docs.length} || index number === $index");
-                            Navigator.pushReplacement(
-                              context,
-                              PageTransition(
-                                  child: Stories(
-                                    querySnapshot: storiesSnaps,
-                                    snapIndex: index,
-                                  ),
-                                  type: PageTransitionType.bottomToTop),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+          StatefulBuilder(builder: (context, stateSet) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.2,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: constantColors.darkColor.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: CarouselSlider(
+                  items: imgList
+                      .map(
+                        (item) => Container(
+                          child: ClipRRect(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5.0)),
                             child: Stack(
-                              children: [
-                                Container(
-                                  height: 105,
-                                  width: 105,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: constantColors.blueColor,
-                                    borderRadius: BorderRadius.circular(50),
-                                  ),
-                                  child: SizedBox(
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(50),
-                                      child: CachedNetworkImage(
-                                        fit: BoxFit.cover,
-                                        imageUrl: storiesSnaps.data!.docs[index]
-                                            ['userimage'],
-                                        progressIndicatorBuilder:
-                                            (context, url, downloadProgress) =>
-                                                Container(
-                                          height: 50,
-                                          width: 50,
-                                          child: CircularProgressIndicator(
-                                              value: downloadProgress.progress),
-                                        ),
-                                        errorWidget: (context, url, error) =>
-                                            const Icon(Icons.error),
+                              children: <Widget>[
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(5),
+                                  child: CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    imageUrl: item,
+                                    progressIndicatorBuilder:
+                                        (context, url, downloadProgress) =>
+                                            Center(
+                                      child: Container(
+                                        height: 40,
+                                        width: 40,
+                                        child: CircularProgressIndicator(
+                                            value: downloadProgress.progress),
                                       ),
                                     ),
-                                    height: 100,
-                                    width: 100,
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        );
-                      },
-                    );
-                  }
-                },
+                        ),
+                      )
+                      .toList(),
+                  carouselController: _controller,
+                  options: CarouselOptions(
+                      autoPlay: true,
+                      height: MediaQuery.of(context).size.height,
+                      viewportFraction: 2.0,
+                      enlargeCenterPage: false,
+                      onPageChanged: (index, reason) {
+                        stateSet(() {
+                          _current = index;
+                        });
+                      }),
+                ),
               ),
+            );
+          }),
+          Padding(
+            padding:
+                const EdgeInsets.only(right: 3.0, left: 3, bottom: 3, top: 3),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 4.0,
+                  ),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: constantColors.darkColor,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
+                    ),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Mared Moments",
+                      style: TextStyle(
+                        color: constantColors.blueColor,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.08,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color: constantColors.darkColor,
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(12),
+                      bottomRight: Radius.circular(12),
+                    ),
+                  ),
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("stories")
+                        .orderBy('time', descending: true)
+                        .snapshots(),
+                    builder: (context, storiesSnaps) {
+                      if (storiesSnaps.data!.docs.length == 0) {
+                        return Center(
+                          child: Text(
+                            "No Stories Yet",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        );
+                      } else {
+                        return ListView.builder(
+                          itemCount: storiesSnaps.data!.docs.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            return InkWell(
+                              onTap: () {
+                                print(
+                                    "number of docs === ${storiesSnaps.data!.docs.length} || index number === $index");
+                                Navigator.pushReplacement(
+                                  context,
+                                  PageTransition(
+                                      child: Stories(
+                                        querySnapshot: storiesSnaps,
+                                        snapIndex: index,
+                                      ),
+                                      type: PageTransitionType.bottomToTop),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      height: 80,
+                                      width: 80,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: constantColors.blueColor,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: SizedBox(
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          child: CachedNetworkImage(
+                                            fit: BoxFit.cover,
+                                            imageUrl: storiesSnaps
+                                                .data!.docs[index]['userimage'],
+                                            progressIndicatorBuilder: (context,
+                                                    url, downloadProgress) =>
+                                                Container(
+                                              height: 50,
+                                              width: 50,
+                                              child: CircularProgressIndicator(
+                                                  value: downloadProgress
+                                                      .progress),
+                                            ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(Icons.error),
+                                          ),
+                                        ),
+                                        height: 80,
+                                        width: 80,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(

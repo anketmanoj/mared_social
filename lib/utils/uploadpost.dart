@@ -208,6 +208,9 @@ class UploadPost with ChangeNotifier {
       isScrollControlled: true,
       context: context,
       builder: (context) {
+        List<String> catNames =
+            Provider.of<FirebaseOperations>(context, listen: false).catNames;
+        String? _selectedCategory;
         return Container(
           child: Column(
             children: [
@@ -331,6 +334,41 @@ class UploadPost with ChangeNotifier {
                   ],
                 ),
               ),
+              StatefulBuilder(builder: (context, innerState) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      DropdownButton(
+                        dropdownColor: constantColors.blueGreyColor,
+                        hint: Text(
+                          'Please choose a Category',
+                          style: TextStyle(
+                            color: constantColors.whiteColor,
+                          ),
+                        ),
+                        value: _selectedCategory,
+                        onChanged: (String? newValue) {
+                          innerState(() {
+                            _selectedCategory = newValue;
+                          });
+                        },
+                        items: catNames.map((category) {
+                          return DropdownMenuItem(
+                            child: Text(category,
+                                style: TextStyle(
+                                  color: constantColors.whiteColor,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                            value: category,
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                );
+              }),
               MaterialButton(
                 child: Text(
                   "Share",
@@ -345,6 +383,7 @@ class UploadPost with ChangeNotifier {
                   Provider.of<FirebaseOperations>(context, listen: false)
                       .uploadPostData(postId, {
                     'postid': postId,
+                    'postcategory': _selectedCategory,
                     'caption': captionController.text,
                     'username':
                         Provider.of<FirebaseOperations>(context, listen: false)
@@ -372,6 +411,7 @@ class UploadPost with ChangeNotifier {
                         .doc(postId)
                         .set({
                       'postid': postId,
+                      'postcategory': _selectedCategory,
                       'caption': captionController.text,
                       'username': Provider.of<FirebaseOperations>(context,
                               listen: false)
@@ -400,7 +440,7 @@ class UploadPost with ChangeNotifier {
               ),
             ],
           ),
-          height: MediaQuery.of(context).size.height * 0.75,
+          height: MediaQuery.of(context).size.height * 0.8,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             color: constantColors.blueGreyColor,

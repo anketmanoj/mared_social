@@ -8,7 +8,9 @@ import 'package:provider/provider.dart';
 class FirebaseOperations with ChangeNotifier {
   UploadTask? imageUploadTask;
   late String initUserEmail, initUserName, initUserImage;
+  late bool store;
 
+  bool get getStore => store;
   String get getInitUserImage => initUserImage;
   String get getInitUserEmail => initUserEmail;
   String get getInitUserName => initUserName;
@@ -49,6 +51,7 @@ class FirebaseOperations with ChangeNotifier {
       initUserName = doc['username'];
       initUserEmail = doc['useremail'];
       initUserImage = doc['userimage'];
+      store = doc['store'];
       print(initUserName);
       notifyListeners();
     });

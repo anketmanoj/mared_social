@@ -148,6 +148,32 @@ class AltProfileHelper with ChangeNotifier {
                           ],
                         ),
                       ),
+                      Visibility(
+                        visible: userDocSnap.data!['store'],
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                FontAwesomeIcons.storeAlt,
+                                color: constantColors.blueColor,
+                                size: 12,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Text(
+                                  "Store Profile",
+                                  style: TextStyle(
+                                    color: constantColors.blueColor,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
                     ],
                   ),
                 ),

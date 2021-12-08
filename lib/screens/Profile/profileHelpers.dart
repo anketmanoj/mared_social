@@ -9,6 +9,7 @@ import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/LandingPage/landingpage.dart';
 import 'package:mared_social/screens/Stories/stories_widget.dart';
+import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/postoptions.dart';
 import 'package:page_transition/page_transition.dart';
@@ -104,6 +105,51 @@ class ProfileHelpers with ChangeNotifier {
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                  Visibility(
+                    visible:
+                        Provider.of<FirebaseOperations>(context, listen: false)
+                            .store,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: InkWell(
+                        onTap: () async {
+                          await FirebaseFirestore.instance
+                              .collection("users")
+                              .get()
+                              .then((user) async {
+                            user.docs.forEach((userDoc) async {
+                              await FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(userDoc.id)
+                                  .update({
+                                'store': false,
+                              });
+                            });
+                          });
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              FontAwesomeIcons.storeAlt,
+                              color: constantColors.blueColor,
+                              size: 12,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                "Store Profile",
+                                style: TextStyle(
+                                  color: constantColors.blueColor,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],

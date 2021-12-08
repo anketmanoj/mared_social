@@ -10,12 +10,15 @@ import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 class LandingService with ChangeNotifier {
   ConstantColors constantColors = ConstantColors();
   TextEditingController userNameController = TextEditingController();
   TextEditingController userEmailController = TextEditingController();
   TextEditingController userPasswordController = TextEditingController();
+  bool store = false;
+  bool get getStore => store;
 
   showUserAvatar(BuildContext context) {
     return showModalBottomSheet(
@@ -309,7 +312,7 @@ class LandingService with ChangeNotifier {
           padding:
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Container(
-            height: MediaQuery.of(context).size.height * 0.5,
+            height: MediaQuery.of(context).size.height * 0.7,
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
               color: constantColors.blueGreyColor,
@@ -326,6 +329,32 @@ class LandingService with ChangeNotifier {
                     thickness: 4,
                     color: constantColors.whiteColor,
                   ),
+                ),
+                ToggleSwitch(
+                  minWidth: 130.0,
+                  initialLabelIndex: 0,
+                  borderWidth: 8,
+                  cornerRadius: 20.0,
+                  activeFgColor: Colors.white,
+                  inactiveBgColor: Colors.grey,
+                  inactiveFgColor: Colors.white,
+                  totalSwitches: 2,
+                  labels: const ['Individual', ' Store'],
+                  icons: const [
+                    Icons.person,
+                    FontAwesomeIcons.storeAlt,
+                  ],
+                  activeBgColors: const [
+                    [Colors.blue],
+                    [Colors.pink]
+                  ],
+                  onToggle: (index) {
+                    if (index == 1) {
+                      store = true;
+                    } else {
+                      store = false;
+                    }
+                  },
                 ),
                 CircleAvatar(
                   backgroundImage: FileImage(
@@ -408,12 +437,11 @@ class LandingService with ChangeNotifier {
                                 .createAccount(userEmailController.text,
                                     userPasswordController.text);
 
-                            print("creating collection");
-
                             await Provider.of<FirebaseOperations>(context,
                                     listen: false)
                                 .createUserCollection(context, {
                               'userpassword': userPasswordController.text,
+                              'store': store,
                               'useruid': Provider.of<Authentication>(context,
                                       listen: false)
                                   .getUserId,

@@ -23,12 +23,18 @@ class _HomePageState extends State<HomePage> {
   final PageController homepageController = PageController();
 
   int pageIndex = 0;
+  bool loading = true;
 
   @override
   void initState() {
     Future.delayed(Duration.zero, () {
       Provider.of<FirebaseOperations>(context, listen: false)
-          .initUserData(context);
+          .initUserData(context)
+          .whenComplete(() {
+        setState(() {
+          loading = false;
+        });
+      });
     });
     super.initState();
   }
@@ -37,21 +43,38 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: constantColors.darkColor,
-      body: PageView(
-        controller: homepageController,
-        children: [
-          Feed(),
-          CategoryScreen(),
-          Chatroom(),
-          Profile(),
-        ],
-        physics: const NeverScrollableScrollPhysics(),
-        onPageChanged: (page) {
-          setState(() {
-            pageIndex = page;
-          });
-        },
-      ),
+      body: loading
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Initializing Mared",
+                    style: TextStyle(
+                      color: constantColors.whiteColor,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const CircularProgressIndicator(),
+                ],
+              ),
+            )
+          : PageView(
+              controller: homepageController,
+              children: [
+                Feed(),
+                CategoryScreen(),
+                Chatroom(),
+                Profile(),
+              ],
+              physics: const NeverScrollableScrollPhysics(),
+              onPageChanged: (page) {
+                setState(() {
+                  pageIndex = page;
+                });
+              },
+            ),
       bottomNavigationBar: Provider.of<HomepageHelpers>(context, listen: false)
           .bottomNavBar(context, pageIndex, homepageController),
     );
