@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfileHelper.dart';
 import 'package:mared_social/screens/Categories/categoryHelpers.dart';
+import 'package:mared_social/screens/CategoryFeed/categoryfeedhelper.dart';
 import 'package:mared_social/screens/Chatroom/chatroom_helpers.dart';
 import 'package:mared_social/screens/Feed/feedhelpers.dart';
 import 'package:mared_social/screens/HomePage/homepageHelpers.dart';
@@ -11,6 +12,7 @@ import 'package:mared_social/screens/LandingPage/landingServices.dart';
 import 'package:mared_social/screens/LandingPage/landingUtils.dart';
 import 'package:mared_social/screens/Messaging/groupmessagehelper.dart';
 import 'package:mared_social/screens/Profile/profileHelpers.dart';
+import 'package:mared_social/screens/SearchFeed/searchfeedhelper.dart';
 import 'package:mared_social/screens/Stories/stories_helper.dart';
 import 'package:mared_social/screens/splashscreens/splashscreen.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
@@ -57,6 +59,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => GroupMessageHelper()),
         ChangeNotifierProvider(create: (_) => CategoryHelper()),
         ChangeNotifierProvider(create: (_) => StoriesHelper()),
+        ChangeNotifierProvider(create: (_) => CatgeoryFeedHelper()),
+        ChangeNotifierProvider(create: (_) => SearchFeedHelper()),
       ],
     );
   }

@@ -116,15 +116,15 @@ class ProfileHelpers with ChangeNotifier {
                       child: InkWell(
                         onTap: () async {
                           await FirebaseFirestore.instance
-                              .collection("users")
+                              .collection("posts")
                               .get()
-                              .then((user) async {
-                            user.docs.forEach((userDoc) async {
+                              .then((post) async {
+                            post.docs.forEach((postDoc) async {
                               await FirebaseFirestore.instance
-                                  .collection("users")
-                                  .doc(userDoc.id)
+                                  .collection("posts")
+                                  .doc(postDoc.id)
                                   .update({
-                                'store': false,
+                                'postcategory': "",
                               });
                             });
                           });

@@ -3,6 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/screens/CategoryFeed/categoryfeed.dart';
+import 'package:mared_social/screens/CategoryFeed/categoryfeedhelper.dart';
+import 'package:mared_social/screens/SearchFeed/searchfeed.dart';
+import 'package:mared_social/screens/SearchFeed/searchfeedhelper.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 class CategoryHelper with ChangeNotifier {
   ConstantColors constantColors = ConstantColors();
@@ -86,6 +92,19 @@ class CategoryHelper with ChangeNotifier {
               ),
               child: TextField(
                 controller: searchController,
+                onSubmitted: (value) async {
+                  // * push to Search screen based on description of item
+                  await Provider.of<SearchFeedHelper>(context, listen: false)
+                      .getSearchValue(searchValue: value);
+
+                  Navigator.pushReplacement(
+                      context,
+                      PageTransition(
+                          child: SearchFeed(
+                            searchVal: value,
+                          ),
+                          type: PageTransitionType.rightToLeft));
+                },
                 decoration: InputDecoration(
                   prefixIcon: Icon(
                     EvaIcons.searchOutline,
@@ -126,7 +145,21 @@ class CategoryHelper with ChangeNotifier {
                 children: catSnaps.data!.docs.map(
                   (catDocSnap) {
                     return InkWell(
-                      onTap: () {},
+                      onTap: () async {
+                        // * Push to Category screen
+                        await Provider.of<CatgeoryFeedHelper>(context,
+                                listen: false)
+                            .getCategoryNameVal(
+                                categoryNameVal: catDocSnap['categoryname']);
+
+                        Navigator.pushReplacement(
+                            context,
+                            PageTransition(
+                                child: CategoryFeed(
+                                  categoryName: catDocSnap['categoryname'],
+                                ),
+                                type: PageTransitionType.rightToLeft));
+                      },
                       child: Stack(
                         children: [
                           Padding(
