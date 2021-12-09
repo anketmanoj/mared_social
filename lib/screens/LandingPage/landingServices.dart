@@ -2,6 +2,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
@@ -17,8 +18,14 @@ class LandingService with ChangeNotifier {
   TextEditingController userNameController = TextEditingController();
   TextEditingController userEmailController = TextEditingController();
   TextEditingController userPasswordController = TextEditingController();
+  TextEditingController userPhoneNoController = TextEditingController();
   bool store = false;
-  bool get getStore => store;
+
+  final _formKey = GlobalKey<FormState>();
+  final passwordValidator = MultiValidator([
+    RequiredValidator(errorText: 'password is required'),
+    MinLengthValidator(6, errorText: 'password must be at least 6 digits long'),
+  ]);
 
   showUserAvatar(BuildContext context) {
     return showModalBottomSheet(
@@ -201,103 +208,106 @@ class LandingService with ChangeNotifier {
         isScrollControlled: true,
         context: context,
         builder: (context) {
-          return Padding(
-            padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.30,
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 150),
-                    child: Divider(
-                      thickness: 4,
-                      color: constantColors.whiteColor,
+          return Form(
+            key: _formKey,
+            child: Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.30,
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 150),
+                      child: Divider(
+                        thickness: 4,
+                        color: constantColors.whiteColor,
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: TextField(
-                      controller: userEmailController,
-                      decoration: InputDecoration(
-                        hintText: "Email",
-                        hintStyle: TextStyle(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: TextFormField(
+                        controller: userEmailController,
+                        decoration: InputDecoration(
+                          hintText: "Email",
+                          hintStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: constantColors.whiteColor,
+                            fontSize: 16,
+                          ),
+                        ),
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: constantColors.whiteColor,
-                          fontSize: 16,
+                          fontSize: 18,
                         ),
                       ),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: constantColors.whiteColor,
-                        fontSize: 18,
-                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: TextField(
-                      controller: userPasswordController,
-                      decoration: InputDecoration(
-                        hintText: "Password",
-                        hintStyle: TextStyle(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: TextFormField(
+                        controller: userPasswordController,
+                        validator: passwordValidator,
+                        decoration: InputDecoration(
+                          hintText: "Password",
+                          hintStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: constantColors.whiteColor,
+                            fontSize: 16,
+                          ),
+                        ),
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: constantColors.whiteColor,
-                          fontSize: 16,
+                          fontSize: 18,
                         ),
-                      ),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: constantColors.whiteColor,
-                        fontSize: 18,
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: FloatingActionButton(
-                        backgroundColor: constantColors.blueColor,
-                        child: Icon(
-                          FontAwesomeIcons.check,
-                          color: constantColors.whiteColor,
-                        ),
-                        onPressed: () async {
-                          if (userEmailController.text.isNotEmpty &&
-                              userPasswordController.text.isNotEmpty) {
-                            try {
-                              await Provider.of<Authentication>(context,
-                                      listen: false)
-                                  .loginIntoAccount(userEmailController.text,
-                                      userPasswordController.text);
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: FloatingActionButton(
+                          backgroundColor: constantColors.blueColor,
+                          child: Icon(
+                            FontAwesomeIcons.check,
+                            color: constantColors.whiteColor,
+                          ),
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              try {
+                                await Provider.of<Authentication>(context,
+                                        listen: false)
+                                    .loginIntoAccount(userEmailController.text,
+                                        userPasswordController.text);
 
-                              Navigator.pushReplacement(
-                                context,
-                                PageTransition(
-                                    child: HomePage(),
-                                    type: PageTransitionType.bottomToTop),
-                              );
-                            } catch (e) {
-                              CoolAlert.show(
-                                context: context,
-                                type: CoolAlertType.error,
-                                title: "Sign In Failed",
-                                text: e.toString(),
-                              );
+                                Navigator.pushReplacement(
+                                  context,
+                                  PageTransition(
+                                      child: HomePage(),
+                                      type: PageTransitionType.bottomToTop),
+                                );
+                              } catch (e) {
+                                CoolAlert.show(
+                                  context: context,
+                                  type: CoolAlertType.error,
+                                  title: "Sign In Failed",
+                                  text: e.toString(),
+                                );
+                              }
+                            } else {
+                              warningText(context, "Fill all details");
                             }
-                          } else {
-                            warningText(context, "Fill all details");
-                          }
-                        }),
-                  ),
-                ],
+                          }),
+                    ),
+                  ],
+                ),
+                decoration: BoxDecoration(
+                    color: constantColors.blueGreyColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    )),
               ),
-              decoration: BoxDecoration(
-                  color: constantColors.blueGreyColor,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    topRight: Radius.circular(12),
-                  )),
             ),
           );
         });
@@ -308,171 +318,196 @@ class LandingService with ChangeNotifier {
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return Padding(
-          padding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          child: Container(
-            height: MediaQuery.of(context).size.height * 0.7,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              color: constantColors.blueGreyColor,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
+        return Container(
+          padding: const EdgeInsets.only(top: 20),
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: constantColors.blueGreyColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(12),
+              topRight: Radius.circular(12),
+            ),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 150),
+                child: Divider(
+                  thickness: 4,
+                  color: constantColors.whiteColor,
+                ),
               ),
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 150),
-                  child: Divider(
-                    thickness: 4,
+              ToggleSwitch(
+                changeOnTap: true,
+                minWidth: 130.0,
+                initialLabelIndex: 0,
+                borderWidth: 8,
+                cornerRadius: 20.0,
+                activeFgColor: Colors.white,
+                inactiveBgColor: Colors.grey,
+                inactiveFgColor: Colors.white,
+                totalSwitches: 2,
+                labels: const ['Individual', ' Company'],
+                icons: const [
+                  Icons.person,
+                  FontAwesomeIcons.storeAlt,
+                ],
+                activeBgColors: const [
+                  [Colors.blue],
+                  [Colors.pink]
+                ],
+                onToggle: (index) {
+                  if (index == 1) {
+                    store = true;
+                  } else {
+                    store = false;
+                  }
+                  print(store);
+                },
+              ),
+              CircleAvatar(
+                backgroundImage: FileImage(
+                    Provider.of<LandingUtils>(context, listen: false)
+                        .getUserAvatar),
+                backgroundColor: constantColors.redColor,
+                radius: 60,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: TextField(
+                  controller: userNameController,
+                  decoration: InputDecoration(
+                    hintText: store == true ? "Company Name" : "Name",
+                    hintStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: constantColors.whiteColor,
+                      fontSize: 16,
+                    ),
+                  ),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
                     color: constantColors.whiteColor,
+                    fontSize: 18,
                   ),
                 ),
-                ToggleSwitch(
-                  minWidth: 130.0,
-                  initialLabelIndex: 0,
-                  borderWidth: 8,
-                  cornerRadius: 20.0,
-                  activeFgColor: Colors.white,
-                  inactiveBgColor: Colors.grey,
-                  inactiveFgColor: Colors.white,
-                  totalSwitches: 2,
-                  labels: const ['Individual', ' Store'],
-                  icons: const [
-                    Icons.person,
-                    FontAwesomeIcons.storeAlt,
-                  ],
-                  activeBgColors: const [
-                    [Colors.blue],
-                    [Colors.pink]
-                  ],
-                  onToggle: (index) {
-                    if (index == 1) {
-                      store = true;
-                    } else {
-                      store = false;
-                    }
-                  },
-                ),
-                CircleAvatar(
-                  backgroundImage: FileImage(
-                      Provider.of<LandingUtils>(context, listen: false)
-                          .getUserAvatar),
-                  backgroundColor: constantColors.redColor,
-                  radius: 60,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextField(
-                    controller: userNameController,
-                    decoration: InputDecoration(
-                      hintText: "Name",
-                      hintStyle: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: constantColors.whiteColor,
-                        fontSize: 16,
-                      ),
-                    ),
-                    style: TextStyle(
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: TextField(
+                  controller: userPhoneNoController,
+                  decoration: InputDecoration(
+                    hintText: "Contact Number",
+                    hintStyle: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: constantColors.whiteColor,
-                      fontSize: 18,
+                      fontSize: 16,
                     ),
                   ),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: constantColors.whiteColor,
+                    fontSize: 18,
+                  ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextField(
-                    controller: userEmailController,
-                    decoration: InputDecoration(
-                      hintText: "Email",
-                      hintStyle: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: constantColors.whiteColor,
-                        fontSize: 16,
-                      ),
-                    ),
-                    style: TextStyle(
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: TextField(
+                  controller: userEmailController,
+                  decoration: InputDecoration(
+                    hintText: "Email",
+                    hintStyle: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: constantColors.whiteColor,
-                      fontSize: 18,
+                      fontSize: 16,
                     ),
                   ),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: constantColors.whiteColor,
+                    fontSize: 18,
+                  ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextField(
-                    controller: userPasswordController,
-                    decoration: InputDecoration(
-                      hintText: "Password",
-                      hintStyle: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: constantColors.whiteColor,
-                        fontSize: 16,
-                      ),
-                    ),
-                    style: TextStyle(
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: TextField(
+                  controller: userPasswordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    hintText: "Password",
+                    hintStyle: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: constantColors.whiteColor,
-                      fontSize: 18,
+                      fontSize: 16,
                     ),
                   ),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: constantColors.whiteColor,
+                    fontSize: 18,
+                  ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: FloatingActionButton(
-                      backgroundColor: constantColors.redColor,
-                      child: Icon(
-                        FontAwesomeIcons.check,
-                        color: constantColors.whiteColor,
-                      ),
-                      onPressed: () async {
-                        if (userEmailController.text.isNotEmpty &&
-                            userPasswordController.text.isNotEmpty) {
-                          try {
-                            await Provider.of<Authentication>(context,
-                                    listen: false)
-                                .createAccount(userEmailController.text,
-                                    userPasswordController.text);
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: FloatingActionButton(
+                    backgroundColor: constantColors.redColor,
+                    child: Icon(
+                      FontAwesomeIcons.check,
+                      color: constantColors.whiteColor,
+                    ),
+                    onPressed: () async {
+                      if (userEmailController.text.isNotEmpty &&
+                          userPasswordController.text.isNotEmpty) {
+                        try {
+                          await Provider.of<Authentication>(context,
+                                  listen: false)
+                              .createAccount(userEmailController.text,
+                                  userPasswordController.text);
 
-                            await Provider.of<FirebaseOperations>(context,
+                          await Provider.of<FirebaseOperations>(context,
+                                  listen: false)
+                              .createUserCollection(context, {
+                            'userpassword': userPasswordController.text,
+                            'usercontactnumber': userPhoneNoController.text,
+                            'store': store,
+                            'useruid': Provider.of<Authentication>(context,
                                     listen: false)
-                                .createUserCollection(context, {
-                              'userpassword': userPasswordController.text,
-                              'store': store,
-                              'useruid': Provider.of<Authentication>(context,
-                                      listen: false)
-                                  .getUserId,
-                              'useremail': userEmailController.text,
-                              'username': userNameController.text,
-                              'userimage': Provider.of<LandingUtils>(context,
-                                      listen: false)
-                                  .getUserAvatarUrl,
-                            });
+                                .getUserId,
+                            'useremail': userEmailController.text,
+                            'username': userNameController.text,
+                            'userimage': Provider.of<LandingUtils>(context,
+                                    listen: false)
+                                .getUserAvatarUrl,
+                          });
 
-                            Navigator.pushReplacement(
-                              context,
-                              PageTransition(
-                                  child: HomePage(),
-                                  type: PageTransitionType.bottomToTop),
-                            );
-                          } catch (e) {
-                            CoolAlert.show(
-                              context: context,
-                              type: CoolAlertType.error,
-                              title: "Sign In Failed",
-                              text: e.toString(),
-                            );
-                          }
-                        } else {
-                          warningText(context, "Fill all details");
+                          Navigator.pushReplacement(
+                            context,
+                            PageTransition(
+                                child: HomePage(),
+                                type: PageTransitionType.bottomToTop),
+                          );
+                        } catch (e) {
+                          CoolAlert.show(
+                            context: context,
+                            type: CoolAlertType.error,
+                            title: "Sign In Failed",
+                            text: e.toString(),
+                          );
                         }
-                      }),
-                ),
-              ],
-            ),
+                      } else {
+                        CoolAlert.show(
+                          context: context,
+                          type: CoolAlertType.error,
+                          title: "Sign Up Failed",
+                          text: "Missing Details",
+                        );
+                      }
+                    }),
+              ),
+            ],
           ),
         );
       },
@@ -485,13 +520,20 @@ class LandingService with ChangeNotifier {
       builder: (context) {
         return Container(
           decoration: BoxDecoration(
-            color: constantColors.darkColor,
+            color: constantColors.blueGreyColor,
             borderRadius: BorderRadius.circular(15),
           ),
           height: MediaQuery.of(context).size.height * 0.1,
           width: MediaQuery.of(context).size.width,
           child: Center(
-            child: Text(warning),
+            child: Text(
+              warning,
+              style: TextStyle(
+                color: constantColors.whiteColor,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         );
       },

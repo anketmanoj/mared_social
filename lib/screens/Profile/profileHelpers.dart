@@ -115,19 +115,19 @@ class ProfileHelpers with ChangeNotifier {
                       padding: const EdgeInsets.only(top: 8.0),
                       child: InkWell(
                         onTap: () async {
-                          await FirebaseFirestore.instance
-                              .collection("posts")
-                              .get()
-                              .then((post) async {
-                            post.docs.forEach((postDoc) async {
-                              await FirebaseFirestore.instance
-                                  .collection("posts")
-                                  .doc(postDoc.id)
-                                  .update({
-                                'postcategory': "",
-                              });
-                            });
-                          });
+                          // await FirebaseFirestore.instance
+                          //     .collection("users")
+                          //     .get()
+                          //     .then((user) async {
+                          //   user.docs.forEach((userDoc) async {
+                          //     await FirebaseFirestore.instance
+                          //         .collection("users")
+                          //         .doc(userDoc.id)
+                          //         .update({
+                          //       'usercontactnumber': "",
+                          //     });
+                          //   });
+                          // });
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
