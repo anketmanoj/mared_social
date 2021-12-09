@@ -3,13 +3,30 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/Chatroom/chatroom_helpers.dart';
+import 'package:mared_social/screens/Chatroom/groupChat.dart';
 import 'package:provider/provider.dart';
 
-class Chatroom extends StatelessWidget {
+class Chatroom extends StatefulWidget {
+  @override
+  State<Chatroom> createState() => _ChatroomState();
+}
+
+class _ChatroomState extends State<Chatroom> {
+  final PageController chatTypeController = PageController();
+
+  int pageIndex = 0;
+
   ConstantColors constantColors = ConstantColors();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar:
+          Provider.of<ChatroomHelpers>(context, listen: false).bottomNavBar(
+        context: context,
+        index: pageIndex,
+        pageController: chatTypeController,
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Provider.of<ChatroomHelpers>(context, listen: false)
@@ -34,7 +51,10 @@ class Chatroom extends StatelessWidget {
           ),
         ],
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Provider.of<ChatroomHelpers>(context, listen: false)
+                .showCreateChatroomSheet(context: context);
+          },
           icon: Icon(
             FontAwesomeIcons.plus,
             color: constantColors.greenColor,
@@ -61,11 +81,18 @@ class Chatroom extends StatelessWidget {
           ),
         ),
       ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Provider.of<ChatroomHelpers>(context, listen: false)
-            .showChatrooms(context: context),
+      body: PageView(
+        controller: chatTypeController,
+        children: const [
+          GroupChats(),
+          GroupChats(),
+        ],
+        physics: const NeverScrollableScrollPhysics(),
+        onPageChanged: (page) {
+          setState(() {
+            pageIndex = page;
+          });
+        },
       ),
     );
   }
