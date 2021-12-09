@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/Chatroom/chatroom_helpers.dart';
 import 'package:mared_social/screens/Chatroom/groupChat.dart';
+import 'package:mared_social/screens/Chatroom/privateChat.dart';
 import 'package:provider/provider.dart';
 
 class Chatroom extends StatefulWidget {
@@ -85,7 +86,7 @@ class _ChatroomState extends State<Chatroom> {
         controller: chatTypeController,
         children: const [
           GroupChats(),
-          GroupChats(),
+          PrivateChats(),
         ],
         physics: const NeverScrollableScrollPhysics(),
         onPageChanged: (page) {

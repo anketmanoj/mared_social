@@ -131,6 +131,30 @@ class FirebaseOperations with ChangeNotifier {
         .set(chatroomData);
   }
 
+  Future messageUser({
+    required String messagingUid,
+    required String messagingDocId,
+    required dynamic messagingData,
+    required String messengerUid,
+    required String messengerDocId,
+    required dynamic messengerData,
+  }) async {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(messagingUid)
+        .collection("chats")
+        .doc(messagingDocId)
+        .set(messagingData)
+        .whenComplete(() async {
+      return FirebaseFirestore.instance
+          .collection("users")
+          .doc(messengerUid)
+          .collection("chats")
+          .doc(messengerDocId)
+          .set(messengerData);
+    });
+  }
+
   Future deleteMessage(
       {required String chatroomId, required String messageId}) async {
     return FirebaseFirestore.instance

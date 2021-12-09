@@ -192,8 +192,6 @@ class FeedHelpers with ChangeNotifier {
                           itemBuilder: (context, index) {
                             return InkWell(
                               onTap: () {
-                                print(
-                                    "number of docs === ${storiesSnaps.data!.docs.length} || index number === $index");
                                 Navigator.pushReplacement(
                                   context,
                                   PageTransition(

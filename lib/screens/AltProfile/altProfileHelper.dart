@@ -9,6 +9,7 @@ import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/postoptions.dart';
+import 'package:nanoid/nanoid.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
@@ -435,7 +436,44 @@ class AltProfileHelper with ChangeNotifier {
                       fontSize: 16,
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    await Provider.of<FirebaseOperations>(context,
+                            listen: false)
+                        .messageUser(
+                            messagingUid: userUid,
+                            messagingDocId: Provider.of<Authentication>(context,
+                                    listen: false)
+                                .getUserId,
+                            messagingData: {
+                              'username': Provider.of<FirebaseOperations>(
+                                      context,
+                                      listen: false)
+                                  .getInitUserName,
+                              'userimage': Provider.of<FirebaseOperations>(
+                                      context,
+                                      listen: false)
+                                  .getInitUserImage,
+                              'useremail': Provider.of<FirebaseOperations>(
+                                      context,
+                                      listen: false)
+                                  .getInitUserEmail,
+                              'useruid': Provider.of<Authentication>(context,
+                                      listen: false)
+                                  .getUserId,
+                              'time': Timestamp.now(),
+                            },
+                            messengerUid: Provider.of<Authentication>(context,
+                                    listen: false)
+                                .getUserId,
+                            messengerDocId: userUid,
+                            messengerData: {
+                              'username': userDocSnap.data!['username'],
+                              'userimage': userDocSnap.data!['userimage'],
+                              'useremail': userDocSnap.data!['useremail'],
+                              'useruid': userDocSnap.data!['useruid'],
+                              'time': Timestamp.now(),
+                            });
+                  },
                 ),
               ],
             ),
