@@ -28,17 +28,19 @@ class _ChatroomState extends State<Chatroom> {
         index: pageIndex,
         pageController: chatTypeController,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Provider.of<ChatroomHelpers>(context, listen: false)
-              .showCreateChatroomSheet(context: context);
-        },
-        backgroundColor: constantColors.blueGreyColor,
-        child: Icon(
-          FontAwesomeIcons.plus,
-          color: constantColors.greenColor,
-        ),
-      ),
+      floatingActionButton: pageIndex == 0
+          ? FloatingActionButton(
+              onPressed: () {
+                Provider.of<ChatroomHelpers>(context, listen: false)
+                    .showCreateChatroomSheet(context: context);
+              },
+              backgroundColor: constantColors.blueGreyColor,
+              child: Icon(
+                FontAwesomeIcons.plus,
+                color: constantColors.greenColor,
+              ),
+            )
+          : Container(),
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: constantColors.darkColor,
@@ -51,16 +53,18 @@ class _ChatroomState extends State<Chatroom> {
             ),
           ),
         ],
-        leading: IconButton(
-          onPressed: () {
-            Provider.of<ChatroomHelpers>(context, listen: false)
-                .showCreateChatroomSheet(context: context);
-          },
-          icon: Icon(
-            FontAwesomeIcons.plus,
-            color: constantColors.greenColor,
-          ),
-        ),
+        leading: pageIndex == 0
+            ? IconButton(
+                onPressed: () {
+                  Provider.of<ChatroomHelpers>(context, listen: false)
+                      .showCreateChatroomSheet(context: context);
+                },
+                icon: Icon(
+                  FontAwesomeIcons.plus,
+                  color: constantColors.greenColor,
+                ),
+              )
+            : Container(),
         title: RichText(
           text: TextSpan(
             text: "Mared ",

@@ -8,6 +8,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/screens/Stories/stories_helper.dart';
 import 'package:mared_social/screens/Stories/stories_widget.dart';
@@ -31,11 +32,6 @@ class _StoriesState extends State<Stories> {
   final StoryWidgets storyWidgets = StoryWidgets();
   CountDownController countDownController = CountDownController();
   int indexCheck = 0;
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   void initState() {
@@ -88,12 +84,14 @@ class _StoriesState extends State<Stories> {
                               imageUrl: widget.querySnapshot.data!
                                   .docs[widget.snapIndex]['image'],
                               progressIndicatorBuilder:
-                                  (context, url, downloadProgress) => Container(
-                                height: 40,
-                                width: 40,
-                                child: CircularProgressIndicator(
-                                    value: downloadProgress.progress),
-                              ),
+                                  (context, url, downloadProgress) {
+                                return SizedBox(
+                                  height: 40,
+                                  width: 40,
+                                  child: CircularProgressIndicator(
+                                      value: downloadProgress.progress),
+                                );
+                              },
                               errorWidget: (context, url, error) =>
                                   const Icon(Icons.error),
                             ),
@@ -108,12 +106,15 @@ class _StoriesState extends State<Stories> {
                 right: 0,
                 child: InkWell(
                   onTap: () {
-                    setState(() {
-                      widget.snapIndex = widget.snapIndex + 1;
-                    });
-                    countDownController.restart();
+                    if (widget.snapIndex <
+                        widget.querySnapshot.data!.docs.length - 1) {
+                      setState(() {
+                        widget.snapIndex = widget.snapIndex + 1;
+                      });
+                      countDownController.restart();
+                    }
                   },
-                  child: Container(
+                  child: SizedBox(
                     height: MediaQuery.of(context).size.height,
                     width: MediaQuery.of(context).size.width / 2,
                   ),
@@ -123,10 +124,12 @@ class _StoriesState extends State<Stories> {
                 left: 0,
                 child: InkWell(
                   onTap: () {
-                    setState(() {
-                      widget.snapIndex = widget.snapIndex - 1;
-                    });
-                    countDownController.restart();
+                    if (widget.snapIndex > 0) {
+                      setState(() {
+                        widget.snapIndex = widget.snapIndex - 1;
+                      });
+                      countDownController.restart();
+                    }
                   },
                   child: Container(
                     height: MediaQuery.of(context).size.height,
@@ -143,24 +146,42 @@ class _StoriesState extends State<Stories> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(25),
-                          child: CachedNetworkImage(
-                            fit: BoxFit.cover,
-                            imageUrl: widget.querySnapshot.data!
-                                .docs[widget.snapIndex]['userimage'],
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) => Container(
-                              height: 40,
-                              width: 40,
-                              child: CircularProgressIndicator(
-                                  value: downloadProgress.progress),
+                      InkWell(
+                        onTap: () {
+                          if (widget.querySnapshot.data!.docs[widget.snapIndex]
+                                  ['useruid'] !=
+                              Provider.of<Authentication>(context,
+                                      listen: false)
+                                  .getUserId) {
+                            Navigator.push(
+                                context,
+                                PageTransition(
+                                    child: AltProfile(
+                                      userUid: widget.querySnapshot.data!
+                                          .docs[widget.snapIndex]['useruid'],
+                                    ),
+                                    type: PageTransitionType.bottomToTop));
+                          }
+                        },
+                        child: SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(25),
+                            child: CachedNetworkImage(
+                              fit: BoxFit.cover,
+                              imageUrl: widget.querySnapshot.data!
+                                  .docs[widget.snapIndex]['userimage'],
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) => Container(
+                                height: 40,
+                                width: 40,
+                                child: CircularProgressIndicator(
+                                    value: downloadProgress.progress),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
                             ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
                           ),
                         ),
                       ),
@@ -243,6 +264,7 @@ class _StoriesState extends State<Stories> {
                                 widget.snapIndex = i;
                               });
                               print("index == ${widget.snapIndex}");
+                              countDownController.restart();
                               await Future.delayed(const Duration(seconds: 15));
                             }
                           },

@@ -56,7 +56,12 @@ class PrivateMessageHelper with ChangeNotifier {
                               showCancelBtn: true,
                               confirmBtnText: "Yes",
                               onCancelBtnTap: () => Navigator.pop(context),
-                              onConfirmBtnTap: () {},
+                              onConfirmBtnTap: () async {
+                                await deleteMessage(
+                                    context: context,
+                                    documentSnapshot: documentSnapshot,
+                                    msgId: msgSnap.id);
+                              },
                             );
                           }
                         },
@@ -185,6 +190,155 @@ class PrivateMessageHelper with ChangeNotifier {
               }).toList(),
             );
           });
+        }
+      },
+    );
+  }
+
+  sendMessage(
+      {required BuildContext context,
+      required DocumentSnapshot documentSnapshot,
+      required TextEditingController messagecontroller,
+      required String messageId}) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+        .collection("chats")
+        .doc(documentSnapshot.id)
+        .collection("messages")
+        .doc(messageId)
+        .set({
+      'messageid': messageId,
+      'message': messagecontroller.text,
+      'time': Timestamp.now(),
+      'useruid': Provider.of<Authentication>(context, listen: false).getUserId,
+      'username': Provider.of<FirebaseOperations>(context, listen: false)
+          .getInitUserName,
+      'userimage': Provider.of<FirebaseOperations>(context, listen: false)
+          .getInitUserImage,
+    }).whenComplete(() async {
+      return await FirebaseFirestore.instance
+          .collection("users")
+          .doc(documentSnapshot.id)
+          .collection("chats")
+          .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+          .collection("messages")
+          .doc(messageId)
+          .set({
+        'messageid': messageId,
+        'message': messagecontroller.text,
+        'time': Timestamp.now(),
+        'useruid':
+            Provider.of<Authentication>(context, listen: false).getUserId,
+        'username': Provider.of<FirebaseOperations>(context, listen: false)
+            .getInitUserName,
+        'userimage': Provider.of<FirebaseOperations>(context, listen: false)
+            .getInitUserImage,
+      });
+    });
+  }
+
+  updateTime({
+    required BuildContext context,
+    required DocumentSnapshot documentSnapshot,
+  }) {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+        .collection("chats")
+        .doc(documentSnapshot.id)
+        .update({
+      'time': Timestamp.now(),
+    }).whenComplete(() {
+      return FirebaseFirestore.instance
+          .collection("users")
+          .doc(documentSnapshot.id)
+          .collection("chats")
+          .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+          .update({
+        'time': Timestamp.now(),
+      });
+    });
+  }
+
+  Future deleteMessage({
+    required BuildContext context,
+    required DocumentSnapshot documentSnapshot,
+    required String msgId,
+  }) async {
+    try {
+      Navigator.pop(context);
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+          .collection("chats")
+          .doc(documentSnapshot.id)
+          .collection("messages")
+          .doc(msgId)
+          .delete()
+          .whenComplete(() async {
+        return await FirebaseFirestore.instance
+            .collection("users")
+            .doc(documentSnapshot.id)
+            .collection("chats")
+            .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+            .collection("messages")
+            .doc(msgId)
+            .delete()
+            .whenComplete(() {});
+      });
+    } catch (e) {
+      CoolAlert.show(
+        context: context,
+        type: CoolAlertType.error,
+        title: "Sign In Failed",
+        text: e.toString(),
+      );
+    }
+  }
+
+  deleteChat(
+      {required BuildContext context,
+      required DocumentSnapshot documentSnapshot}) async {
+    return CoolAlert.show(
+      context: context,
+      type: CoolAlertType.warning,
+      backgroundColor: constantColors.darkColor,
+      title: "Delete Chat with ${documentSnapshot['username']}?",
+      text: "Are you sure you want to delete this conversation?",
+      showCancelBtn: true,
+      cancelBtnText: "No",
+      confirmBtnText: "Yes",
+      onCancelBtnTap: () => Navigator.pop(context),
+      onConfirmBtnTap: () async {
+        try {
+          await FirebaseFirestore.instance
+              .collection("users")
+              .doc(
+                  Provider.of<Authentication>(context, listen: false).getUserId)
+              .collection("chats")
+              .doc(documentSnapshot.id)
+              .delete()
+              .whenComplete(() async {
+            return await FirebaseFirestore.instance
+                .collection("users")
+                .doc(documentSnapshot.id)
+                .collection("chats")
+                .doc(Provider.of<Authentication>(context, listen: false)
+                    .getUserId)
+                .delete()
+                .whenComplete(() {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            });
+          });
+        } catch (e) {
+          CoolAlert.show(
+            context: context,
+            type: CoolAlertType.error,
+            title: "Sign In Failed",
+            text: e.toString(),
+          );
         }
       },
     );

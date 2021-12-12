@@ -410,7 +410,7 @@ class ChatroomHelpers with ChangeNotifier {
                 .map((DocumentSnapshot documentSnapshot) {
               return ListTile(
                 onTap: () {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                       context,
                       PageTransition(
                           child:
@@ -447,25 +447,31 @@ class ChatroomHelpers with ChangeNotifier {
                         .limit(1)
                         .snapshots(),
                     builder: (context, snapshot) {
-                      if (snapshot.data!.docs.isNotEmpty) {
-                        return Text(
-                          snapshot.data!.docs[0]['message']
-                                  .toString()
-                                  .isNotEmpty
-                              ? "${snapshot.data!.docs[0]['username']}: ${snapshot.data!.docs[0]['message']}"
-                              : "${snapshot.data!.docs[0]['username']}: Sticker",
-                          style: TextStyle(
-                            color: constantColors.greenColor,
-                            fontSize: 10,
-                          ),
-                        );
-                      } else {
-                        return Text(
-                          "",
-                          style: TextStyle(
-                            color: constantColors.whiteColor,
-                            fontSize: 10,
-                          ),
+                      try {
+                        if (snapshot.data!.docs.isNotEmpty) {
+                          return Text(
+                            snapshot.data!.docs[0]['message']
+                                    .toString()
+                                    .isNotEmpty
+                                ? "${snapshot.data!.docs[0]['username']}: ${snapshot.data!.docs[0]['message']}"
+                                : "${snapshot.data!.docs[0]['username']}: Sticker",
+                            style: TextStyle(
+                              color: constantColors.greenColor,
+                              fontSize: 10,
+                            ),
+                          );
+                        } else {
+                          return Text(
+                            "",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontSize: 10,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        return Center(
+                          child: Text(e.toString()),
                         );
                       }
                     }),

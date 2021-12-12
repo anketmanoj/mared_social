@@ -51,6 +51,11 @@ class _GroupMessageState extends State<GroupMessage> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: constantColors.darkColor,
@@ -82,11 +87,7 @@ class _GroupMessageState extends State<GroupMessage> {
         ],
         leading: IconButton(
           onPressed: () {
-            Navigator.pushReplacement(
-                context,
-                PageTransition(
-                    child: const HomePage(),
-                    type: PageTransitionType.rightToLeft));
+            Navigator.pop(context);
           },
           icon: Icon(
             Icons.arrow_back_ios_rounded,

@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
+import 'package:mared_social/screens/Messaging/privateMessage.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/postoptions.dart';
@@ -472,7 +473,17 @@ class AltProfileHelper with ChangeNotifier {
                               'useremail': userDocSnap.data!['useremail'],
                               'useruid': userDocSnap.data!['useruid'],
                               'time': Timestamp.now(),
-                            });
+                            })
+                        .whenComplete(() {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              child: PrivateMessage(
+                                  documentSnapshot:
+                                      (userDocSnap.data as DocumentSnapshot)),
+                              type: PageTransitionType.leftToRight));
+                    });
                   },
                 ),
               ],

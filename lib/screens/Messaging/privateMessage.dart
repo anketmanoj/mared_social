@@ -21,6 +21,12 @@ class PrivateMessage extends StatefulWidget {
 class _PrivateMessageState extends State<PrivateMessage> {
   ConstantColors constantColors = ConstantColors();
   TextEditingController messageController = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +34,12 @@ class _PrivateMessageState extends State<PrivateMessage> {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Provider.of<PrivateMessageHelper>(context, listen: false)
+                  .deleteChat(
+                      context: context,
+                      documentSnapshot: widget.documentSnapshot);
+            },
             icon: Icon(EvaIcons.logInOutline, color: constantColors.redColor),
           ),
           Provider.of<Authentication>(context, listen: false).getUserId ==
@@ -47,11 +58,7 @@ class _PrivateMessageState extends State<PrivateMessage> {
         ],
         leading: IconButton(
           onPressed: () {
-            Navigator.pushReplacement(
-                context,
-                PageTransition(
-                    child: const HomePage(),
-                    type: PageTransitionType.rightToLeft));
+            Navigator.pop(context);
           },
           icon: Icon(
             Icons.arrow_back_ios_rounded,
@@ -142,19 +149,21 @@ class _PrivateMessageState extends State<PrivateMessage> {
                         backgroundColor: constantColors.blueColor,
                         onPressed: () async {
                           String messageId = nanoid(14).toString();
-                          // await Provider.of<PrivateMessageHelper>(context,
-                          //         listen: false)
-                          //     .sendMessage(
-                          //   context: context,
-                          //   documentSnapshot: widget.documentSnapshot,
-                          //   messagecontroller: messageController,
-                          //   messageId: messageId,
-                          // );
+                          await Provider.of<PrivateMessageHelper>(context,
+                                  listen: false)
+                              .sendMessage(
+                            context: context,
+                            documentSnapshot: widget.documentSnapshot,
+                            messagecontroller: messageController,
+                            messageId: messageId,
+                          );
+                          FocusScope.of(context).unfocus();
 
-                          // await Provider.of<GroupMessageHelper>(context,
-                          //         listen: false)
-                          //     .updateTime(
-                          //         documentSnapshot: widget.documentSnapshot);
+                          await Provider.of<PrivateMessageHelper>(context,
+                                  listen: false)
+                              .updateTime(
+                                  context: context,
+                                  documentSnapshot: widget.documentSnapshot);
 
                           messageController.clear();
                         },
