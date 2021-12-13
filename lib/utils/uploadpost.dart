@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_place/google_place.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
@@ -23,6 +24,18 @@ class UploadPost with ChangeNotifier {
 
   TextEditingController captionController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+  GooglePlace googlePlace =
+      GooglePlace("AIzaSyCMYWYXY7CM6l3axYkOjHIqtuSUsTKbGAs");
+
+  List<AutocompletePrediction> predictions = [];
+  late DetailsResult detailsResult;
+
+  void autoCompleteSearch(String value) async {
+    var result = await googlePlace.queryAutocomplete.get(value);
+    if (result != null && result.predictions != null) {
+      predictions = result.predictions!;
+    }
+  }
 
   Future pickUploadPostImage(BuildContext context, ImageSource source) async {
     final uploadPostImageVal = await picker.pickImage(source: source);
@@ -186,6 +199,16 @@ class UploadPost with ChangeNotifier {
     );
   }
 
+  getDetils({required String placeId, required GooglePlace googlePlace}) async {
+    var result = await googlePlace.details.get(placeId);
+    if (result != null && result.result != null) {
+      detailsResult = result.result!;
+
+      print(detailsResult.geometry!.location!.lat);
+      print(detailsResult.geometry!.location!.lng);
+    }
+  }
+
   Future uploadPostImageToFirebase() async {
     Reference imageReference = FirebaseStorage.instance
         .ref()
@@ -210,78 +233,121 @@ class UploadPost with ChangeNotifier {
         List<String> catNames =
             Provider.of<FirebaseOperations>(context, listen: false).catNames;
         String? _selectedCategory;
-        return Container(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 150),
-                child: Divider(
-                  thickness: 4,
-                  color: constantColors.whiteColor,
+        return Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Container(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 150),
+                  child: Divider(
+                    thickness: 4,
+                    color: constantColors.whiteColor,
+                  ),
                 ),
-              ),
-              Container(
-                child: Row(
-                  children: [
-                    Container(
-                      child: Column(
-                        children: [
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.image_aspect_ratio,
-                              color: constantColors.greenColor,
+                Container(
+                  child: Row(
+                    children: [
+                      Container(
+                        child: Column(
+                          children: [
+                            IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                Icons.image_aspect_ratio,
+                                color: constantColors.greenColor,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                Icons.fit_screen,
+                                color: constantColors.yellowColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 200,
+                        width: 300,
+                        child: Image.file(
+                          uploadPostImage,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: SizedBox(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: SizedBox(
+                            height: 50,
+                            width: 330,
+                            child: TextField(
+                              keyboardType: TextInputType.text,
+                              maxLines: 1,
+                              textCapitalization: TextCapitalization.words,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(50)
+                              ],
+                              maxLengthEnforcement:
+                                  MaxLengthEnforcement.enforced,
+                              maxLength: 50,
+                              controller: captionController,
+                              style: TextStyle(
+                                color: constantColors.whiteColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: "Give your picture a title...",
+                                hintStyle: TextStyle(
+                                  color: constantColors.whiteColor,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.fit_screen,
-                              color: constantColors.yellowColor,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    Container(
-                      height: 200,
-                      width: 300,
-                      child: Image.file(
-                        uploadPostImage,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: SizedBox(
+                SizedBox(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0),
                         child: SizedBox(
-                          height: 50,
+                          height: 120,
                           width: 330,
                           child: TextField(
                             keyboardType: TextInputType.text,
-                            maxLines: 1,
+                            maxLines: 5,
                             textCapitalization: TextCapitalization.words,
                             inputFormatters: [
-                              LengthLimitingTextInputFormatter(50)
+                              LengthLimitingTextInputFormatter(200)
                             ],
                             maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                            maxLength: 50,
-                            controller: captionController,
+                            maxLength: 200,
+                            controller: descriptionController,
                             style: TextStyle(
                               color: constantColors.whiteColor,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                             decoration: InputDecoration(
-                              hintText: "Give your picture a title...",
+                              hintText: "Give your picture a caption...",
                               hintStyle: TextStyle(
                                 color: constantColors.whiteColor,
                                 fontSize: 14,
@@ -294,121 +360,126 @@ class UploadPost with ChangeNotifier {
                     ],
                   ),
                 ),
-              ),
-              SizedBox(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: SizedBox(
-                        height: 120,
-                        width: 330,
-                        child: TextField(
-                          keyboardType: TextInputType.text,
-                          maxLines: 5,
-                          textCapitalization: TextCapitalization.words,
-                          inputFormatters: [
-                            LengthLimitingTextInputFormatter(200)
-                          ],
-                          maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                          maxLength: 200,
-                          controller: descriptionController,
-                          style: TextStyle(
-                            color: constantColors.whiteColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: "Give your picture a caption...",
-                            hintStyle: TextStyle(
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: "Search",
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: constantColors.blueColor,
+                        width: 2.0,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: constantColors.darkColor,
+                        width: 2.0,
+                      ),
+                    ),
+                  ),
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      autoCompleteSearch(value);
+                    } else {
+                      if (predictions.isNotEmpty) {
+                        predictions = [];
+                      }
+                    }
+                  },
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                StatefulBuilder(builder: (context, addressState) {
+                  return SizedBox(
+                    height: predictions.isNotEmpty ? 100 : 0,
+                    child: ListView.builder(
+                      itemCount: predictions.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          leading: CircleAvatar(
+                            child: Icon(
+                              Icons.pin_drop,
                               color: constantColors.whiteColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
                             ),
                           ),
+                          title: Text(
+                            predictions[index].description!,
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontSize: 10,
+                            ),
+                          ),
+                          onTap: () async {
+                            await getDetils(
+                              googlePlace: googlePlace,
+                              placeId: predictions[index].placeId!,
+                            );
+
+                            addressState(() {
+                              predictions = [];
+                            });
+                          },
+                        );
+                      },
+                    ),
+                  );
+                }),
+                StatefulBuilder(builder: (context, innerState) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: DropdownButton(
+                                dropdownColor: constantColors.blueGreyColor,
+                                hint: Text(
+                                  'Please choose a Category',
+                                  style: TextStyle(
+                                    color: constantColors.whiteColor,
+                                  ),
+                                ),
+                                value: _selectedCategory,
+                                onChanged: (String? newValue) {
+                                  innerState(() {
+                                    _selectedCategory = newValue;
+                                  });
+                                },
+                                items: catNames.map((category) {
+                                  return DropdownMenuItem(
+                                    child: Text(category,
+                                        style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                          fontWeight: FontWeight.bold,
+                                        )),
+                                    value: category,
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              StatefulBuilder(builder: (context, innerState) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      DropdownButton(
-                        dropdownColor: constantColors.blueGreyColor,
-                        hint: Text(
-                          'Please choose a Category',
-                          style: TextStyle(
-                            color: constantColors.whiteColor,
-                          ),
-                        ),
-                        value: _selectedCategory,
-                        onChanged: (String? newValue) {
-                          innerState(() {
-                            _selectedCategory = newValue;
-                          });
-                        },
-                        items: catNames.map((category) {
-                          return DropdownMenuItem(
-                            child: Text(category,
-                                style: TextStyle(
-                                  color: constantColors.whiteColor,
-                                  fontWeight: FontWeight.bold,
-                                )),
-                            value: category,
-                          );
-                        }).toList(),
-                      ),
-                    ],
+                  );
+                }),
+                MaterialButton(
+                  child: Text(
+                    "Share",
+                    style: TextStyle(
+                      color: constantColors.whiteColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
                   ),
-                );
-              }),
-              MaterialButton(
-                child: Text(
-                  "Share",
-                  style: TextStyle(
-                    color: constantColors.whiteColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                onPressed: () async {
-                  String postId = nanoid(14).toString();
-                  Provider.of<FirebaseOperations>(context, listen: false)
-                      .uploadPostData(postId, {
-                    'postid': postId,
-                    'postcategory': _selectedCategory,
-                    'caption': captionController.text,
-                    'username':
-                        Provider.of<FirebaseOperations>(context, listen: false)
-                            .getInitUserName,
-                    'userimage':
-                        Provider.of<FirebaseOperations>(context, listen: false)
-                            .getInitUserImage,
-                    'useruid':
-                        Provider.of<Authentication>(context, listen: false)
-                            .getUserId,
-                    'time': Timestamp.now(),
-                    'useremail':
-                        Provider.of<FirebaseOperations>(context, listen: false)
-                            .getInitUserEmail,
-                    'postimage':
-                        uploadPostImageUrl, //or chnage to getUploadPostImageUrl
-                    'description': descriptionController.text,
-                  }).whenComplete(() async {
-                    // Add data under user profile
-                    return FirebaseFirestore.instance
-                        .collection("users")
-                        .doc(Provider.of<Authentication>(context, listen: false)
-                            .getUserId)
-                        .collection("posts")
-                        .doc(postId)
-                        .set({
+                  onPressed: () async {
+                    String postId = nanoid(14).toString();
+                    Provider.of<FirebaseOperations>(context, listen: false)
+                        .uploadPostData(postId, {
                       'postid': postId,
                       'postcategory': _selectedCategory,
                       'caption': captionController.text,
@@ -428,22 +499,52 @@ class UploadPost with ChangeNotifier {
                       'postimage':
                           uploadPostImageUrl, //or chnage to getUploadPostImageUrl
                       'description': descriptionController.text,
+                    }).whenComplete(() async {
+                      // Add data under user profile
+                      return FirebaseFirestore.instance
+                          .collection("users")
+                          .doc(Provider.of<Authentication>(context,
+                                  listen: false)
+                              .getUserId)
+                          .collection("posts")
+                          .doc(postId)
+                          .set({
+                        'postid': postId,
+                        'postcategory': _selectedCategory,
+                        'caption': captionController.text,
+                        'username': Provider.of<FirebaseOperations>(context,
+                                listen: false)
+                            .getInitUserName,
+                        'userimage': Provider.of<FirebaseOperations>(context,
+                                listen: false)
+                            .getInitUserImage,
+                        'useruid':
+                            Provider.of<Authentication>(context, listen: false)
+                                .getUserId,
+                        'time': Timestamp.now(),
+                        'useremail': Provider.of<FirebaseOperations>(context,
+                                listen: false)
+                            .getInitUserEmail,
+                        'postimage':
+                            uploadPostImageUrl, //or chnage to getUploadPostImageUrl
+                        'description': descriptionController.text,
+                      });
+                    }).whenComplete(() {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                      Navigator.pop(context);
                     });
-                  }).whenComplete(() {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  });
-                },
-                color: constantColors.blueColor,
-              ),
-            ],
-          ),
-          height: MediaQuery.of(context).size.height * 0.8,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            color: constantColors.blueGreyColor,
-            borderRadius: BorderRadius.circular(12),
+                  },
+                  color: constantColors.blueColor,
+                ),
+              ],
+            ),
+            height: MediaQuery.of(context).size.height * 0.9,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              color: constantColors.blueGreyColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
       },

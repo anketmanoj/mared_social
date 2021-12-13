@@ -47,6 +47,7 @@ class HomepageHelpers with ChangeNotifier {
                     icon: const Icon(EvaIcons.keypadOutline)),
                 CustomNavigationBarItem(
                     icon: const Icon(EvaIcons.messageCircle)),
+                CustomNavigationBarItem(icon: const Icon(EvaIcons.mapOutline)),
                 CustomNavigationBarItem(
                   icon: SizedBox(
                     height: 35,

@@ -6,6 +6,7 @@ import 'package:mared_social/screens/Chatroom/chatroom.dart';
 import 'package:mared_social/screens/Feed/feed.dart';
 import 'package:mared_social/screens/HomePage/homepageHelpers.dart';
 import 'package:mared_social/screens/Profile/profile.dart';
+import 'package:mared_social/screens/mapscreen/mapscreen.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:provider/provider.dart';
 
@@ -66,6 +67,7 @@ class _HomePageState extends State<HomePage> {
                 Feed(),
                 CategoryScreen(),
                 Chatroom(),
+                MapScreen(),
                 Profile(),
               ],
               physics: const NeverScrollableScrollPhysics(),
