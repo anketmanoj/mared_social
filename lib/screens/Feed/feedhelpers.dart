@@ -347,19 +347,37 @@ class FeedHelpers with ChangeNotifier {
                     Padding(
                       padding: const EdgeInsets.only(left: 8.0),
                       child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.6,
+                        width: MediaQuery.of(context).size.width * 0.65,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(
-                              child: Text(
-                                documentSnapshot['caption'],
-                                style: TextStyle(
-                                  color: constantColors.greenColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    documentSnapshot['caption'],
+                                    style: TextStyle(
+                                      color: constantColors.greenColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.4,
+                                    child: Text(
+                                      ", ${documentSnapshot['address']}",
+                                      softWrap: true,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: constantColors.lightColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             SizedBox(

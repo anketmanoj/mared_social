@@ -497,20 +497,9 @@ class SearchFeedHelper with ChangeNotifier {
             ),
           );
         } else {
-          return SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: Center(
-              child: Text(
-                "No posts yet\nCome back later to view posts about $searchTerm",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: constantColors.whiteColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ),
+          return const SizedBox(
+            height: 0,
+            width: 0,
           );
         }
       }).toList(),

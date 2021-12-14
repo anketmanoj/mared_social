@@ -996,12 +996,18 @@ class AltProfileHelper with ChangeNotifier {
                   ),
                 ),
               ),
-              Text(
-                documentSnapshot['description'],
-                style: TextStyle(
-                  color: constantColors.whiteColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, left: 16),
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    documentSnapshot['description'],
+                    style: TextStyle(
+                      color: constantColors.whiteColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ),
               Container(
