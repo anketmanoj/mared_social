@@ -91,9 +91,23 @@ class FirebaseOperations with ChangeNotifier {
   }
 
   Future updateDescription(
-      {required String postId, String? description}) async {
-    return FirebaseFirestore.instance.collection("posts").doc(postId).update({
+      {required String postId,
+      String? description,
+      required BuildContext context}) async {
+    return await FirebaseFirestore.instance
+        .collection("posts")
+        .doc(postId)
+        .update({
       'description': description,
+    }).whenComplete(() async {
+      return await FirebaseFirestore.instance
+          .collection("users")
+          .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+          .collection("posts")
+          .doc(postId)
+          .update({
+        'description': description,
+      });
     });
   }
 

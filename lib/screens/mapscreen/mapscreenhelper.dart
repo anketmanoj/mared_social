@@ -36,6 +36,13 @@ class MapScreenHelper with ChangeNotifier {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 150),
+                child: Divider(
+                  thickness: 4,
+                  color: constantColors.whiteColor,
+                ),
+              ),
+              Padding(
                 padding: const EdgeInsets.only(top: 8.0, left: 8),
                 child: Row(
                   children: [

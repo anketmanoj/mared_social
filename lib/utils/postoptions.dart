@@ -153,6 +153,7 @@ class PostFunctions with ChangeNotifier {
                                                             context,
                                                             listen: false)
                                                         .updateDescription(
+                                                            context: context,
                                                             postId: postId,
                                                             description:
                                                                 updateDescriptionController
