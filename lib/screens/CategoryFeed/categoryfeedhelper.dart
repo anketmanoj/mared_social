@@ -7,6 +7,7 @@ import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
+import 'package:mared_social/screens/mapscreen/categorymapscreen.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/postoptions.dart';
 import 'package:page_transition/page_transition.dart';
@@ -21,6 +22,19 @@ class CatgeoryFeedHelper with ChangeNotifier {
     return AppBar(
       backgroundColor: constantColors.darkColor.withOpacity(0.8),
       centerTitle: true,
+      actions: [
+        IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      child: CategoryMapScreen(
+                        categoryName: categoryName,
+                      ),
+                      type: PageTransitionType.rightToLeft));
+            },
+            icon: const Icon(EvaIcons.mapOutline)),
+      ],
       leading: IconButton(
           onPressed: () {
             Navigator.pushReplacement(

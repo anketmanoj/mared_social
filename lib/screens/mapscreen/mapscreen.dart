@@ -53,7 +53,7 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GoogleMap(
-        mapType: MapType.satellite,
+        mapType: MapType.normal,
         markers: Set<Marker>.of(markers.values),
         myLocationEnabled: true,
         initialCameraPosition: const CameraPosition(
