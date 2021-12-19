@@ -30,8 +30,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    print(
-        "Is Anon ? == ${Provider.of<Authentication>(context, listen: false).getIsAnon}");
     Future.delayed(Duration.zero, () {
       Provider.of<FirebaseOperations>(context, listen: false)
           .initUserData(context)
@@ -70,7 +68,10 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Feed(),
                 CategoryScreen(),
-                Chatroom(),
+                Provider.of<Authentication>(context, listen: false).getIsAnon ==
+                        false
+                    ? Chatroom()
+                    : IsAnonMsg(),
                 MapScreen(),
                 Provider.of<Authentication>(context, listen: false).getIsAnon ==
                         false

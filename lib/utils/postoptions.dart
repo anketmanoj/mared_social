@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
+import 'package:mared_social/screens/Feed/feedhelpers.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:nanoid/nanoid.dart';
@@ -678,15 +679,22 @@ class PostFunctions with ChangeNotifier {
                           color: constantColors.whiteColor,
                         ),
                         onPressed: () {
-                          print("Adding Comment....");
-                          addComment(
-                                  postId: snapshot['postid'],
-                                  comment: commentController.text,
-                                  context: context)
-                              .whenComplete(() {
-                            commentController.clear();
-                            notifyListeners();
-                          });
+                          if (Provider.of<Authentication>(context,
+                                      listen: false)
+                                  .getIsAnon ==
+                              false) {
+                            addComment(
+                                    postId: snapshot['postid'],
+                                    comment: commentController.text,
+                                    context: context)
+                                .whenComplete(() {
+                              commentController.clear();
+                              notifyListeners();
+                            });
+                          } else {
+                            Provider.of<FeedHelpers>(context, listen: false)
+                                .IsAnonBottomSheet(context);
+                          }
                         },
                       ),
                     ],
@@ -922,25 +930,36 @@ class PostFunctions with ChangeNotifier {
                                 .map((DocumentSnapshot awardDocSnap) {
                               return InkWell(
                                 onTap: () async {
-                                  print("rewarding user...");
-                                  await Provider.of<FirebaseOperations>(context,
-                                          listen: false)
-                                      .addAward(postId: postId, data: {
-                                    'username': Provider.of<FirebaseOperations>(
+                                  if (Provider.of<Authentication>(context,
+                                              listen: false)
+                                          .getIsAnon ==
+                                      false) {
+                                    await Provider.of<FirebaseOperations>(
                                             context,
                                             listen: false)
-                                        .getInitUserName,
-                                    'userimage':
-                                        Provider.of<FirebaseOperations>(context,
-                                                listen: false)
-                                            .getInitUserImage,
-                                    'useruid': Provider.of<Authentication>(
-                                            context,
+                                        .addAward(postId: postId, data: {
+                                      'username':
+                                          Provider.of<FirebaseOperations>(
+                                                  context,
+                                                  listen: false)
+                                              .getInitUserName,
+                                      'userimage':
+                                          Provider.of<FirebaseOperations>(
+                                                  context,
+                                                  listen: false)
+                                              .getInitUserImage,
+                                      'useruid': Provider.of<Authentication>(
+                                              context,
+                                              listen: false)
+                                          .getUserId,
+                                      'time': Timestamp.now(),
+                                      'award': awardDocSnap['image'],
+                                    });
+                                  } else {
+                                    Provider.of<FeedHelpers>(context,
                                             listen: false)
-                                        .getUserId,
-                                    'time': Timestamp.now(),
-                                    'award': awardDocSnap['image'],
-                                  });
+                                        .IsAnonBottomSheet(context);
+                                  }
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 8.0),

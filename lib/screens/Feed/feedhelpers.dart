@@ -8,6 +8,7 @@ import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/Stories/stories.dart';
+import 'package:mared_social/screens/isAnon/isAnon.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/postoptions.dart';
@@ -453,14 +454,20 @@ class FeedHelpers with ChangeNotifier {
                 padding: const EdgeInsets.only(top: 16.0),
                 child: InkWell(
                   onDoubleTap: () {
-                    print("Adding like...");
-                    Provider.of<PostFunctions>(context, listen: false).addLike(
-                      context: context,
-                      postID: documentSnapshot['postid'],
-                      subDocId:
-                          Provider.of<Authentication>(context, listen: false)
-                              .getUserId,
-                    );
+                    if (Provider.of<Authentication>(context, listen: false)
+                            .getIsAnon ==
+                        false) {
+                      Provider.of<PostFunctions>(context, listen: false)
+                          .addLike(
+                        context: context,
+                        postID: documentSnapshot['postid'],
+                        subDocId:
+                            Provider.of<Authentication>(context, listen: false)
+                                .getUserId,
+                      );
+                    } else {
+                      IsAnonBottomSheet(context);
+                    }
                   },
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height * 0.46,
@@ -686,6 +693,19 @@ class FeedHelpers with ChangeNotifier {
           ),
         );
       }).toList(),
+    );
+  }
+
+  IsAnonBottomSheet(BuildContext context) {
+    return showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.9,
+          child: IsAnonMsg(),
+        );
+      },
     );
   }
 }

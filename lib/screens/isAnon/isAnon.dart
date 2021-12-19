@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 
 class IsAnonMsg extends StatelessWidget {
   final ConstantColors constantColors = ConstantColors();
+
+  IsAnonMsg({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(

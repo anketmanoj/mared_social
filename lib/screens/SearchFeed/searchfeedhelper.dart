@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
+import 'package:mared_social/screens/Feed/feedhelpers.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/postoptions.dart';
@@ -260,15 +261,21 @@ class SearchFeedHelper with ChangeNotifier {
                   padding: const EdgeInsets.only(top: 16.0),
                   child: InkWell(
                     onDoubleTap: () {
-                      print("Adding like...");
-                      Provider.of<PostFunctions>(context, listen: false)
-                          .addLike(
-                        context: context,
-                        postID: documentSnapshot['postid'],
-                        subDocId:
-                            Provider.of<Authentication>(context, listen: false)
-                                .getUserId,
-                      );
+                      if (Provider.of<Authentication>(context, listen: false)
+                              .getIsAnon ==
+                          false) {
+                        Provider.of<PostFunctions>(context, listen: false)
+                            .addLike(
+                          context: context,
+                          postID: documentSnapshot['postid'],
+                          subDocId: Provider.of<Authentication>(context,
+                                  listen: false)
+                              .getUserId,
+                        );
+                      } else {
+                        Provider.of<FeedHelpers>(context, listen: false)
+                            .IsAnonBottomSheet(context);
+                      }
                     },
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height * 0.46,

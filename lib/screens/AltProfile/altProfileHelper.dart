@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
+import 'package:mared_social/screens/Feed/feedhelpers.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/screens/Messaging/privateMessage.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
@@ -387,44 +388,51 @@ class AltProfileHelper with ChangeNotifier {
                     ),
                   ),
                   onPressed: () {
-                    Provider.of<FirebaseOperations>(context, listen: false)
-                        .followUser(
-                      followingUid: userUid,
-                      followingDocId:
-                          Provider.of<Authentication>(context, listen: false)
-                              .getUserId,
-                      followingData: {
-                        'username': Provider.of<FirebaseOperations>(context,
-                                listen: false)
-                            .getInitUserName,
-                        'userimage': Provider.of<FirebaseOperations>(context,
-                                listen: false)
-                            .getInitUserImage,
-                        'useremail': Provider.of<FirebaseOperations>(context,
-                                listen: false)
-                            .getInitUserEmail,
-                        'useruid':
+                    if (Provider.of<Authentication>(context, listen: false)
+                            .getIsAnon ==
+                        false) {
+                      Provider.of<FirebaseOperations>(context, listen: false)
+                          .followUser(
+                        followingUid: userUid,
+                        followingDocId:
                             Provider.of<Authentication>(context, listen: false)
                                 .getUserId,
-                        'time': Timestamp.now(),
-                      },
-                      followerUid:
-                          Provider.of<Authentication>(context, listen: false)
+                        followingData: {
+                          'username': Provider.of<FirebaseOperations>(context,
+                                  listen: false)
+                              .getInitUserName,
+                          'userimage': Provider.of<FirebaseOperations>(context,
+                                  listen: false)
+                              .getInitUserImage,
+                          'useremail': Provider.of<FirebaseOperations>(context,
+                                  listen: false)
+                              .getInitUserEmail,
+                          'useruid': Provider.of<Authentication>(context,
+                                  listen: false)
                               .getUserId,
-                      followerDocId: userUid,
-                      followerData: {
-                        'username': userDocSnap.data!['username'],
-                        'userimage': userDocSnap.data!['userimage'],
-                        'useremail': userDocSnap.data!['useremail'],
-                        'useruid': userDocSnap.data!['useruid'],
-                        'time': Timestamp.now(),
-                      },
-                    )
-                        .whenComplete(() {
-                      followedNotification(
-                          context: context,
-                          name: userDocSnap.data!['username']);
-                    });
+                          'time': Timestamp.now(),
+                        },
+                        followerUid:
+                            Provider.of<Authentication>(context, listen: false)
+                                .getUserId,
+                        followerDocId: userUid,
+                        followerData: {
+                          'username': userDocSnap.data!['username'],
+                          'userimage': userDocSnap.data!['userimage'],
+                          'useremail': userDocSnap.data!['useremail'],
+                          'useruid': userDocSnap.data!['useruid'],
+                          'time': Timestamp.now(),
+                        },
+                      )
+                          .whenComplete(() {
+                        followedNotification(
+                            context: context,
+                            name: userDocSnap.data!['username']);
+                      });
+                    } else {
+                      Provider.of<FeedHelpers>(context, listen: false)
+                          .IsAnonBottomSheet(context);
+                    }
                   },
                 ),
                 MaterialButton(
@@ -438,52 +446,60 @@ class AltProfileHelper with ChangeNotifier {
                     ),
                   ),
                   onPressed: () async {
-                    await Provider.of<FirebaseOperations>(context,
-                            listen: false)
-                        .messageUser(
-                            messagingUid: userUid,
-                            messagingDocId: Provider.of<Authentication>(context,
-                                    listen: false)
-                                .getUserId,
-                            messagingData: {
-                              'username': Provider.of<FirebaseOperations>(
+                    if (Provider.of<Authentication>(context, listen: false)
+                            .getIsAnon ==
+                        false) {
+                      await Provider.of<FirebaseOperations>(context,
+                              listen: false)
+                          .messageUser(
+                              messagingUid: userUid,
+                              messagingDocId: Provider.of<Authentication>(
                                       context,
-                                      listen: false)
-                                  .getInitUserName,
-                              'userimage': Provider.of<FirebaseOperations>(
-                                      context,
-                                      listen: false)
-                                  .getInitUserImage,
-                              'useremail': Provider.of<FirebaseOperations>(
-                                      context,
-                                      listen: false)
-                                  .getInitUserEmail,
-                              'useruid': Provider.of<Authentication>(context,
                                       listen: false)
                                   .getUserId,
-                              'time': Timestamp.now(),
-                            },
-                            messengerUid: Provider.of<Authentication>(context,
-                                    listen: false)
-                                .getUserId,
-                            messengerDocId: userUid,
-                            messengerData: {
-                              'username': userDocSnap.data!['username'],
-                              'userimage': userDocSnap.data!['userimage'],
-                              'useremail': userDocSnap.data!['useremail'],
-                              'useruid': userDocSnap.data!['useruid'],
-                              'time': Timestamp.now(),
-                            })
-                        .whenComplete(() {
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          PageTransition(
-                              child: PrivateMessage(
-                                  documentSnapshot:
-                                      (userDocSnap.data as DocumentSnapshot)),
-                              type: PageTransitionType.leftToRight));
-                    });
+                              messagingData: {
+                                'username': Provider.of<FirebaseOperations>(
+                                        context,
+                                        listen: false)
+                                    .getInitUserName,
+                                'userimage': Provider.of<FirebaseOperations>(
+                                        context,
+                                        listen: false)
+                                    .getInitUserImage,
+                                'useremail': Provider.of<FirebaseOperations>(
+                                        context,
+                                        listen: false)
+                                    .getInitUserEmail,
+                                'useruid': Provider.of<Authentication>(context,
+                                        listen: false)
+                                    .getUserId,
+                                'time': Timestamp.now(),
+                              },
+                              messengerUid: Provider.of<Authentication>(context,
+                                      listen: false)
+                                  .getUserId,
+                              messengerDocId: userUid,
+                              messengerData: {
+                                'username': userDocSnap.data!['username'],
+                                'userimage': userDocSnap.data!['userimage'],
+                                'useremail': userDocSnap.data!['useremail'],
+                                'useruid': userDocSnap.data!['useruid'],
+                                'time': Timestamp.now(),
+                              })
+                          .whenComplete(() {
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                child: PrivateMessage(
+                                    documentSnapshot:
+                                        (userDocSnap.data as DocumentSnapshot)),
+                                type: PageTransitionType.leftToRight));
+                      });
+                    } else {
+                      Provider.of<FeedHelpers>(context, listen: false)
+                          .IsAnonBottomSheet(context);
+                    }
                   },
                 ),
               ],
@@ -964,14 +980,20 @@ class AltProfileHelper with ChangeNotifier {
               ),
               InkWell(
                 onDoubleTap: () {
-                  print("Adding like...");
-                  Provider.of<PostFunctions>(context, listen: false).addLike(
-                    context: context,
-                    postID: documentSnapshot['postid'],
-                    subDocId:
-                        Provider.of<Authentication>(context, listen: false)
-                            .getUserId,
-                  );
+                  if (Provider.of<Authentication>(context, listen: false)
+                          .getIsAnon ==
+                      false) {
+                    Provider.of<PostFunctions>(context, listen: false).addLike(
+                      context: context,
+                      postID: documentSnapshot['postid'],
+                      subDocId:
+                          Provider.of<Authentication>(context, listen: false)
+                              .getUserId,
+                    );
+                  } else {
+                    Provider.of<FeedHelpers>(context, listen: false)
+                        .IsAnonBottomSheet(context);
+                  }
                 },
                 child: SizedBox(
                   height: MediaQuery.of(context).size.height * 0.3,
