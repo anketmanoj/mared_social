@@ -26,8 +26,13 @@ class FeedHelpers with ChangeNotifier {
       actions: [
         IconButton(
           onPressed: () {
-            Provider.of<UploadPost>(context, listen: false)
-                .selectPostImageType(context);
+            if (Provider.of<Authentication>(context, listen: false).getIsAnon ==
+                false) {
+              Provider.of<UploadPost>(context, listen: false)
+                  .selectPostImageType(context);
+            } else {
+              IsAnonBottomSheet(context);
+            }
           },
           icon: Icon(
             Icons.camera_enhance_rounded,
