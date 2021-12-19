@@ -6,11 +6,16 @@ class Authentication with ChangeNotifier {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
-  late String userUid, googleUsername, googleUseremail, googleUserImage;
+  late String userUid,
+      googleUsername,
+      googleUseremail,
+      googleUserImage,
+      googlePhoneNo;
   String get getUserId => userUid;
   String get getgoogleUsername => googleUsername;
   String get getgoogleUseremail => googleUseremail;
   String get getgoogleUserImage => googleUserImage;
+  String get getgooglePhoneNo => googlePhoneNo;
 
   Future loginIntoAccount(String email, String password) async {
     UserCredential userCredential = await firebaseAuth
@@ -53,9 +58,11 @@ class Authentication with ChangeNotifier {
     assert(user!.uid != null);
 
     userUid = user!.uid;
+
     googleUseremail = user.email!;
     googleUsername = user.displayName!;
     googleUserImage = user.photoURL!;
+    googlePhoneNo = user.phoneNumber!;
     print("Google sign in => ${userUid} || ${user.email}");
 
     notifyListeners();
@@ -63,5 +70,18 @@ class Authentication with ChangeNotifier {
 
   Future signOutWithGoogle() async {
     return googleSignIn.signOut();
+  }
+
+  Future signInAnon() async {
+    try {
+      var userCredential = await firebaseAuth.signInAnonymously();
+
+      User? user = userCredential.user;
+      userUid = user!.uid;
+      print("logged in " + userUid);
+      notifyListeners();
+    } catch (e) {
+      print("FAILED === ${e.toString()}");
+    }
   }
 }

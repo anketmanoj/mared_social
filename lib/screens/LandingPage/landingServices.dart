@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,12 +7,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/models/sharedPrefUser.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/screens/LandingPage/landingUtils.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class LandingService with ChangeNotifier {
@@ -112,91 +116,95 @@ class LandingService with ChangeNotifier {
         });
   }
 
+  Future<SharedPrefUser> getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPrefUser userData;
+    var itemData = prefs.getString("mydata");
+
+    userData = sharedPrefUserFromJson(itemData!);
+
+    return userData;
+  }
+
   Widget passwordlessSignIn(BuildContext context) {
     return SizedBox(
         height: MediaQuery.of(context).size.height * 0.4,
         width: MediaQuery.of(context).size.width,
-        child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection("users").snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+        child: FutureBuilder<SharedPrefUser>(
+          future: getUser(),
+          builder: (context, userData) {
+            if (userData.hasError) {
               return const Center(child: CircularProgressIndicator());
             } else {
-              return ListView(
-                children: snapshot.data!.docs
-                    .map((DocumentSnapshot documentSnapshot) {
-                  return ListTile(
-                    trailing: Container(
-                      width: 120,
-                      height: 50,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          IconButton(
-                            onPressed: () async {
-                              try {
-                                await Provider.of<Authentication>(context,
-                                        listen: false)
-                                    .loginIntoAccount(
-                                        documentSnapshot['useremail'],
-                                        documentSnapshot['userpassword']);
+              SharedPrefUser savedUserData = userData.data!;
+              return ListTile(
+                trailing: Container(
+                  width: 120,
+                  height: 50,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      IconButton(
+                        onPressed: () async {
+                          try {
+                            await Provider.of<Authentication>(context,
+                                    listen: false)
+                                .loginIntoAccount(savedUserData.useremail!,
+                                    savedUserData.userpassword!);
 
-                                Navigator.pushReplacement(
-                                  context,
-                                  PageTransition(
-                                      child: HomePage(),
-                                      type: PageTransitionType.bottomToTop),
-                                );
-                              } catch (e) {
-                                CoolAlert.show(
-                                  context: context,
-                                  type: CoolAlertType.error,
-                                  title: "Sign In Failed",
-                                  text: e.toString(),
-                                );
-                              }
-                            },
-                            icon: Icon(
-                              FontAwesomeIcons.check,
-                              color: constantColors.blueColor,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              Provider.of<FirebaseOperations>(context,
-                                      listen: false)
-                                  .deleteUserData(documentSnapshot['useruid']);
-                            },
-                            icon: Icon(
-                              FontAwesomeIcons.trashAlt,
-                              color: constantColors.redColor,
-                            ),
-                          ),
-                        ],
+                            Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                  child: HomePage(),
+                                  type: PageTransitionType.bottomToTop),
+                            );
+                          } catch (e) {
+                            CoolAlert.show(
+                              context: context,
+                              type: CoolAlertType.error,
+                              title: "Sign In Failed",
+                              text: e.toString(),
+                            );
+                          }
+                        },
+                        icon: Icon(
+                          FontAwesomeIcons.check,
+                          color: constantColors.blueColor,
+                        ),
                       ),
-                    ),
-                    leading: CircleAvatar(
-                      backgroundColor: constantColors.darkColor,
-                      backgroundImage:
-                          NetworkImage(documentSnapshot['userimage']),
-                    ),
-                    subtitle: Text(
-                      documentSnapshot['useremail'],
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: constantColors.whiteColor,
-                        fontSize: 12,
-                      ),
-                    ),
-                    title: Text(
-                      documentSnapshot['username'],
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: constantColors.greenColor,
-                      ),
-                    ),
-                  );
-                }).toList(),
+                      // IconButton(
+                      //   onPressed: () {
+                      //     Provider.of<FirebaseOperations>(context,
+                      //             listen: false)
+                      //         .deleteUserData(documentSnapshot['useruid']);
+                      //   },
+                      //   icon: Icon(
+                      //     FontAwesomeIcons.trashAlt,
+                      //     color: constantColors.redColor,
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                ),
+                leading: CircleAvatar(
+                  backgroundColor: constantColors.darkColor,
+                  backgroundImage: NetworkImage(savedUserData.userimage!),
+                ),
+                subtitle: Text(
+                  savedUserData.useremail!,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: constantColors.whiteColor,
+                    fontSize: 12,
+                  ),
+                ),
+                title: Text(
+                  savedUserData.username!,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: constantColors.greenColor,
+                  ),
+                ),
               );
             }
           },
@@ -466,6 +474,27 @@ class LandingService with ChangeNotifier {
                                   listen: false)
                               .createAccount(userEmailController.text,
                                   userPasswordController.text);
+
+                          SharedPreferences.setMockInitialValues({});
+
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+
+                          await prefs.setString(
+                              'mydata',
+                              json.encode({
+                                'userpassword': userPasswordController.text,
+                                'usercontactnumber': userPhoneNoController.text,
+                                'store': store,
+                                'useruid': Provider.of<Authentication>(context,
+                                        listen: false)
+                                    .getUserId,
+                                'useremail': userEmailController.text,
+                                'username': userNameController.text,
+                                'userimage': Provider.of<LandingUtils>(context,
+                                        listen: false)
+                                    .getUserAvatarUrl,
+                              }));
 
                           await Provider.of<FirebaseOperations>(context,
                                   listen: false)

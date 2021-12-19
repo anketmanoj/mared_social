@@ -76,6 +76,8 @@ class ProfileHelpers with ChangeNotifier {
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
                       snapshot.data!['username'],
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: constantColors.whiteColor,
                         fontWeight: FontWeight.bold,
@@ -93,14 +95,17 @@ class ProfileHelpers with ChangeNotifier {
                           color: constantColors.greenColor,
                           size: 16,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            snapshot.data!['useremail'],
-                            style: TextStyle(
-                              color: constantColors.whiteColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(
+                              snapshot.data!['useremail'],
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: constantColors.whiteColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
                         ),

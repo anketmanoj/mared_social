@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "781834378277",
+    "project_id": "maredsocial-79a7b",
+    "storage_bucket": "maredsocial-79a7b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:781834378277:android:7e4a22887332f520f9b3cc",
+        "android_client_info": {
+          "package_name": "com.example.mared_social"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "781834378277-i2qa1dt8802r99u8pgot7k68m8nqbedl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mared_social",
+            "certificate_hash": "0d7a07fd1973c24401ecd6faabb25d1146aa2e28"
+          }
+        },
+        {
+          "client_id": "781834378277-4ib632hkt1nqo0bjunngjd2i29tgmhdt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvmsiW7kqPd5cPKv46EfnxBnD_W_sC_mI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "781834378277-4ib632hkt1nqo0bjunngjd2i29tgmhdt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "781834378277-aco3riktknugtv6tbk0jcqs6qv1pegpn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.maredSocial"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

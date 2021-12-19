@@ -21,6 +21,8 @@ class LandingPage extends StatelessWidget {
           Provider.of<LandingHelpers>(context, listen: false)
               .mainButton(context),
           Provider.of<LandingHelpers>(context, listen: false)
+              .exploreApp(context),
+          Provider.of<LandingHelpers>(context, listen: false)
               .privacyText(context),
         ],
       ),

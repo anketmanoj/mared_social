@@ -57,8 +57,8 @@ class _MapScreenState extends State<MapScreen> {
         markers: Set<Marker>.of(markers.values),
         myLocationEnabled: true,
         initialCameraPosition: const CameraPosition(
-          target: LatLng(25.203809493644336, 55.27576934136506),
-          zoom: 10,
+          target: LatLng(25.2048, 55.2708),
+          zoom: 15,
         ),
         onMapCreated: (controller) {
           googleMapController = controller;

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cool_alert/cool_alert.dart';
@@ -10,8 +11,10 @@ import 'package:mared_social/screens/LandingPage/landingServices.dart';
 import 'package:mared_social/screens/LandingPage/landingUtils.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
+import 'package:nanoid/nanoid.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LandingHelpers with ChangeNotifier {
   ConstantColors constantColors = ConstantColors();
@@ -71,7 +74,7 @@ class LandingHelpers with ChangeNotifier {
 
   Widget mainButton(BuildContext context) {
     return Positioned(
-      top: 700,
+      top: 670,
       right: 10,
       left: 10,
       child: Platform.isIOS
@@ -99,6 +102,11 @@ class LandingHelpers with ChangeNotifier {
                         await Provider.of<FirebaseOperations>(context,
                                 listen: false)
                             .createUserCollection(context, {
+                          'usercontactnumber': Provider.of<Authentication>(
+                                  context,
+                                  listen: false)
+                              .getgooglePhoneNo,
+                          'store': false,
                           'useruid': Provider.of<Authentication>(context,
                                   listen: false)
                               .getUserId,
@@ -151,16 +159,49 @@ class LandingHelpers with ChangeNotifier {
                   LoginIcon(
                     icon: EvaIcons.google,
                     color: constantColors.greenColor,
-                    onTap: () {
-                      Provider.of<Authentication>(context, listen: false)
-                          .signInWithgoogle()
-                          .whenComplete(() {
+                    onTap: () async {
+                      try {
+                        await Provider.of<Authentication>(context,
+                                listen: false)
+                            .signInWithgoogle();
+
+                        print("creating collection");
+
+                        await Provider.of<FirebaseOperations>(context,
+                                listen: false)
+                            .createUserCollection(context, {
+                          'usercontactnumber': Provider.of<Authentication>(
+                                  context,
+                                  listen: false)
+                              .getgooglePhoneNo,
+                          'store': false,
+                          'useruid': Provider.of<Authentication>(context,
+                                  listen: false)
+                              .getUserId,
+                          'useremail': Provider.of<Authentication>(context,
+                                  listen: false)
+                              .getgoogleUseremail,
+                          'username': Provider.of<Authentication>(context,
+                                  listen: false)
+                              .getgoogleUsername,
+                          'userimage': Provider.of<Authentication>(context,
+                                  listen: false)
+                              .getgoogleUserImage,
+                        });
+
                         Navigator.pushReplacement(
                             context,
                             PageTransition(
                                 child: HomePage(),
                                 type: PageTransitionType.rightToLeft));
-                      });
+                      } catch (e) {
+                        CoolAlert.show(
+                          context: context,
+                          type: CoolAlertType.error,
+                          title: "Sign In Failed",
+                          text: e.toString(),
+                        );
+                      }
                     },
                   ),
                   LoginIcon(
@@ -170,6 +211,72 @@ class LandingHelpers with ChangeNotifier {
                 ],
               ),
             ),
+    );
+  }
+
+  Widget exploreApp(BuildContext context) {
+    return Positioned(
+      top: 710,
+      left: 20,
+      right: 20,
+      child: InkWell(
+        onTap: () async {
+          try {
+            String anonUsername = nanoid(10).toString();
+            await Provider.of<Authentication>(context, listen: false)
+                .signInAnon();
+
+            await Provider.of<FirebaseOperations>(context, listen: false)
+                .createUserCollection(context, {
+              'usercontactnumber': "",
+              'store': false,
+              'useruid':
+                  Provider.of<Authentication>(context, listen: false).getUserId,
+              'useremail': "$anonUsername@mared.ae",
+              'username': "@$anonUsername",
+              'userimage':
+                  "https://firebasestorage.googleapis.com/v0/b/maredsocial-79a7b.appspot.com/o/userProfileAvatar%2Fprivate%2Fvar%2Fmobile%2FContainers%2FData%2FApplication%2Ficon-mared.png?alt=media&token=eec2b470-f32e-4449-874a-e6929e210c6c",
+            });
+
+            Navigator.pushReplacement(
+                context,
+                PageTransition(
+                    child: HomePage(), type: PageTransitionType.rightToLeft));
+          } catch (e) {
+            CoolAlert.show(
+              context: context,
+              type: CoolAlertType.error,
+              title: "Sign In Failed",
+              text: e.toString(),
+            );
+          }
+        },
+        child: Column(
+          children: [
+            Divider(
+              color: constantColors.lightColor,
+            ),
+            Container(
+              alignment: Alignment.center,
+              height: 40,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: constantColors.lightBlueColor,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                "I want to explore Mared first",
+                style: TextStyle(
+                  color: constantColors.lightBlueColor,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -236,7 +343,7 @@ class LandingHelpers with ChangeNotifier {
                   ),
                   MaterialButton(
                     color: constantColors.redColor,
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.pop(context);
                       Provider.of<LandingUtils>(context, listen: false)
                           .selectAvatarOptionsSheet(context);
