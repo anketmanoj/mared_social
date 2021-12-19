@@ -136,13 +136,13 @@ class LandingHelpers with ChangeNotifier {
                       }
                     },
                   ),
-                  LoginIcon(
-                    icon: EvaIcons.facebook,
-                    color: constantColors.blueColor,
-                  ),
-                  LoginIcon(
-                      icon: FontAwesomeIcons.apple,
-                      color: constantColors.whiteColor)
+                  // LoginIcon(
+                  //   icon: EvaIcons.facebook,
+                  //   color: constantColors.blueColor,
+                  // ),
+                  // LoginIcon(
+                  //     icon: FontAwesomeIcons.apple,
+                  //     color: constantColors.whiteColor)
                 ],
               ),
             )
@@ -204,10 +204,10 @@ class LandingHelpers with ChangeNotifier {
                       }
                     },
                   ),
-                  LoginIcon(
-                    icon: EvaIcons.facebook,
-                    color: constantColors.blueColor,
-                  ),
+                  // LoginIcon(
+                  //   icon: EvaIcons.facebook,
+                  //   color: constantColors.blueColor,
+                  // ),
                 ],
               ),
             ),

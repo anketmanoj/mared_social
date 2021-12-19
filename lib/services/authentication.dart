@@ -5,12 +5,15 @@ import 'package:google_sign_in/google_sign_in.dart';
 class Authentication with ChangeNotifier {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  late bool isAnon;
 
   late String userUid,
       googleUsername,
       googleUseremail,
       googleUserImage,
       googlePhoneNo;
+
+  bool get getIsAnon => isAnon;
   String get getUserId => userUid;
   String get getgoogleUsername => googleUsername;
   String get getgoogleUseremail => googleUseremail;
@@ -23,6 +26,7 @@ class Authentication with ChangeNotifier {
 
     User? user = userCredential.user;
     userUid = user!.uid;
+    isAnon = false;
     print("logged in " + userUid);
     notifyListeners();
   }
@@ -33,6 +37,7 @@ class Authentication with ChangeNotifier {
 
     User? user = userCredential.user;
     userUid = user!.uid;
+    isAnon = false;
     print(userUid);
     notifyListeners();
   }
@@ -58,11 +63,11 @@ class Authentication with ChangeNotifier {
     assert(user!.uid != null);
 
     userUid = user!.uid;
-
+    isAnon = false;
     googleUseremail = user.email!;
     googleUsername = user.displayName!;
     googleUserImage = user.photoURL!;
-    googlePhoneNo = user.phoneNumber!;
+    googlePhoneNo = user.phoneNumber ?? "No Number";
     print("Google sign in => ${userUid} || ${user.email}");
 
     notifyListeners();
@@ -78,6 +83,7 @@ class Authentication with ChangeNotifier {
 
       User? user = userCredential.user;
       userUid = user!.uid;
+      isAnon = true;
       print("logged in " + userUid);
       notifyListeners();
     } catch (e) {

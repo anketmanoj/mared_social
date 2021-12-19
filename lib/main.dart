@@ -16,6 +16,7 @@ import 'package:mared_social/screens/Messaging/privateMessageHelper.dart';
 import 'package:mared_social/screens/Profile/profileHelpers.dart';
 import 'package:mared_social/screens/SearchFeed/searchfeedhelper.dart';
 import 'package:mared_social/screens/Stories/stories_helper.dart';
+import 'package:mared_social/screens/isAnon/isAnonHelper.dart';
 import 'package:mared_social/screens/mapscreen/category_mapscreenhelper.dart';
 import 'package:mared_social/screens/mapscreen/mapscreenhelper.dart';
 import 'package:mared_social/screens/splashscreens/splashscreen.dart';
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       providers: [
+        ChangeNotifierProvider(create: (_) => IsAnonHelper()),
         ChangeNotifierProvider(create: (_) => CategoryMapScreenHelper()),
         ChangeNotifierProvider(create: (_) => MapScreenHelper()),
         ChangeNotifierProvider(create: (_) => LandingHelpers()),

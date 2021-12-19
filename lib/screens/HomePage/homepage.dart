@@ -6,8 +6,10 @@ import 'package:mared_social/screens/Chatroom/chatroom.dart';
 import 'package:mared_social/screens/Feed/feed.dart';
 import 'package:mared_social/screens/HomePage/homepageHelpers.dart';
 import 'package:mared_social/screens/Profile/profile.dart';
+import 'package:mared_social/screens/isAnon/isAnon.dart';
 import 'package:mared_social/screens/mapscreen/mapscreen.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
+import 'package:mared_social/services/authentication.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -28,6 +30,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    print(
+        "Is Anon ? == ${Provider.of<Authentication>(context, listen: false).getIsAnon}");
     Future.delayed(Duration.zero, () {
       Provider.of<FirebaseOperations>(context, listen: false)
           .initUserData(context)
@@ -68,7 +72,10 @@ class _HomePageState extends State<HomePage> {
                 CategoryScreen(),
                 Chatroom(),
                 MapScreen(),
-                Profile(),
+                Provider.of<Authentication>(context, listen: false).getIsAnon ==
+                        false
+                    ? Profile()
+                    : IsAnonMsg(),
               ],
               physics: const NeverScrollableScrollPhysics(),
               onPageChanged: (page) {

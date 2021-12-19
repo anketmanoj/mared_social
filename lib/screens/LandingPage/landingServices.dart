@@ -134,7 +134,18 @@ class LandingService with ChangeNotifier {
           future: getUser(),
           builder: (context, userData) {
             if (userData.hasError) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                  child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Text(
+                  "Welcome to Mared!\nSign up to connect with businesses near you!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: constantColors.whiteColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
+                ),
+              ));
             } else {
               SharedPrefUser savedUserData = userData.data!;
               return ListTile(
