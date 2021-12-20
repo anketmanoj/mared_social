@@ -545,9 +545,23 @@ class UploadPost with ChangeNotifier {
                       ),
                       onPressed: () async {
                         String postId = nanoid(14).toString();
+                        String name =
+                            "${captionController.text} ${descriptionController.text}";
+
+                        List<String> splitList = name.split(" ");
+                        List<String> indexList = [];
+
+                        for (int i = 0; i < splitList.length; i++) {
+                          for (int j = 0; j < splitList[i].length; j++) {
+                            indexList.add(
+                                splitList[i].substring(0, j + 1).toLowerCase());
+                          }
+                        }
+
                         Provider.of<FirebaseOperations>(context, listen: false)
                             .uploadPostData(postId, {
                           'postid': postId,
+                          'searchindex': indexList,
                           'postcategory': _selectedCategory,
                           'caption': captionController.text,
                           'username': Provider.of<FirebaseOperations>(context,
@@ -580,6 +594,7 @@ class UploadPost with ChangeNotifier {
                               .doc(postId)
                               .set({
                             'postid': postId,
+                            'searchindex': indexList,
                             'postcategory': _selectedCategory,
                             'caption': captionController.text,
                             'username': Provider.of<FirebaseOperations>(context,

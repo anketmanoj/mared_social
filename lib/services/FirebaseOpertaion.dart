@@ -92,13 +92,25 @@ class FirebaseOperations with ChangeNotifier {
 
   Future updateDescription(
       {required String postId,
+      required AsyncSnapshot<DocumentSnapshot> postDoc,
       String? description,
       required BuildContext context}) async {
+    String name = "${postDoc.data!['caption']} ${description}";
+
+    List<String> splitList = name.split(" ");
+    List<String> indexList = [];
+
+    for (int i = 0; i < splitList.length; i++) {
+      for (int j = 0; j < splitList[i].length; j++) {
+        indexList.add(splitList[i].substring(0, j + 1).toLowerCase());
+      }
+    }
     return await FirebaseFirestore.instance
         .collection("posts")
         .doc(postId)
         .update({
       'description': description,
+      'searchindex': indexList,
     }).whenComplete(() async {
       return await FirebaseFirestore.instance
           .collection("users")
@@ -107,6 +119,7 @@ class FirebaseOperations with ChangeNotifier {
           .doc(postId)
           .update({
         'description': description,
+        'searchindex': indexList,
       });
     });
   }

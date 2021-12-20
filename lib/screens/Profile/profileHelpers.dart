@@ -96,16 +96,50 @@ class ProfileHelpers with ChangeNotifier {
                           color: constantColors.greenColor,
                           size: 16,
                         ),
-                        Flexible(
-                          child: Container(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: Text(
-                              snapshot.data!['useremail'],
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: constantColors.whiteColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
+                        InkWell(
+                          onTap: () async {
+                            print("staring");
+                            await FirebaseFirestore.instance
+                                .collection("posts")
+                                .get()
+                                .then((post) async {
+                              post.docs.forEach((postDoc) async {
+                                String name =
+                                    "${postDoc['caption']} ${postDoc['description']}";
+
+                                List<String> splitList = name.split(" ");
+                                List<String> indexList = [];
+
+                                for (int i = 0; i < splitList.length; i++) {
+                                  for (int j = 0;
+                                      j < splitList[i].length;
+                                      j++) {
+                                    indexList.add(splitList[i]
+                                        .substring(0, j + 1)
+                                        .toLowerCase());
+                                  }
+                                }
+                                await FirebaseFirestore.instance
+                                    .collection("posts")
+                                    .doc(postDoc.id)
+                                    .update({
+                                  'searchindex': indexList,
+                                });
+                              });
+                            });
+                            print("finished");
+                          },
+                          child: Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                snapshot.data!['useremail'],
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: constantColors.whiteColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
                           ),

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/CategoryFeed/categoryfeed.dart';
 import 'package:mared_social/screens/CategoryFeed/categoryfeedhelper.dart';
@@ -46,81 +47,179 @@ class CategoryHelper with ChangeNotifier {
   }
 
   Widget headerCategory({required BuildContext context}) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.25,
-      width: MediaQuery.of(context).size.width,
-      color: constantColors.blueGreyColor,
-      child: Stack(
-        children: [
-          StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection("categoryHeader")
-                .limit(1)
-                .snapshots(),
-            builder: (context, headerSnap) {
-              return Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: FittedBox(
-                  fit: BoxFit.fill,
-                  child: CachedNetworkImage(
+    return StatefulBuilder(builder: (context, innerState) {
+      return Container(
+        height: MediaQuery.of(context).size.height * 0.25,
+        width: MediaQuery.of(context).size.width,
+        color: constantColors.blueGreyColor,
+        child: Stack(
+          children: [
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection("categoryHeader")
+                  .limit(1)
+                  .snapshots(),
+              builder: (context, headerSnap) {
+                return Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: FittedBox(
                     fit: BoxFit.fill,
-                    imageUrl: headerSnap.data!.docs[0]['image'],
-                    progressIndicatorBuilder:
-                        (context, url, downloadProgress) => Container(
-                      height: 40,
-                      width: 40,
-                      child: CircularProgressIndicator(
-                          value: downloadProgress.progress),
+                    child: CachedNetworkImage(
+                      fit: BoxFit.fill,
+                      imageUrl: headerSnap.data!.docs[0]['image'],
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) => Container(
+                        height: 40,
+                        width: 40,
+                        child: CircularProgressIndicator(
+                            value: downloadProgress.progress),
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
                     ),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
                   ),
-                ),
-              );
-            },
-          ),
-          Positioned(
-            bottom: 20,
-            right: 16,
-            left: 16,
-            child: Container(
-              height: 50,
-              decoration: BoxDecoration(
-                color: constantColors.whiteColor.withOpacity(0.9),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: TextField(
-                controller: searchController,
-                onSubmitted: (value) async {
-                  // * push to Search screen based on description of item
-                  await Provider.of<SearchFeedHelper>(context, listen: false)
-                      .getSearchValue(searchValue: value);
-
-                  Navigator.pushReplacement(
-                      context,
-                      PageTransition(
-                          child: SearchFeed(
-                            searchVal: value,
+                );
+              },
+            ),
+            Positioned(
+              top: 20,
+              right: 16,
+              left: 16,
+              child: Column(
+                children: [
+                  Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: constantColors.whiteColor.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: TextField(
+                      controller: searchController,
+                      onSubmitted: (value) {
+                        innerState(() {
+                          searchController.text = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            searchController.clear();
+                            innerState(() {
+                              searchController.text = "";
+                            });
+                          },
+                          icon: Icon(
+                            Icons.close,
+                            color: constantColors.darkColor,
                           ),
-                          type: PageTransitionType.rightToLeft));
-                },
-                decoration: InputDecoration(
-                  prefixIcon: Icon(
-                    EvaIcons.searchOutline,
-                    color: constantColors.darkColor,
-                    size: 20,
+                        ),
+                        prefixIcon: Icon(
+                          EvaIcons.searchOutline,
+                          color: constantColors.darkColor,
+                          size: 20,
+                        ),
+                        hintText: "Describe what you're looking for...",
+                        hintStyle: TextStyle(
+                            color: constantColors.darkColor, fontSize: 16),
+                      ),
+                    ),
                   ),
-                  hintText: "Describe what you're looking for...",
-                  hintStyle:
-                      TextStyle(color: constantColors.darkColor, fontSize: 16),
-                ),
+                  Visibility(
+                    visible: searchController.text != "",
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 5.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: constantColors.whiteColor.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        height: 130,
+                        child: StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection("posts")
+                              .where('searchindex',
+                                  arrayContains:
+                                      searchController.text.toLowerCase())
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(
+                                child: SizedBox(
+                                  height: 500,
+                                  width: 400,
+                                  child: Lottie.asset(
+                                      "assets/animations/loading.json"),
+                                ),
+                              );
+                            } else {
+                              if (snapshot.data!.docs.isEmpty) {
+                                return Center(
+                                  child: Text(
+                                    "We looked everywhere and couldnt find what you're looking for on Mared",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: constantColors.darkColor,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                );
+                              } else {
+                                return ListView(
+                                  children: snapshot.data!.docs
+                                      .map((DocumentSnapshot documentSnapshot) {
+                                    return ListTile(
+                                      onTap: () async {
+                                        // * push to Search screen based on description of item
+                                        await Provider.of<SearchFeedHelper>(
+                                                context,
+                                                listen: false)
+                                            .getSearchValue(
+                                                searchValue:
+                                                    searchController.text);
+
+                                        Navigator.pushReplacement(
+                                            context,
+                                            PageTransition(
+                                                child: SearchFeed(
+                                                  searchVal:
+                                                      searchController.text,
+                                                ),
+                                                type: PageTransitionType
+                                                    .rightToLeft));
+                                      },
+                                      title: Text(
+                                        documentSnapshot['caption'],
+                                        style: TextStyle(
+                                          color: constantColors.darkColor,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      subtitle: Text(
+                                        documentSnapshot['description'],
+                                        style: TextStyle(
+                                          color: constantColors.blueGreyColor,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                );
+                              }
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
   Widget middleCategory({required BuildContext context}) {

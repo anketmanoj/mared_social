@@ -154,6 +154,8 @@ class PostFunctions with ChangeNotifier {
                                                             context,
                                                             listen: false)
                                                         .updateDescription(
+                                                            postDoc:
+                                                                postDocSnap,
                                                             context: context,
                                                             postId: postId,
                                                             description:
