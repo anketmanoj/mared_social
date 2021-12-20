@@ -90,4 +90,13 @@ class Authentication with ChangeNotifier {
       print("FAILED === ${e.toString()}");
     }
   }
+
+  // Future signInApple() async {
+  //   var userCredentials = SignInWithApple.getAppleIDCredential(scopes: [
+  //     AppleIDAuthorizationScopes.email,
+  //     AppleIDAuthorizationScopes.fullName,
+  //   ]);
+
+  //   print(userCredentials);
+  // }
 }

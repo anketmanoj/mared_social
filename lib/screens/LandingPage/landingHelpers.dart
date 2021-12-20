@@ -32,7 +32,7 @@ class LandingHelpers with ChangeNotifier {
 
   Widget taglineText(BuildContext context) {
     return Positioned(
-      top: 500,
+      top: MediaQuery.of(context).size.height * 0.59,
       left: 10,
       child: Container(
         constraints: BoxConstraints(
@@ -74,7 +74,7 @@ class LandingHelpers with ChangeNotifier {
 
   Widget mainButton(BuildContext context) {
     return Positioned(
-      top: 670,
+      top: MediaQuery.of(context).size.height * 0.79,
       right: 10,
       left: 10,
       child: Platform.isIOS
@@ -142,6 +142,10 @@ class LandingHelpers with ChangeNotifier {
                   // ),
                   // LoginIcon(
                   //     icon: FontAwesomeIcons.apple,
+                  //     onTap: () async {
+                  //       Provider.of<Authentication>(context, listen: false)
+                  //           .signInApple();
+                  //     },
                   //     color: constantColors.whiteColor)
                 ],
               ),
@@ -216,7 +220,7 @@ class LandingHelpers with ChangeNotifier {
 
   Widget exploreApp(BuildContext context) {
     return Positioned(
-      top: 710,
+      top: MediaQuery.of(context).size.height * 0.84,
       left: 20,
       right: 20,
       child: InkWell(
@@ -282,7 +286,7 @@ class LandingHelpers with ChangeNotifier {
 
   Widget privacyText(BuildContext context) {
     return Positioned(
-      top: 780,
+      top: MediaQuery.of(context).size.height * 0.92,
       left: 20,
       right: 20,
       child: Column(
