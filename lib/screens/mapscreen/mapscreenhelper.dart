@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/Feed/feedhelpers.dart';
@@ -70,11 +71,11 @@ class MapScreenHelper with ChangeNotifier {
                             fit: BoxFit.cover,
                             imageUrl: documentSnapshot['userimage'],
                             progressIndicatorBuilder:
-                                (context, url, downloadProgress) => Container(
-                              height: 100,
-                              width: 100,
-                              child: CircularProgressIndicator(
-                                  value: downloadProgress.progress),
+                                (context, url, downloadProgress) => SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: Lottie.asset(
+                                  "assets/animations/loading.json"),
                             ),
                             errorWidget: (context, url, error) =>
                                 const Icon(Icons.error),
@@ -214,11 +215,10 @@ class MapScreenHelper with ChangeNotifier {
                       fit: BoxFit.contain,
                       imageUrl: documentSnapshot['postimage'],
                       progressIndicatorBuilder:
-                          (context, url, downloadProgress) => Container(
-                        height: 100,
-                        width: 100,
-                        child: CircularProgressIndicator(
-                            value: downloadProgress.progress),
+                          (context, url, downloadProgress) => SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: Lottie.asset("assets/animations/loading.json"),
                       ),
                       errorWidget: (context, url, error) =>
                           const Icon(Icons.error),

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/Feed/feedhelpers.dart';
@@ -351,11 +352,11 @@ class PostFunctions with ChangeNotifier {
                                     imageUrl: awardDocSnap['userimage'],
                                     progressIndicatorBuilder:
                                         (context, url, downloadProgress) =>
-                                            Container(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                          value: downloadProgress.progress),
+                                            SizedBox(
+                                      height: 50,
+                                      width: 50,
+                                      child: Lottie.asset(
+                                          "assets/animations/loading.json"),
                                     ),
                                     errorWidget: (context, url, error) =>
                                         const Icon(Icons.error),
@@ -513,13 +514,10 @@ class PostFunctions with ChangeNotifier {
                                                     (context, url,
                                                             downloadProgress) =>
                                                         SizedBox(
-                                                  height: 30,
-                                                  width: 30,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                          value:
-                                                              downloadProgress
-                                                                  .progress),
+                                                  height: 50,
+                                                  width: 50,
+                                                  child: Lottie.asset(
+                                                      "assets/animations/loading.json"),
                                                 ),
                                                 errorWidget:
                                                     (context, url, error) =>
@@ -805,11 +803,11 @@ class PostFunctions with ChangeNotifier {
                                     imageUrl: documentSnapshot['userimage'],
                                     progressIndicatorBuilder:
                                         (context, url, downloadProgress) =>
-                                            Container(
-                                      height: 40,
-                                      width: 40,
-                                      child: CircularProgressIndicator(
-                                          value: downloadProgress.progress),
+                                            SizedBox(
+                                      height: 50,
+                                      width: 50,
+                                      child: Lottie.asset(
+                                          "assets/animations/loading.json"),
                                     ),
                                     errorWidget: (context, url, error) =>
                                         const Icon(Icons.error),

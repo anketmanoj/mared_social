@@ -158,11 +158,11 @@ class SearchFeedHelper with ChangeNotifier {
                               fit: BoxFit.cover,
                               imageUrl: documentSnapshot['userimage'],
                               progressIndicatorBuilder:
-                                  (context, url, downloadProgress) => Container(
-                                height: 100,
-                                width: 100,
-                                child: CircularProgressIndicator(
-                                    value: downloadProgress.progress),
+                                  (context, url, downloadProgress) => SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: Lottie.asset(
+                                    "assets/animations/loading.json"),
                               ),
                               errorWidget: (context, url, error) =>
                                   const Icon(Icons.error),
@@ -284,11 +284,10 @@ class SearchFeedHelper with ChangeNotifier {
                         fit: BoxFit.contain,
                         imageUrl: documentSnapshot['postimage'],
                         progressIndicatorBuilder:
-                            (context, url, downloadProgress) => Container(
-                          height: 100,
-                          width: 100,
-                          child: CircularProgressIndicator(
-                              value: downloadProgress.progress),
+                            (context, url, downloadProgress) => SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: Lottie.asset("assets/animations/loading.json"),
                         ),
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),

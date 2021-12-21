@@ -69,11 +69,10 @@ class CategoryHelper with ChangeNotifier {
                       fit: BoxFit.fill,
                       imageUrl: headerSnap.data!.docs[0]['image'],
                       progressIndicatorBuilder:
-                          (context, url, downloadProgress) => Container(
-                        height: 40,
-                        width: 40,
-                        child: CircularProgressIndicator(
-                            value: downloadProgress.progress),
+                          (context, url, downloadProgress) => SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: Lottie.asset("assets/animations/loading.json"),
                       ),
                       errorWidget: (context, url, error) =>
                           const Icon(Icons.error),
@@ -284,10 +283,10 @@ class CategoryHelper with ChangeNotifier {
                                     progressIndicatorBuilder:
                                         (context, url, downloadProgress) =>
                                             SizedBox(
-                                      height: 40,
-                                      width: 40,
-                                      child: CircularProgressIndicator(
-                                          value: downloadProgress.progress),
+                                      height: 50,
+                                      width: 50,
+                                      child: Lottie.asset(
+                                          "assets/animations/loading.json"),
                                     ),
                                     errorWidget: (context, url, error) =>
                                         const Icon(Icons.error),

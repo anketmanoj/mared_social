@@ -4,6 +4,7 @@ import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
@@ -56,11 +57,10 @@ class HomepageHelpers with ChangeNotifier {
                       fit: BoxFit.cover,
                       imageUrl: snapshot.data!['userimage'],
                       progressIndicatorBuilder:
-                          (context, url, downloadProgress) => Container(
-                        height: 40,
-                        width: 40,
-                        child: CircularProgressIndicator(
-                            value: downloadProgress.progress),
+                          (context, url, downloadProgress) => SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: Lottie.asset("assets/animations/loading.json"),
                       ),
                       errorWidget: (context, url, error) =>
                           const Icon(Icons.error),

@@ -5,6 +5,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/Feed/feedhelpers.dart';
@@ -51,11 +52,11 @@ class ProfileHelpers with ChangeNotifier {
                               fit: BoxFit.cover,
                               imageUrl: snapshot.data!['userimage'],
                               progressIndicatorBuilder:
-                                  (context, url, downloadProgress) => Container(
-                                height: 40,
-                                width: 40,
-                                child: CircularProgressIndicator(
-                                    value: downloadProgress.progress),
+                                  (context, url, downloadProgress) => SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: Lottie.asset(
+                                    "assets/animations/loading.json"),
                               ),
                               errorWidget: (context, url, error) =>
                                   const Icon(Icons.error),
@@ -468,11 +469,11 @@ class ProfileHelpers with ChangeNotifier {
                                 imageUrl: followingDocSnap['userimage'],
                                 progressIndicatorBuilder:
                                     (context, url, downloadProgress) =>
-                                        Container(
-                                  height: 40,
-                                  width: 40,
-                                  child: CircularProgressIndicator(
-                                      value: downloadProgress.progress),
+                                        SizedBox(
+                                  height: 50,
+                                  width: 50,
+                                  child: Lottie.asset(
+                                      "assets/animations/loading.json"),
                                 ),
                                 errorWidget: (context, url, error) =>
                                     const Icon(Icons.error),
@@ -570,11 +571,11 @@ class ProfileHelpers with ChangeNotifier {
                             fit: BoxFit.cover,
                             imageUrl: userPostDocSnap['postimage'],
                             progressIndicatorBuilder:
-                                (context, url, downloadProgress) => Container(
-                              height: 40,
-                              width: 40,
-                              child: CircularProgressIndicator(
-                                  value: downloadProgress.progress),
+                                (context, url, downloadProgress) => SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: Lottie.asset(
+                                  "assets/animations/loading.json"),
                             ),
                             errorWidget: (context, url, error) =>
                                 const Icon(Icons.error),
@@ -710,11 +711,11 @@ class ProfileHelpers with ChangeNotifier {
                                       imageUrl: followingDocSnap['userimage'],
                                       progressIndicatorBuilder:
                                           (context, url, downloadProgress) =>
-                                              Container(
-                                        height: 40,
-                                        width: 40,
-                                        child: CircularProgressIndicator(
-                                            value: downloadProgress.progress),
+                                              SizedBox(
+                                        height: 50,
+                                        width: 50,
+                                        child: Lottie.asset(
+                                            "assets/animations/loading.json"),
                                       ),
                                       errorWidget: (context, url, error) =>
                                           const Icon(Icons.error),
@@ -832,11 +833,11 @@ class ProfileHelpers with ChangeNotifier {
                                       imageUrl: followerDocSnap['userimage'],
                                       progressIndicatorBuilder:
                                           (context, url, downloadProgress) =>
-                                              Container(
-                                        height: 40,
-                                        width: 40,
-                                        child: CircularProgressIndicator(
-                                            value: downloadProgress.progress),
+                                              SizedBox(
+                                        height: 50,
+                                        width: 50,
+                                        child: Lottie.asset(
+                                            "assets/animations/loading.json"),
                                       ),
                                       errorWidget: (context, url, error) =>
                                           const Icon(Icons.error),
@@ -931,11 +932,10 @@ class ProfileHelpers with ChangeNotifier {
                         fit: BoxFit.cover,
                         imageUrl: documentSnapshot['postimage'],
                         progressIndicatorBuilder:
-                            (context, url, downloadProgress) => Container(
-                          height: 40,
-                          width: 40,
-                          child: CircularProgressIndicator(
-                              value: downloadProgress.progress),
+                            (context, url, downloadProgress) => SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: Lottie.asset("assets/animations/loading.json"),
                         ),
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),

@@ -105,20 +105,17 @@ class FeedHelpers with ChangeNotifier {
                                           borderRadius:
                                               BorderRadius.circular(5),
                                           child: CachedNetworkImage(
-                                            fit: BoxFit.cover,
+                                            fit: BoxFit.contain,
                                             imageUrl: item,
                                             progressIndicatorBuilder: (context,
-                                                    url, downloadProgress) =>
-                                                Center(
-                                              child: Container(
-                                                height: 40,
-                                                width: 40,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                        value: downloadProgress
-                                                            .progress),
-                                              ),
-                                            ),
+                                                url, downloadProgress) {
+                                              return SizedBox(
+                                                height: 50,
+                                                width: 50,
+                                                child: Lottie.asset(
+                                                    "assets/animations/loading.json"),
+                                              );
+                                            },
                                             errorWidget:
                                                 (context, url, error) =>
                                                     const Icon(Icons.error),
@@ -245,13 +242,11 @@ class FeedHelpers with ChangeNotifier {
                                                     progressIndicatorBuilder:
                                                         (context, url,
                                                                 downloadProgress) =>
-                                                            Container(
+                                                            SizedBox(
                                                       height: 50,
                                                       width: 50,
-                                                      child: CircularProgressIndicator(
-                                                          value:
-                                                              downloadProgress
-                                                                  .progress),
+                                                      child: Lottie.asset(
+                                                          "assets/animations/loading.json"),
                                                     ),
                                                     errorWidget: (context, url,
                                                             error) =>
@@ -333,11 +328,11 @@ class FeedHelpers with ChangeNotifier {
                                       imageUrl: documentSnapshot['userimage'],
                                       progressIndicatorBuilder:
                                           (context, url, downloadProgress) =>
-                                              Container(
-                                        height: 100,
-                                        width: 100,
-                                        child: CircularProgressIndicator(
-                                            value: downloadProgress.progress),
+                                              SizedBox(
+                                        height: 50,
+                                        width: 50,
+                                        child: Lottie.asset(
+                                            "assets/animations/loading.json"),
                                       ),
                                       errorWidget: (context, url, error) =>
                                           const Icon(Icons.error),
@@ -481,23 +476,20 @@ class FeedHelpers with ChangeNotifier {
                                 IsAnonBottomSheet(context);
                               }
                             },
-                            child: SizedBox(
+                            child: CachedNetworkImage(
                               height: MediaQuery.of(context).size.height * 0.46,
                               width: MediaQuery.of(context).size.width,
-                              child: CachedNetworkImage(
-                                fit: BoxFit.contain,
-                                imageUrl: documentSnapshot['postimage'],
-                                progressIndicatorBuilder:
-                                    (context, url, downloadProgress) =>
-                                        Container(
-                                  height: 100,
-                                  width: 100,
-                                  child: CircularProgressIndicator(
-                                      value: downloadProgress.progress),
-                                ),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
+                              fit: BoxFit.contain,
+                              imageUrl: documentSnapshot['postimage'],
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) => SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: Lottie.asset(
+                                    "assets/animations/loading.json"),
                               ),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
                             ),
                           ),
                         ),
@@ -1001,11 +993,11 @@ class FeedHelpers with ChangeNotifier {
                             fit: BoxFit.cover,
                             imageUrl: documentSnapshot['userimage'],
                             progressIndicatorBuilder:
-                                (context, url, downloadProgress) => Container(
-                              height: 100,
-                              width: 100,
-                              child: CircularProgressIndicator(
-                                  value: downloadProgress.progress),
+                                (context, url, downloadProgress) => SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: Lottie.asset(
+                                  "assets/animations/loading.json"),
                             ),
                             errorWidget: (context, url, error) =>
                                 const Icon(Icons.error),
@@ -1144,11 +1136,10 @@ class FeedHelpers with ChangeNotifier {
                       fit: BoxFit.contain,
                       imageUrl: documentSnapshot['postimage'],
                       progressIndicatorBuilder:
-                          (context, url, downloadProgress) => Container(
-                        height: 100,
-                        width: 100,
-                        child: CircularProgressIndicator(
-                            value: downloadProgress.progress),
+                          (context, url, downloadProgress) => SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: Lottie.asset("assets/animations/loading.json"),
                       ),
                       errorWidget: (context, url, error) =>
                           const Icon(Icons.error),
