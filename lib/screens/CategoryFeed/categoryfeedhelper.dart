@@ -99,9 +99,37 @@ class CatgeoryFeedHelper with ChangeNotifier {
                   ),
                 );
               } else if (snapshot.data!.docs.length == 0) {
-                return Center(
-                  child: Text(
-                      "No posts yet\nCome back later to view posts about $category"),
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          child: Image.asset("assets/images/empty.png"),
+                          height: 150,
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        Text(
+                          "No posts for $category yet",
+                          style: TextStyle(
+                            color: constantColors.whiteColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                    height: MediaQuery.of(context).size.height * 0.55,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      color: constantColors.darkColor.withOpacity(0.4),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ),
                 );
               } else {
                 return loadPosts(context, snapshot);
