@@ -35,82 +35,85 @@ class LandingService with ChangeNotifier {
     return showModalBottomSheet(
         context: context,
         builder: (context) {
-          return Container(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 150),
-                  child: Divider(
-                    thickness: 4,
-                    color: constantColors.whiteColor,
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Select Profile Picture",
-                        style: TextStyle(
-                          color: constantColors.whiteColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        )),
-                  ],
-                ),
-                CircleAvatar(
-                  radius: 80,
-                  backgroundColor: constantColors.transperant,
-                  backgroundImage: FileImage(
-                    Provider.of<LandingUtils>(context, listen: false)
-                        .userAvatar,
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    MaterialButton(
-                      child: Text(
-                        "Reselect",
-                        style: TextStyle(
-                          color: constantColors.whiteColor,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                          decorationColor: constantColors.whiteColor,
-                        ),
-                      ),
-                      onPressed: () {
-                        Provider.of<LandingUtils>(context, listen: false)
-                            .pickUserAvatar(
-                          context,
-                          ImageSource.gallery,
-                        );
-                      },
+          return SafeArea(
+            child: Container(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 150),
+                    child: Divider(
+                      thickness: 4,
+                      color: constantColors.whiteColor,
                     ),
-                    MaterialButton(
-                      color: constantColors.blueColor,
-                      child: Text(
-                        "Confirm Image",
-                        style: TextStyle(
-                          color: constantColors.whiteColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: () {
-                        Provider.of<FirebaseOperations>(context, listen: false)
-                            .uploadUserAvatar(context)
-                            .whenComplete(() {
-                          signUpSheet(context);
-                        });
-                      },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Select Profile Picture",
+                          style: TextStyle(
+                            color: constantColors.whiteColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          )),
+                    ],
+                  ),
+                  CircleAvatar(
+                    radius: 80,
+                    backgroundColor: constantColors.transperant,
+                    backgroundImage: FileImage(
+                      Provider.of<LandingUtils>(context, listen: false)
+                          .userAvatar,
                     ),
-                  ],
-                ),
-              ],
-            ),
-            height: MediaQuery.of(context).size.height * 0.3,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              color: constantColors.blueGreyColor,
-              borderRadius: BorderRadius.circular(15),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      MaterialButton(
+                        child: Text(
+                          "Reselect",
+                          style: TextStyle(
+                            color: constantColors.whiteColor,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                            decorationColor: constantColors.whiteColor,
+                          ),
+                        ),
+                        onPressed: () {
+                          Provider.of<LandingUtils>(context, listen: false)
+                              .pickUserAvatar(
+                            context,
+                            ImageSource.gallery,
+                          );
+                        },
+                      ),
+                      MaterialButton(
+                        color: constantColors.blueColor,
+                        child: Text(
+                          "Confirm Image",
+                          style: TextStyle(
+                            color: constantColors.whiteColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onPressed: () {
+                          Provider.of<FirebaseOperations>(context,
+                                  listen: false)
+                              .uploadUserAvatar(context)
+                              .whenComplete(() {
+                            signUpSheet(context);
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              height: MediaQuery.of(context).size.height * 0.3,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: constantColors.blueGreyColor,
+                borderRadius: BorderRadius.circular(15),
+              ),
             ),
           );
         });

@@ -130,75 +130,77 @@ class UploadPost with ChangeNotifier {
     return showModalBottomSheet(
       context: context,
       builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.5,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            color: constantColors.blueGreyColor,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 150),
-                child: Divider(
-                  thickness: 4,
-                  color: constantColors.whiteColor,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 8.0,
-                  left: 8,
-                ),
-                child: Container(
-                  height: 300,
-                  width: 300,
-                  child: Image.file(
-                    uploadPostImage,
-                    fit: BoxFit.contain,
+        return SafeArea(
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.5,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              color: constantColors.blueGreyColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 150),
+                  child: Divider(
+                    thickness: 4,
+                    color: constantColors.whiteColor,
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    MaterialButton(
-                      child: Text(
-                        "Reselect",
-                        style: TextStyle(
-                          color: constantColors.whiteColor,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                          decorationColor: constantColors.whiteColor,
-                        ),
-                      ),
-                      onPressed: () {
-                        selectPostImageType(context);
-                      },
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 8.0,
+                    left: 8,
+                  ),
+                  child: Container(
+                    height: 300,
+                    width: 300,
+                    child: Image.file(
+                      uploadPostImage,
+                      fit: BoxFit.contain,
                     ),
-                    MaterialButton(
-                      color: constantColors.blueColor,
-                      child: Text(
-                        "Confirm Image",
-                        style: TextStyle(
-                          color: constantColors.whiteColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: () {
-                        uploadPostImageToFirebase().whenComplete(() {
-                          editPostSheet(context);
-                          print("image uploaded");
-                        });
-                      },
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      MaterialButton(
+                        child: Text(
+                          "Reselect",
+                          style: TextStyle(
+                            color: constantColors.whiteColor,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                            decorationColor: constantColors.whiteColor,
+                          ),
+                        ),
+                        onPressed: () {
+                          selectPostImageType(context);
+                        },
+                      ),
+                      MaterialButton(
+                        color: constantColors.blueColor,
+                        child: Text(
+                          "Confirm Image",
+                          style: TextStyle(
+                            color: constantColors.whiteColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onPressed: () {
+                          uploadPostImageToFirebase().whenComplete(() {
+                            editPostSheet(context);
+                            print("image uploaded");
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

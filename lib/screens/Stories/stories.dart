@@ -43,6 +43,11 @@ class _StoriesState extends State<Stories> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: constantColors.darkColor,
@@ -264,7 +269,7 @@ class _StoriesState extends State<Stories> {
                               setState(() {
                                 widget.snapIndex = i;
                               });
-                              print("index == ${widget.snapIndex}");
+
                               countDownController.restart();
                               await Future.delayed(const Duration(seconds: 15));
                             }

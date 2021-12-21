@@ -22,7 +22,7 @@ class IsAnonHelper with ChangeNotifier {
 
   Widget taglineText(BuildContext context) {
     return Positioned(
-      top: 500,
+      top: MediaQuery.of(context).size.height * 0.59,
       left: 10,
       child: Container(
         constraints: BoxConstraints(
@@ -65,7 +65,7 @@ class IsAnonHelper with ChangeNotifier {
 
   Widget mainButton(BuildContext context) {
     return Positioned(
-      top: 620,
+      top: MediaQuery.of(context).size.height * 0.73,
       left: 10,
       right: 10,
       child: InkWell(

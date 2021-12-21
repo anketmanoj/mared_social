@@ -30,197 +30,201 @@ class ChatroomHelpers with ChangeNotifier {
     return showModalBottomSheet(
       context: context,
       builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.27,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            color: constantColors.blueGreyColor,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 150),
-                child: Divider(
-                  thickness: 4,
-                  color: constantColors.whiteColor,
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: constantColors.blueColor,
+        return SafeArea(
+          bottom: true,
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.27,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              color: constantColors.blueGreyColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 150),
+                  child: Divider(
+                    thickness: 4,
+                    color: constantColors.whiteColor,
                   ),
-                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "Members",
-                    style: TextStyle(
-                      color: constantColors.whiteColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: constantColors.blueColor,
                     ),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ),
-              ),
-              Container(
-                color: constantColors.transperant,
-                height: MediaQuery.of(context).size.height * 0.08,
-                width: MediaQuery.of(context).size.width,
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection("chatrooms")
-                      .doc(documentSnapshot.id)
-                      .collection("members")
-                      .snapshots(),
-                  builder: (context, memberSnaps) {
-                    if (!memberSnaps.hasData) {
-                      return Center(
-                        child: Text(
-                          "No Members Yet",
-                          style: TextStyle(
-                            color: constantColors.whiteColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      );
-                    } else {
-                      return ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: memberSnaps.data!.docs.map((memberDocSnap) {
-                          return InkWell(
-                            onTap: () {
-                              if (memberDocSnap['useruid'] !=
-                                  Provider.of<Authentication>(context,
-                                          listen: false)
-                                      .getUserId) {
-                                Navigator.pushReplacement(
-                                    context,
-                                    PageTransition(
-                                        child: AltProfile(
-                                          userUid: memberDocSnap['useruid'],
-                                        ),
-                                        type: PageTransitionType.bottomToTop));
-                              }
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: CircleAvatar(
-                                radius: 25,
-                                backgroundImage:
-                                    NetworkImage(memberDocSnap['userimage']),
-                                backgroundColor: constantColors.darkColor,
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      );
-                    }
-                  },
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: constantColors.yellowColor,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "Admins",
-                    style: TextStyle(
-                      color: constantColors.whiteColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: SizedBox(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: constantColors.transperant,
-                        backgroundImage: NetworkImage(
-                          documentSnapshot['userimage'],
-                        ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Members",
+                      style: TextStyle(
+                        color: constantColors.whiteColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: Text(
-                              documentSnapshot['username'],
-                              style: TextStyle(
-                                color: constantColors.whiteColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                    ),
+                  ),
+                ),
+                Container(
+                  color: constantColors.transperant,
+                  height: MediaQuery.of(context).size.height * 0.08,
+                  width: MediaQuery.of(context).size.width,
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("chatrooms")
+                        .doc(documentSnapshot.id)
+                        .collection("members")
+                        .snapshots(),
+                    builder: (context, memberSnaps) {
+                      if (!memberSnaps.hasData) {
+                        return Center(
+                          child: Text(
+                            "No Members Yet",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Provider.of<Authentication>(context, listen: false)
-                                      .getUserId ==
-                                  documentSnapshot['useruid']
-                              ? Padding(
-                                  padding: const EdgeInsets.only(left: 16.0),
-                                  child: MaterialButton(
-                                    color: constantColors.redColor,
-                                    child: Text(
-                                      "Delete Chat",
-                                      style: TextStyle(
-                                        color: constantColors.whiteColor,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      CoolAlert.show(
-                                        context: context,
-                                        type: CoolAlertType.warning,
-                                        backgroundColor:
-                                            constantColors.darkColor,
-                                        title:
-                                            "Delete ${documentSnapshot['roomname']}?",
-                                        text:
-                                            "Are you sure you want to delete the group chat?",
-                                        showCancelBtn: true,
-                                        cancelBtnText: "No",
-                                        confirmBtnText: "Yes",
-                                        onCancelBtnTap: () =>
-                                            Navigator.pop(context),
-                                        onConfirmBtnTap: () {
-                                          FirebaseFirestore.instance
-                                              .collection("chatrooms")
-                                              .doc(documentSnapshot.id)
-                                              .delete()
-                                              .whenComplete(() {
-                                            Navigator.pop(context);
-                                            Navigator.pop(context);
-                                          });
-                                        },
-                                      );
-                                    },
-                                  ),
-                                )
-                              : const SizedBox(
-                                  height: 0,
-                                  width: 0,
+                        );
+                      } else {
+                        return ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: memberSnaps.data!.docs.map((memberDocSnap) {
+                            return InkWell(
+                              onTap: () {
+                                if (memberDocSnap['useruid'] !=
+                                    Provider.of<Authentication>(context,
+                                            listen: false)
+                                        .getUserId) {
+                                  Navigator.pushReplacement(
+                                      context,
+                                      PageTransition(
+                                          child: AltProfile(
+                                            userUid: memberDocSnap['useruid'],
+                                          ),
+                                          type:
+                                              PageTransitionType.bottomToTop));
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: CircleAvatar(
+                                  radius: 25,
+                                  backgroundImage:
+                                      NetworkImage(memberDocSnap['userimage']),
+                                  backgroundColor: constantColors.darkColor,
                                 ),
-                        ],
-                      ),
-                    ],
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      }
+                    },
                   ),
                 ),
-              ),
-            ],
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: constantColors.yellowColor,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Admins",
+                      style: TextStyle(
+                        color: constantColors.whiteColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: SizedBox(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: constantColors.transperant,
+                          backgroundImage: NetworkImage(
+                            documentSnapshot['userimage'],
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                documentSnapshot['username'],
+                                style: TextStyle(
+                                  color: constantColors.whiteColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Provider.of<Authentication>(context, listen: false)
+                                        .getUserId ==
+                                    documentSnapshot['useruid']
+                                ? Padding(
+                                    padding: const EdgeInsets.only(left: 16.0),
+                                    child: MaterialButton(
+                                      color: constantColors.redColor,
+                                      child: Text(
+                                        "Delete Chat",
+                                        style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        CoolAlert.show(
+                                          context: context,
+                                          type: CoolAlertType.warning,
+                                          backgroundColor:
+                                              constantColors.darkColor,
+                                          title:
+                                              "Delete ${documentSnapshot['roomname']}?",
+                                          text:
+                                              "Are you sure you want to delete the group chat?",
+                                          showCancelBtn: true,
+                                          cancelBtnText: "No",
+                                          confirmBtnText: "Yes",
+                                          onCancelBtnTap: () =>
+                                              Navigator.pop(context),
+                                          onConfirmBtnTap: () {
+                                            FirebaseFirestore.instance
+                                                .collection("chatrooms")
+                                                .doc(documentSnapshot.id)
+                                                .delete()
+                                                .whenComplete(() {
+                                              Navigator.pop(context);
+                                              Navigator.pop(context);
+                                            });
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  )
+                                : const SizedBox(
+                                    height: 0,
+                                    width: 0,
+                                  ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -232,159 +236,163 @@ class ChatroomHelpers with ChangeNotifier {
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return StatefulBuilder(builder: (context, stateSetter) {
-          return Padding(
-            padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.25,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                color: constantColors.blueGreyColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
+        return SafeArea(
+          child: StatefulBuilder(builder: (context, stateSetter) {
+            return Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.25,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: constantColors.blueGreyColor,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
                 ),
-              ),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 150),
-                    child: Divider(
-                      thickness: 4,
-                      color: constantColors.whiteColor,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 150),
+                      child: Divider(
+                        thickness: 4,
+                        color: constantColors.whiteColor,
+                      ),
                     ),
-                  ),
-                  Text(
-                    "Select Chatroom Avatar",
-                    style: TextStyle(
-                      color: constantColors.greenColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                    Text(
+                      "Select Chatroom Avatar",
+                      style: TextStyle(
+                        color: constantColors.greenColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
-                  ),
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    width: MediaQuery.of(context).size.width,
-                    child: StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection("chatroomIcons")
-                          .snapshots(),
-                      builder: (context, chatroomIconSnaps) {
-                        if (!chatroomIconSnaps.hasData) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        } else {
-                          return ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: chatroomIconSnaps.data!.docs
-                                .map((DocumentSnapshot documentSnapshot) {
-                              return InkWell(
-                                onTap: () {
-                                  stateSetter(() {
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.1,
+                      width: MediaQuery.of(context).size.width,
+                      child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection("chatroomIcons")
+                            .snapshots(),
+                        builder: (context, chatroomIconSnaps) {
+                          if (!chatroomIconSnaps.hasData) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else {
+                            return ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: chatroomIconSnaps.data!.docs
+                                  .map((DocumentSnapshot documentSnapshot) {
+                                return InkWell(
+                                  onTap: () {
+                                    stateSetter(() {
+                                      chatroomAvatarUrl =
+                                          documentSnapshot['image'];
+                                    });
                                     chatroomAvatarUrl =
                                         documentSnapshot['image'];
-                                  });
-                                  chatroomAvatarUrl = documentSnapshot['image'];
-                                  notifyListeners();
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 16.0),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: getChatroomAvatarUrl ==
-                                                documentSnapshot['image']
-                                            ? constantColors.blueColor
-                                            : constantColors.transperant,
+                                    notifyListeners();
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 16.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: getChatroomAvatarUrl ==
+                                                  documentSnapshot['image']
+                                              ? constantColors.blueColor
+                                              : constantColors.transperant,
+                                        ),
                                       ),
+                                      height: 15,
+                                      width: 45,
+                                      child: Image.network(
+                                          documentSnapshot['image'],
+                                          fit: BoxFit.contain),
                                     ),
-                                    height: 15,
-                                    width: 45,
-                                    child: Image.network(
-                                        documentSnapshot['image'],
-                                        fit: BoxFit.contain),
                                   ),
-                                ),
-                              );
-                            }).toList(),
-                          );
-                        }
-                      },
+                                );
+                              }).toList(),
+                            );
+                          }
+                        },
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.7,
-                          child: TextField(
-                            textCapitalization: TextCapitalization.sentences,
-                            controller: chatroomNameController,
-                            style: TextStyle(
-                              color: constantColors.whiteColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: "Enter Chatroom ID",
-                              hintStyle: TextStyle(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.7,
+                            child: TextField(
+                              textCapitalization: TextCapitalization.sentences,
+                              controller: chatroomNameController,
+                              style: TextStyle(
                                 color: constantColors.whiteColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
+                              decoration: InputDecoration(
+                                hintText: "Enter Chatroom ID",
+                                hintStyle: TextStyle(
+                                  color: constantColors.whiteColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                        FloatingActionButton(
-                          onPressed: () async {
-                            String chatroomIdName = nanoid(14).toString();
-                            Provider.of<FirebaseOperations>(context,
-                                    listen: false)
-                                .submitChatroomData(
-                              chatroomName: chatroomIdName,
-                              chatroomData: {
-                                'chatroomid': chatroomIdName,
-                                'roomAvatar': getChatroomAvatarUrl,
-                                'time': Timestamp.now(),
-                                'roomname': chatroomNameController.text,
-                                'username': Provider.of<FirebaseOperations>(
-                                        context,
-                                        listen: false)
-                                    .getInitUserName,
-                                'userimage': Provider.of<FirebaseOperations>(
-                                        context,
-                                        listen: false)
-                                    .getInitUserImage,
-                                'useremail': Provider.of<FirebaseOperations>(
-                                        context,
-                                        listen: false)
-                                    .getInitUserEmail,
-                                'useruid': Provider.of<Authentication>(context,
-                                        listen: false)
-                                    .getUserId,
-                              },
-                            ).whenComplete(() {
-                              Navigator.pop(context);
-                            });
-                          },
-                          backgroundColor: constantColors.darkColor,
-                          child: Icon(
-                            FontAwesomeIcons.plus,
-                            color: constantColors.yellowColor,
+                          FloatingActionButton(
+                            onPressed: () async {
+                              String chatroomIdName = nanoid(14).toString();
+                              Provider.of<FirebaseOperations>(context,
+                                      listen: false)
+                                  .submitChatroomData(
+                                chatroomName: chatroomIdName,
+                                chatroomData: {
+                                  'chatroomid': chatroomIdName,
+                                  'roomAvatar': getChatroomAvatarUrl,
+                                  'time': Timestamp.now(),
+                                  'roomname': chatroomNameController.text,
+                                  'username': Provider.of<FirebaseOperations>(
+                                          context,
+                                          listen: false)
+                                      .getInitUserName,
+                                  'userimage': Provider.of<FirebaseOperations>(
+                                          context,
+                                          listen: false)
+                                      .getInitUserImage,
+                                  'useremail': Provider.of<FirebaseOperations>(
+                                          context,
+                                          listen: false)
+                                      .getInitUserEmail,
+                                  'useruid': Provider.of<Authentication>(
+                                          context,
+                                          listen: false)
+                                      .getUserId,
+                                },
+                              ).whenComplete(() {
+                                Navigator.pop(context);
+                              });
+                            },
+                            backgroundColor: constantColors.darkColor,
+                            child: Icon(
+                              FontAwesomeIcons.plus,
+                              color: constantColors.yellowColor,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        });
+            );
+          }),
+        );
       },
     );
   }

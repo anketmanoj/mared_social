@@ -94,26 +94,23 @@ class AltProfileHelper with ChangeNotifier {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      GestureDetector(
-                        onTap: () {},
-                        child: SizedBox(
-                          height: 100,
-                          width: 100,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(30),
-                            child: CachedNetworkImage(
-                              fit: BoxFit.cover,
-                              imageUrl: userDocSnap.data!['userimage'],
-                              progressIndicatorBuilder:
-                                  (context, url, downloadProgress) => SizedBox(
-                                height: 50,
-                                width: 50,
-                                child: Lottie.asset(
-                                    "assets/animations/loading.json"),
-                              ),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
+                      SizedBox(
+                        height: 100,
+                        width: 100,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(30),
+                          child: CachedNetworkImage(
+                            fit: BoxFit.cover,
+                            imageUrl: userDocSnap.data!['userimage'],
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) => SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: Lottie.asset(
+                                  "assets/animations/loading.json"),
                             ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
                           ),
                         ),
                       ),
@@ -142,6 +139,7 @@ class AltProfileHelper with ChangeNotifier {
                               padding: const EdgeInsets.only(left: 8.0),
                               child: Text(
                                 userDocSnap.data!['useremail'],
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   color: constantColors.whiteColor,
                                   fontWeight: FontWeight.bold,
@@ -182,7 +180,7 @@ class AltProfileHelper with ChangeNotifier {
                   ),
                 ),
               ),
-              Container(
+              SizedBox(
                 width: 190,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
