@@ -37,76 +37,81 @@ class LandingUtils with ChangeNotifier {
     return showModalBottomSheet(
         context: context,
         builder: (context) {
-          return Container(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 150),
-                  child: Divider(
-                    thickness: 4,
-                    color: constantColors.whiteColor,
+          return SafeArea(
+            bottom: true,
+            child: Container(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 150),
+                    child: Divider(
+                      thickness: 4,
+                      color: constantColors.whiteColor,
+                    ),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Select Profile Picture",
-                        style: TextStyle(
-                          color: constantColors.whiteColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        )),
-                  ],
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    MaterialButton(
-                        color: constantColors.blueColor,
-                        child: Text(
-                          'Gallery',
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Select Profile Picture",
                           style: TextStyle(
                             color: constantColors.whiteColor,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                          )),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      MaterialButton(
+                          color: constantColors.blueColor,
+                          child: Text(
+                            'Gallery',
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
                           ),
-                        ),
-                        onPressed: () {
-                          pickUserAvatar(context, ImageSource.gallery)
-                              .whenComplete(() {
-                            Provider.of<LandingService>(context, listen: false)
-                                .showUserAvatar(context);
-                          });
-                        }),
-                    MaterialButton(
-                        color: constantColors.blueColor,
-                        child: Text(
-                          'Camera',
-                          style: TextStyle(
-                            color: constantColors.whiteColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                          onPressed: () {
+                            pickUserAvatar(context, ImageSource.gallery)
+                                .whenComplete(() {
+                              Provider.of<LandingService>(context,
+                                      listen: false)
+                                  .showUserAvatar(context);
+                            });
+                          }),
+                      MaterialButton(
+                          color: constantColors.blueColor,
+                          child: Text(
+                            'Camera',
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
                           ),
-                        ),
-                        onPressed: () {
-                          pickUserAvatar(context, ImageSource.camera)
-                              .whenComplete(() {
-                            Provider.of<LandingService>(context, listen: false)
-                                .showUserAvatar(context);
-                          });
-                        }),
-                  ],
-                )
-              ],
-            ),
-            height: MediaQuery.of(context).size.height * 0.2,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              color: constantColors.blueGreyColor,
-              borderRadius: BorderRadius.circular(12),
+                          onPressed: () {
+                            pickUserAvatar(context, ImageSource.camera)
+                                .whenComplete(() {
+                              Provider.of<LandingService>(context,
+                                      listen: false)
+                                  .showUserAvatar(context);
+                            });
+                          }),
+                    ],
+                  )
+                ],
+              ),
+              height: MediaQuery.of(context).size.height * 0.2,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: constantColors.blueGreyColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           );
         });

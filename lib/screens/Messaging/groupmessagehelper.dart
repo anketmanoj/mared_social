@@ -379,95 +379,98 @@ class GroupMessageHelper with ChangeNotifier {
     return showModalBottomSheet(
       context: context,
       builder: (context) {
-        return AnimatedContainer(
-          duration: const Duration(seconds: 1),
-          curve: Curves.easeIn,
-          height: MediaQuery.of(context).size.height * 0.5,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            color: constantColors.blueGreyColor,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 105.0),
-                child: Divider(
-                  thickness: 4,
-                  color: constantColors.whiteColor,
+        return SafeArea(
+          bottom: true,
+          child: AnimatedContainer(
+            duration: const Duration(seconds: 1),
+            curve: Curves.easeIn,
+            height: MediaQuery.of(context).size.height * 0.5,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              color: constantColors.blueGreyColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 105.0),
+                  child: Divider(
+                    thickness: 4,
+                    color: constantColors.whiteColor,
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.1,
-                width: MediaQuery.of(context).size.width,
-                child: Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(
-                          color: constantColors.blueColor,
-                        ),
-                      ),
-                      height: 30,
-                      width: 30,
-                      child: Image.asset("assets/icons/sunflower.png"),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.3,
-                width: MediaQuery.of(context).size.width,
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection("stickers")
-                      .snapshots(),
-                  builder: (context, stickerSnaps) {
-                    if (!stickerSnaps.hasData) {
-                      return Center(
-                        child: Text(
-                          "No Stickers Available",
-                          style: TextStyle(
-                            color: constantColors.whiteColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
+                            color: constantColors.blueColor,
                           ),
                         ),
-                      );
-                    } else {
-                      return GridView(
-                        children: stickerSnaps.data!.docs.map(
-                          (stickerDocSnap) {
-                            return InkWell(
-                              onTap: () {
-                                String messageId = nanoid(14).toString();
-                                sendSticker(
-                                    context: context,
-                                    stickerImageUrl: stickerDocSnap['image'],
-                                    chatroomid: chatroomId,
-                                    messageId: messageId);
-                              },
-                              child: SizedBox(
-                                height: 40,
-                                width: 40,
-                                child: Image.network(
-                                  stickerDocSnap['image'],
-                                ),
-                              ),
-                            );
-                          },
-                        ).toList(),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                        ),
-                      );
-                    }
-                  },
+                        height: 30,
+                        width: 30,
+                        child: Image.asset("assets/icons/sunflower.png"),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  width: MediaQuery.of(context).size.width,
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("stickers")
+                        .snapshots(),
+                    builder: (context, stickerSnaps) {
+                      if (!stickerSnaps.hasData) {
+                        return Center(
+                          child: Text(
+                            "No Stickers Available",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        );
+                      } else {
+                        return GridView(
+                          children: stickerSnaps.data!.docs.map(
+                            (stickerDocSnap) {
+                              return InkWell(
+                                onTap: () {
+                                  String messageId = nanoid(14).toString();
+                                  sendSticker(
+                                      context: context,
+                                      stickerImageUrl: stickerDocSnap['image'],
+                                      chatroomid: chatroomId,
+                                      messageId: messageId);
+                                },
+                                child: SizedBox(
+                                  height: 40,
+                                  width: 40,
+                                  child: Image.network(
+                                    stickerDocSnap['image'],
+                                  ),
+                                ),
+                              );
+                            },
+                          ).toList(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

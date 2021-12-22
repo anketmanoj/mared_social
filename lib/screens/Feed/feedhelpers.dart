@@ -1400,9 +1400,12 @@ class FeedHelpers with ChangeNotifier {
       isScrollControlled: true,
       context: context,
       builder: (context) {
-        return SizedBox(
-          height: MediaQuery.of(context).size.height * 0.9,
-          child: IsAnonMsg(),
+        return SafeArea(
+          bottom: true,
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.9,
+            child: IsAnonMsg(),
+          ),
         );
       },
     );

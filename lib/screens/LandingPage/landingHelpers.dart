@@ -314,64 +314,67 @@ class LandingHelpers with ChangeNotifier {
     return showModalBottomSheet(
       context: context,
       builder: (context) {
-        return Container(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 150),
-                child: Divider(
-                  thickness: 4,
-                  color: constantColors.whiteColor,
+        return SafeArea(
+          bottom: true,
+          child: Container(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 150),
+                  child: Divider(
+                    thickness: 4,
+                    color: constantColors.whiteColor,
+                  ),
                 ),
-              ),
-              Provider.of<LandingService>(context, listen: false)
-                  .passwordlessSignIn(context),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  MaterialButton(
-                    color: constantColors.blueColor,
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Provider.of<LandingService>(context, listen: false)
-                          .loginSheet(context);
-                    },
-                    child: Text(
-                      "Log In",
-                      style: TextStyle(
-                        color: constantColors.whiteColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                Provider.of<LandingService>(context, listen: false)
+                    .passwordlessSignIn(context),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    MaterialButton(
+                      color: constantColors.blueColor,
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Provider.of<LandingService>(context, listen: false)
+                            .loginSheet(context);
+                      },
+                      child: Text(
+                        "Log In",
+                        style: TextStyle(
+                          color: constantColors.whiteColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  MaterialButton(
-                    color: constantColors.redColor,
-                    onPressed: () async {
-                      Navigator.pop(context);
-                      Provider.of<LandingUtils>(context, listen: false)
-                          .selectAvatarOptionsSheet(context);
-                    },
-                    child: Text(
-                      "Sign Up",
-                      style: TextStyle(
-                        color: constantColors.whiteColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    MaterialButton(
+                      color: constantColors.redColor,
+                      onPressed: () async {
+                        Navigator.pop(context);
+                        Provider.of<LandingUtils>(context, listen: false)
+                            .selectAvatarOptionsSheet(context);
+                      },
+                      child: Text(
+                        "Sign Up",
+                        style: TextStyle(
+                          color: constantColors.whiteColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+              ],
+            ),
+            height: MediaQuery.of(context).size.height * 0.5,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              color: constantColors.blueGreyColor,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(15),
+                topRight: Radius.circular(15),
               ),
-            ],
-          ),
-          height: MediaQuery.of(context).size.height * 0.5,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            color: constantColors.blueGreyColor,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(15),
-              topRight: Radius.circular(15),
             ),
           ),
         );

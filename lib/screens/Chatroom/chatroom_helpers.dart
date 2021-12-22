@@ -237,6 +237,7 @@ class ChatroomHelpers with ChangeNotifier {
       isScrollControlled: true,
       builder: (context) {
         return SafeArea(
+          bottom: true,
           child: StatefulBuilder(builder: (context, stateSetter) {
             return Padding(
               padding: EdgeInsets.only(
