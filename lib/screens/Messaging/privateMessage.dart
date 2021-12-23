@@ -197,7 +197,7 @@ class _PrivateMessageState extends State<PrivateMessage> {
 
                           await _fcmNotificationService
                               .sendNotificationToUser(
-                                  to: thisDeviceToken!, //To change once set up
+                                  to: otherDeviceToken!, //To change once set up
                                   title:
                                       "New message from ${widget.documentSnapshot['username']}",
                                   body: messageController.text)
