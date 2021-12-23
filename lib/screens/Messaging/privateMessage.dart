@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/screens/Messaging/privateMessageHelper.dart';
 import 'package:mared_social/services/authentication.dart';
+import 'package:mared_social/services/fcm_notification_Service.dart';
 import 'package:nanoid/nanoid.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +23,39 @@ class PrivateMessage extends StatefulWidget {
 class _PrivateMessageState extends State<PrivateMessage> {
   ConstantColors constantColors = ConstantColors();
   TextEditingController messageController = TextEditingController();
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+  final FCMNotificationService _fcmNotificationService =
+      FCMNotificationService();
+
+  String? thisDeviceToken;
+  String? otherDeviceToken;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    load().whenComplete(() {
+      print(thisDeviceToken);
+    });
+  }
+
+  Future<void> load() async {
+    DocumentSnapshot thisDeviceDocSnap = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+        .get();
+
+    DocumentSnapshot otherDeviceDocSnap = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(widget.documentSnapshot.id)
+        .get();
+
+    setState(() {
+      thisDeviceToken = thisDeviceDocSnap['fcmToken'];
+      otherDeviceToken = otherDeviceDocSnap['fcmToken'];
+    });
+  }
 
   @override
   void dispose() {
@@ -157,7 +192,18 @@ class _PrivateMessageState extends State<PrivateMessage> {
                             messagecontroller: messageController,
                             messageId: messageId,
                           );
+
                           FocusScope.of(context).unfocus();
+
+                          await _fcmNotificationService
+                              .sendNotificationToUser(
+                                  to: thisDeviceToken!, //To change once set up
+                                  title:
+                                      "New message from ${widget.documentSnapshot['username']}",
+                                  body: messageController.text)
+                              .whenComplete(() {
+                            print("notification sent");
+                          });
 
                           await Provider.of<PrivateMessageHelper>(context,
                                   listen: false)

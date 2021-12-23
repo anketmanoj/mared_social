@@ -566,6 +566,7 @@ class ProfileHelpers with ChangeNotifier {
       title: "Are you sure you want to log out?",
       confirmBtnText: "Log Out",
       onConfirmBtnTap: () {
+        Provider.of<Authentication>(context, listen: false).signOutWithGoogle();
         Provider.of<Authentication>(context, listen: false)
             .logOutViaEmail()
             .whenComplete(() {

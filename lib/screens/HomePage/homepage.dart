@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/Categories/category.dart';
@@ -24,6 +28,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   ConstantColors constantColors = ConstantColors();
   final PageController homepageController = PageController();
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
 
   int pageIndex = 0;
   bool loading = true;
@@ -39,7 +44,42 @@ class _HomePageState extends State<HomePage> {
         });
       });
     });
+    load();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+      }
+    });
     super.initState();
+  }
+
+  Future<void> load() async {
+    if (Platform.isIOS) {
+      NotificationSettings settings = await _fcm.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: true,
+        criticalAlert: true,
+        provisional: false,
+        sound: true,
+      );
+    }
+
+    _fcm.getAPNSToken().then((value) => print("APN Token === $value"));
+
+    String? token = await _fcm.getToken();
+    assert(token != null);
+
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+        .update({
+      'fcmToken': token,
+    });
   }
 
   @override
