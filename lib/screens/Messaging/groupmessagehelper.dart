@@ -6,6 +6,7 @@ import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
+import 'package:mared_social/services/fcm_notification_Service.dart';
 import 'package:nanoid/nanoid.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +16,8 @@ class GroupMessageHelper with ChangeNotifier {
   bool hasMemberJoined = false;
   bool get getHasMemberJoined => hasMemberJoined;
   ConstantColors constantColors = ConstantColors();
+  final FCMNotificationService _fcmNotificationService =
+      FCMNotificationService();
 
   leaveTheRoom(
       {required BuildContext context,
@@ -352,7 +355,32 @@ class GroupMessageHelper with ChangeNotifier {
                           .getInitUserEmail,
                   'useruid': Provider.of<Authentication>(context, listen: false)
                       .getUserId,
+                  'fcmToken':
+                      Provider.of<FirebaseOperations>(context, listen: false)
+                          .getFcmToken,
                   'time': Timestamp.now(),
+                }).whenComplete(() async {
+                  await FirebaseFirestore.instance
+                      .collection("chatrooms")
+                      .doc(chatroomId)
+                      .get()
+                      .then((chatroomDoc) async {
+                    await FirebaseFirestore.instance
+                        .collection("chatrooms")
+                        .doc(chatroomId)
+                        .collection("members")
+                        .orderBy('time', descending: true)
+                        .get()
+                        .then((memberDocs) {
+                      memberDocs.docs.forEach((memberDoc) async {
+                        await _fcmNotificationService.sendNotificationToUser(
+                            to: memberDoc['fcmToken']!, //To change once set up
+                            title: "New member | ${chatroomDoc['roomname']}",
+                            body:
+                                "${memberDocs.docs[0]['username']} has joined the group chat");
+                      });
+                    });
+                  });
                 }).whenComplete(() {
                   Navigator.pop(context);
                 });

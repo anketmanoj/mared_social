@@ -35,8 +35,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    Future.delayed(Duration.zero, () {
-      Provider.of<FirebaseOperations>(context, listen: false)
+    Future.delayed(Duration.zero, () async {
+      await Provider.of<FirebaseOperations>(context, listen: false)
           .initUserData(context)
           .whenComplete(() {
         setState(() {

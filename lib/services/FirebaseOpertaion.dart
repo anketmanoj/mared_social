@@ -10,8 +10,10 @@ class FirebaseOperations with ChangeNotifier {
   UploadTask? imageUploadTask;
   late String initUserEmail, initUserName, initUserImage;
   late bool store;
+  late String fcmToken;
 
   bool get getStore => store;
+  String get getFcmToken => fcmToken;
   String get getInitUserImage => initUserImage;
   String get getInitUserEmail => initUserEmail;
   String get getInitUserName => initUserName;
@@ -56,6 +58,7 @@ class FirebaseOperations with ChangeNotifier {
       initUserEmail = doc['useremail'];
       initUserImage = doc['userimage'];
       store = doc['store'];
+      fcmToken = doc['fcmToken'];
       print(initUserName);
       notifyListeners();
     });
