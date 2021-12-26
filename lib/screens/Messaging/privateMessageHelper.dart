@@ -216,6 +216,7 @@ class PrivateMessageHelper with ChangeNotifier {
           .getInitUserName,
       'userimage': Provider.of<FirebaseOperations>(context, listen: false)
           .getInitUserImage,
+      'msgSeen': true,
     }).whenComplete(() async {
       return await FirebaseFirestore.instance
           .collection("users")
@@ -234,6 +235,7 @@ class PrivateMessageHelper with ChangeNotifier {
             .getInitUserName,
         'userimage': Provider.of<FirebaseOperations>(context, listen: false)
             .getInitUserImage,
+        'msgSeen': false,
       });
     });
   }

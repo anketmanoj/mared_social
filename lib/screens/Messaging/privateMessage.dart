@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/screens/Messaging/privateMessageHelper.dart';
+import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/services/fcm_notification_Service.dart';
 import 'package:nanoid/nanoid.dart';
@@ -23,9 +24,9 @@ class PrivateMessage extends StatefulWidget {
 class _PrivateMessageState extends State<PrivateMessage> {
   ConstantColors constantColors = ConstantColors();
   TextEditingController messageController = TextEditingController();
-  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final FCMNotificationService _fcmNotificationService =
       FCMNotificationService();
+  final _formKey = GlobalKey<FormState>();
 
   String? thisDeviceToken;
   String? otherDeviceToken;
@@ -127,7 +128,8 @@ class _PrivateMessageState extends State<PrivateMessage> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Container(
+        child: Form(
+          key: _formKey,
           child: Column(
             children: [
               AnimatedContainer(
@@ -161,7 +163,10 @@ class _PrivateMessageState extends State<PrivateMessage> {
                         padding: const EdgeInsets.only(left: 8.0),
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width * 0.7,
-                          child: TextField(
+                          child: TextFormField(
+                            validator: (value) => value!.isEmpty
+                                ? 'Message cannot be blank'
+                                : null,
                             controller: messageController,
                             style: TextStyle(
                               color: constantColors.whiteColor,
@@ -183,35 +188,38 @@ class _PrivateMessageState extends State<PrivateMessage> {
                         mini: true,
                         backgroundColor: constantColors.blueColor,
                         onPressed: () async {
-                          String messageId = nanoid(14).toString();
-                          await Provider.of<PrivateMessageHelper>(context,
-                                  listen: false)
-                              .sendMessage(
-                            context: context,
-                            documentSnapshot: widget.documentSnapshot,
-                            messagecontroller: messageController,
-                            messageId: messageId,
-                          );
+                          if (_formKey.currentState!.validate() == true) {
+                            String messageId = nanoid(14).toString();
+                            await Provider.of<PrivateMessageHelper>(context,
+                                    listen: false)
+                                .sendMessage(
+                              context: context,
+                              documentSnapshot: widget.documentSnapshot,
+                              messagecontroller: messageController,
+                              messageId: messageId,
+                            );
 
-                          FocusScope.of(context).unfocus();
+                            FocusScope.of(context).unfocus();
 
-                          await _fcmNotificationService
-                              .sendNotificationToUser(
-                                  to: otherDeviceToken!, //To change once set up
-                                  title:
-                                      "New message from ${widget.documentSnapshot['username']}",
-                                  body: messageController.text)
-                              .whenComplete(() {
-                            print("notification sent");
-                          });
+                            await _fcmNotificationService
+                                .sendNotificationToUser(
+                                    to:
+                                        otherDeviceToken!, //To change once set up
+                                    title:
+                                        "New message from ${Provider.of<FirebaseOperations>(context, listen: false).getInitUserName}",
+                                    body: messageController.text)
+                                .whenComplete(() {
+                              print("notification sent");
+                            });
 
-                          await Provider.of<PrivateMessageHelper>(context,
-                                  listen: false)
-                              .updateTime(
-                                  context: context,
-                                  documentSnapshot: widget.documentSnapshot);
+                            await Provider.of<PrivateMessageHelper>(context,
+                                    listen: false)
+                                .updateTime(
+                                    context: context,
+                                    documentSnapshot: widget.documentSnapshot);
 
-                          messageController.clear();
+                            messageController.clear();
+                          }
                         },
                         child: Icon(
                           Icons.send_sharp,

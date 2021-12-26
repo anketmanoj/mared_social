@@ -23,6 +23,7 @@ class GroupMessage extends StatefulWidget {
 class _GroupMessageState extends State<GroupMessage> {
   ConstantColors constantColors = ConstantColors();
   TextEditingController messageController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -155,7 +156,8 @@ class _GroupMessageState extends State<GroupMessage> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Container(
+        child: Form(
+          key: _formKey,
           child: Column(
             children: [
               AnimatedContainer(
@@ -196,7 +198,11 @@ class _GroupMessageState extends State<GroupMessage> {
                         padding: const EdgeInsets.only(left: 8.0),
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width * 0.7,
-                          child: TextField(
+                          child: TextFormField(
+                            validator: (value) =>
+                                value!.isEmpty ? 'Email cannot be blank' : null,
+                            // onSaved: (value) => _email = value,
+
                             controller: messageController,
                             style: TextStyle(
                               color: constantColors.whiteColor,
@@ -218,22 +224,24 @@ class _GroupMessageState extends State<GroupMessage> {
                         mini: true,
                         backgroundColor: constantColors.blueColor,
                         onPressed: () async {
-                          String messageId = nanoid(14).toString();
-                          await Provider.of<GroupMessageHelper>(context,
-                                  listen: false)
-                              .sendMessage(
-                            context: context,
-                            documentSnapshot: widget.documentSnapshot,
-                            messagecontroller: messageController,
-                            messageId: messageId,
-                          );
+                          if (_formKey.currentState!.validate() == true) {
+                            String messageId = nanoid(14).toString();
+                            await Provider.of<GroupMessageHelper>(context,
+                                    listen: false)
+                                .sendMessage(
+                              context: context,
+                              documentSnapshot: widget.documentSnapshot,
+                              messagecontroller: messageController,
+                              messageId: messageId,
+                            );
 
-                          await Provider.of<GroupMessageHelper>(context,
-                                  listen: false)
-                              .updateTime(
-                                  documentSnapshot: widget.documentSnapshot);
+                            await Provider.of<GroupMessageHelper>(context,
+                                    listen: false)
+                                .updateTime(
+                                    documentSnapshot: widget.documentSnapshot);
 
-                          messageController.clear();
+                            messageController.clear();
+                          }
                         },
                         child: Icon(
                           Icons.send_sharp,

@@ -11,6 +11,53 @@ import 'package:timeago/timeago.dart' as timeago;
 class PrivateChatHelpers with ChangeNotifier {
   ConstantColors constantColors = ConstantColors();
 
+  int? unReadMsgs;
+  int? get getUnReadMsgs => unReadMsgs;
+
+  Future countUnReadMsgs(
+      {required DocumentSnapshot documentSnapshot,
+      required BuildContext context}) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+        .collection("chats")
+        .doc(documentSnapshot.id)
+        .collection("messages")
+        .where('msgSeen', isEqualTo: false)
+        .get()
+        .then((value) {
+      unReadMsgs = value.docs.length;
+    });
+
+    print("$unReadMsgs new msgs");
+  }
+
+  Future msgReadByUser(
+      {required DocumentSnapshot documentSnapshot,
+      required BuildContext context}) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+        .collection("chats")
+        .doc(documentSnapshot.id)
+        .collection("messages")
+        .get()
+        .then((value) async {
+      value.docs.forEach((msg) async {
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+            .collection("chats")
+            .doc(documentSnapshot.id)
+            .collection("messages")
+            .doc(msg['messageid'])
+            .update({
+          'msgSeen': true,
+        });
+      });
+    });
+  }
+
   showChatrooms({required BuildContext context, required String userUid}) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -44,7 +91,10 @@ class PrivateChatHelpers with ChangeNotifier {
             children: chatroomSnaps.data!.docs
                 .map((DocumentSnapshot documentSnapshot) {
               return ListTile(
-                onTap: () {
+                onTap: () async {
+                  // here
+                  await msgReadByUser(
+                      documentSnapshot: documentSnapshot, context: context);
                   Navigator.push(
                       context,
                       PageTransition(
@@ -61,14 +111,50 @@ class PrivateChatHelpers with ChangeNotifier {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                trailing: Text(
-                  timeago
-                      .format((documentSnapshot['time'] as Timestamp).toDate()),
-                  style: TextStyle(
-                    color: constantColors.greenColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
+                trailing: Column(
+                  children: [
+                    StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection("users")
+                            .doc(Provider.of<Authentication>(context,
+                                    listen: false)
+                                .getUserId)
+                            .collection("chats")
+                            .doc(documentSnapshot.id)
+                            .collection("messages")
+                            .where('msgSeen', isEqualTo: false)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const SizedBox(
+                              height: 0,
+                              width: 0,
+                            );
+                          } else {
+                            return Visibility(
+                              visible: snapshot.data!.docs.isNotEmpty,
+                              child: Text(
+                                "${snapshot.data!.docs.length} New Messages",
+                                style: TextStyle(
+                                  color: constantColors.redColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            );
+                          }
+                        }),
+                    Text(
+                      timeago.format(
+                          (documentSnapshot['time'] as Timestamp).toDate()),
+                      style: TextStyle(
+                        color: constantColors.greenColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
                 subtitle: StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance

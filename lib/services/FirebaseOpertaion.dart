@@ -11,7 +11,9 @@ class FirebaseOperations with ChangeNotifier {
   late String initUserEmail, initUserName, initUserImage;
   late bool store;
   late String fcmToken;
+  int? unReadMsgs;
 
+  int? get getUnReadMsgs => unReadMsgs;
   bool get getStore => store;
   String get getFcmToken => fcmToken;
   String get getInitUserImage => initUserImage;
@@ -61,6 +63,31 @@ class FirebaseOperations with ChangeNotifier {
       fcmToken = doc['fcmToken'];
       print(initUserName);
       notifyListeners();
+    });
+  }
+
+  Future initChatData(BuildContext context) async {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+        .collection("chats")
+        .get()
+        .then((chats) async {
+      chats.docs.forEach((chat) async {
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+            .collection("chats")
+            .doc(chat.id)
+            .collection("messages")
+            .where("msgSeen", isEqualTo: false)
+            .get()
+            .then((messages) async {
+          print("${messages.docs.length} here");
+          unReadMsgs = messages.docs.length;
+          notifyListeners();
+        });
+      });
     });
   }
 
