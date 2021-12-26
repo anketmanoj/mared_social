@@ -965,9 +965,10 @@ class AltProfileHelper with ChangeNotifier {
     );
   }
 
-  showPostDetail(
-      {required BuildContext context,
-      required DocumentSnapshot documentSnapshot}) {
+  showPostDetail({
+    required BuildContext context,
+    required DocumentSnapshot documentSnapshot,
+  }) {
     return showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -996,6 +997,7 @@ class AltProfileHelper with ChangeNotifier {
                         false) {
                       Provider.of<PostFunctions>(context, listen: false)
                           .addLike(
+                        userUid: documentSnapshot['useruid'],
                         context: context,
                         postID: documentSnapshot['postid'],
                         subDocId:

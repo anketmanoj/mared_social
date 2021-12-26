@@ -9,6 +9,7 @@ import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/Feed/feedhelpers.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
+import 'package:mared_social/services/fcm_notification_Service.dart';
 import 'package:nanoid/nanoid.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,8 @@ import 'package:timeago/timeago.dart' as timeago;
 class PostFunctions with ChangeNotifier {
   TextEditingController commentController = TextEditingController();
   ConstantColors constantColors = ConstantColors();
+  final FCMNotificationService _fcmNotificationService =
+      FCMNotificationService();
   late String imageTimePosted;
   String get getImageTimePosted => imageTimePosted;
   TextEditingController updateDescriptionController = TextEditingController();
@@ -58,22 +61,22 @@ class PostFunctions with ChangeNotifier {
                     color: constantColors.whiteColor,
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    StreamBuilder<DocumentSnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection("posts")
-                            .doc(postId)
-                            .snapshots(),
-                        builder: (context, postDocSnap) {
-                          if (postDocSnap.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          } else {
-                            return MaterialButton(
+                StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("posts")
+                        .doc(postId)
+                        .snapshots(),
+                    builder: (context, postDocSnap) {
+                      if (postDocSnap.connectionState ==
+                          ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            MaterialButton(
                               color: constantColors.blueColor,
                               child: Text("Edit Caption",
                                   style: TextStyle(
@@ -195,42 +198,46 @@ class PostFunctions with ChangeNotifier {
                                   },
                                 );
                               },
-                            );
-                          }
-                        }),
-                    MaterialButton(
-                      color: constantColors.redColor,
-                      child: Text("Delete Post",
-                          style: TextStyle(
-                            color: constantColors.whiteColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          )),
-                      onPressed: () {
-                        // Navigator.pop(context);
-                        CoolAlert.show(
-                          context: context,
-                          type: CoolAlertType.warning,
-                          confirmBtnText: "Delete",
-                          cancelBtnText: "Keep Post",
-                          showCancelBtn: true,
-                          title: "Delete this post?",
-                          onConfirmBtnTap: () async {
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                            await Provider.of<FirebaseOperations>(context,
-                                    listen: false)
-                                .deletePostData(postId: postId);
-                          },
-                          onCancelBtnTap: () {
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                          },
+                            ),
+                            MaterialButton(
+                              color: constantColors.redColor,
+                              child: Text("Delete Post",
+                                  style: TextStyle(
+                                    color: constantColors.whiteColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  )),
+                              onPressed: () {
+                                // Navigator.pop(context);
+                                CoolAlert.show(
+                                  context: context,
+                                  type: CoolAlertType.warning,
+                                  confirmBtnText: "Delete",
+                                  cancelBtnText: "Keep Post",
+                                  showCancelBtn: true,
+                                  title: "Delete this post?",
+                                  onConfirmBtnTap: () async {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                    await Provider.of<FirebaseOperations>(
+                                            context,
+                                            listen: false)
+                                        .deletePostData(
+                                      userUid: postDocSnap.data!['useruid'],
+                                      postId: postId,
+                                    );
+                                  },
+                                  onCancelBtnTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              },
+                            ),
+                          ],
                         );
-                      },
-                    ),
-                  ],
-                ),
+                      }
+                    }),
               ],
             ),
           ),
@@ -243,6 +250,7 @@ class PostFunctions with ChangeNotifier {
     required BuildContext context,
     required String postID,
     required String subDocId,
+    required String userUid,
   }) async {
     return FirebaseFirestore.instance
         .collection('posts')
@@ -259,10 +267,28 @@ class PostFunctions with ChangeNotifier {
       'useremail': Provider.of<FirebaseOperations>(context, listen: false)
           .getInitUserEmail,
       'time': Timestamp.now(),
+    }).whenComplete(() async {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(userUid)
+          .get()
+          .then((postUser) async {
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(subDocId)
+            .get()
+            .then((likingUser) async {
+          await _fcmNotificationService.sendNotificationToUser(
+              to: postUser['fcmToken']!, //To change once set up
+              title: "${likingUser['username']} liked your post",
+              body: "");
+        });
+      });
     });
   }
 
   Future addComment({
+    required String userUid,
     required String postId,
     required String comment,
     required BuildContext context,
@@ -284,6 +310,23 @@ class PostFunctions with ChangeNotifier {
       'useremail': Provider.of<FirebaseOperations>(context, listen: false)
           .getInitUserEmail,
       'time': Timestamp.now(),
+    }).whenComplete(() async {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(userUid)
+          .get()
+          .then((postUser) async {
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+            .get()
+            .then((commentingUser) async {
+          await _fcmNotificationService.sendNotificationToUser(
+              to: postUser['fcmToken']!, //To change once set up
+              title: "${commentingUser['username']} commented",
+              body: comment);
+        });
+      });
     });
   }
 
@@ -431,6 +474,7 @@ class PostFunctions with ChangeNotifier {
     required DocumentSnapshot snapshot,
     required String postId,
   }) {
+    print(snapshot['username']);
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -713,6 +757,7 @@ class PostFunctions with ChangeNotifier {
                                     .getIsAnon ==
                                 false) {
                               addComment(
+                                      userUid: snapshot['useruid'],
                                       postId: snapshot['postid'],
                                       comment: commentController.text,
                                       context: context)

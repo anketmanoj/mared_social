@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:mared_social/screens/LandingPage/landingUtils.dart';
 import 'package:mared_social/services/authentication.dart';
+import 'package:mared_social/services/fcm_notification_Service.dart';
 import 'package:provider/provider.dart';
 
 class FirebaseOperations with ChangeNotifier {
@@ -14,6 +15,9 @@ class FirebaseOperations with ChangeNotifier {
   String get getInitUserImage => initUserImage;
   String get getInitUserEmail => initUserEmail;
   String get getInitUserName => initUserName;
+
+  final FCMNotificationService _fcmNotificationService =
+      FCMNotificationService();
 
   Future uploadUserAvatar(BuildContext context) async {
     Reference imageReference = FirebaseStorage.instance.ref().child(
@@ -65,11 +69,20 @@ class FirebaseOperations with ChangeNotifier {
     return FirebaseFirestore.instance.collection('users').doc(userUid).delete();
   }
 
-  Future deletePostData({String? postId}) async {
+  Future deletePostData(
+      {required String postId, required String userUid}) async {
     return await FirebaseFirestore.instance
         .collection("posts")
         .doc(postId)
-        .delete();
+        .delete()
+        .whenComplete(() async {
+      return await FirebaseFirestore.instance
+          .collection("users")
+          .doc(userUid)
+          .collection("posts")
+          .doc(postId)
+          .delete();
+    });
   }
 
   Future deleteUserComment(
@@ -145,6 +158,23 @@ class FirebaseOperations with ChangeNotifier {
           .collection("following")
           .doc(followerDocId)
           .set(followerData);
+    }).whenComplete(() async {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(followingUid)
+          .get()
+          .then((postUser) async {
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(followerUid)
+            .get()
+            .then((followingUser) async {
+          await _fcmNotificationService.sendNotificationToUser(
+              to: postUser['fcmToken']!, //To change once set up
+              title: "${followingUser['username']} follows you",
+              body: "");
+        });
+      });
     });
   }
 

@@ -478,6 +478,7 @@ class FeedHelpers with ChangeNotifier {
                                     Provider.of<PostFunctions>(context,
                                             listen: false)
                                         .addLike(
+                                      userUid: documentSnapshot['useruid'],
                                       context: context,
                                       postID: documentSnapshot['postid'],
                                       subDocId: Provider.of<Authentication>(
@@ -1159,6 +1160,7 @@ class FeedHelpers with ChangeNotifier {
                         false) {
                       Provider.of<PostFunctions>(context, listen: false)
                           .addLike(
+                        userUid: documentSnapshot['useruid'],
                         context: context,
                         postID: documentSnapshot['postid'],
                         subDocId:

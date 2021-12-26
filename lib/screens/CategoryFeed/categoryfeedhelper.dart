@@ -300,6 +300,7 @@ class CatgeoryFeedHelper with ChangeNotifier {
                         false) {
                       Provider.of<PostFunctions>(context, listen: false)
                           .addLike(
+                        userUid: documentSnapshot['useruid'],
                         context: context,
                         postID: documentSnapshot['postid'],
                         subDocId:
