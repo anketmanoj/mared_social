@@ -109,12 +109,9 @@ class FeedHelpers with ChangeNotifier {
                                             imageUrl: item,
                                             progressIndicatorBuilder: (context,
                                                 url, downloadProgress) {
-                                              return SizedBox(
-                                                height: 50,
-                                                width: 50,
-                                                child: Lottie.asset(
-                                                    "assets/animations/loading.json"),
-                                              );
+                                              return LoadingWidget(
+                                                  constantColors:
+                                                      constantColors);
                                             },
                                             errorWidget:
                                                 (context, url, error) =>
@@ -239,15 +236,12 @@ class FeedHelpers with ChangeNotifier {
                                                     imageUrl: storiesSnaps
                                                             .data!.docs[index]
                                                         ['userimage'],
-                                                    progressIndicatorBuilder:
-                                                        (context, url,
-                                                                downloadProgress) =>
-                                                            SizedBox(
-                                                      height: 50,
-                                                      width: 50,
-                                                      child: Lottie.asset(
-                                                          "assets/animations/loading.json"),
-                                                    ),
+                                                    progressIndicatorBuilder: (context,
+                                                            url,
+                                                            downloadProgress) =>
+                                                        LoadingWidget(
+                                                            constantColors:
+                                                                constantColors),
                                                     errorWidget: (context, url,
                                                             error) =>
                                                         const Icon(Icons.error),
@@ -331,12 +325,9 @@ class FeedHelpers with ChangeNotifier {
                                               documentSnapshot['userimage'],
                                           progressIndicatorBuilder: (context,
                                                   url, downloadProgress) =>
-                                              SizedBox(
-                                            height: 50,
-                                            width: 50,
-                                            child: Lottie.asset(
-                                                "assets/animations/loading.json"),
-                                          ),
+                                              LoadingWidget(
+                                                  constantColors:
+                                                      constantColors),
                                           errorWidget: (context, url, error) =>
                                               const Icon(Icons.error),
                                         ),
@@ -499,12 +490,8 @@ class FeedHelpers with ChangeNotifier {
                                     imageUrl: documentSnapshot['postimage'],
                                     progressIndicatorBuilder:
                                         (context, url, downloadProgress) =>
-                                            SizedBox(
-                                      height: 50,
-                                      width: 50,
-                                      child: Lottie.asset(
-                                          "assets/animations/loading.json"),
-                                    ),
+                                            LoadingWidget(
+                                                constantColors: constantColors),
                                     errorWidget: (context, url, error) =>
                                         const Icon(Icons.error),
                                   ),
@@ -1033,13 +1020,9 @@ class FeedHelpers with ChangeNotifier {
                           child: CachedNetworkImage(
                             fit: BoxFit.cover,
                             imageUrl: documentSnapshot['userimage'],
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) => SizedBox(
-                              height: 50,
-                              width: 50,
-                              child: Lottie.asset(
-                                  "assets/animations/loading.json"),
-                            ),
+                            progressIndicatorBuilder: (context, url,
+                                    downloadProgress) =>
+                                LoadingWidget(constantColors: constantColors),
                             errorWidget: (context, url, error) =>
                                 const Icon(Icons.error),
                           ),
@@ -1178,11 +1161,8 @@ class FeedHelpers with ChangeNotifier {
                       fit: BoxFit.contain,
                       imageUrl: documentSnapshot['postimage'],
                       progressIndicatorBuilder:
-                          (context, url, downloadProgress) => SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: Lottie.asset("assets/animations/loading.json"),
-                      ),
+                          (context, url, downloadProgress) =>
+                              LoadingWidget(constantColors: constantColors),
                       errorWidget: (context, url, error) =>
                           const Icon(Icons.error),
                     ),

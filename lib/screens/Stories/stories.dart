@@ -91,12 +91,8 @@ class _StoriesState extends State<Stories> {
                                   .docs[widget.snapIndex]['image'],
                               progressIndicatorBuilder:
                                   (context, url, downloadProgress) {
-                                return SizedBox(
-                                  height: 50,
-                                  width: 50,
-                                  child: Lottie.asset(
-                                      "assets/animations/loading.json"),
-                                );
+                                return LoadingWidget(
+                                    constantColors: constantColors);
                               },
                               errorWidget: (context, url, error) =>
                                   const Icon(Icons.error),
@@ -178,13 +174,9 @@ class _StoriesState extends State<Stories> {
                               fit: BoxFit.cover,
                               imageUrl: widget.querySnapshot.data!
                                   .docs[widget.snapIndex]['userimage'],
-                              progressIndicatorBuilder:
-                                  (context, url, downloadProgress) => SizedBox(
-                                height: 50,
-                                width: 50,
-                                child: Lottie.asset(
-                                    "assets/animations/loading.json"),
-                              ),
+                              progressIndicatorBuilder: (context, url,
+                                      downloadProgress) =>
+                                  LoadingWidget(constantColors: constantColors),
                               errorWidget: (context, url, error) =>
                                   const Icon(Icons.error),
                             ),

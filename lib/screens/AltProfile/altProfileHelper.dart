@@ -106,8 +106,8 @@ class AltProfileHelper with ChangeNotifier {
                                 (context, url, downloadProgress) => SizedBox(
                               height: 50,
                               width: 50,
-                              child: Lottie.asset(
-                                  "assets/animations/loading.json"),
+                              child:
+                                  LoadingWidget(constantColors: constantColors),
                             ),
                             errorWidget: (context, url, error) =>
                                 const Icon(Icons.error),
@@ -642,8 +642,8 @@ class AltProfileHelper with ChangeNotifier {
                                 (context, url, downloadProgress) => SizedBox(
                               height: 50,
                               width: 50,
-                              child: Lottie.asset(
-                                  "assets/animations/loading.json"),
+                              child:
+                                  LoadingWidget(constantColors: constantColors),
                             ),
                             errorWidget: (context, url, error) =>
                                 const Icon(Icons.error),
@@ -785,8 +785,8 @@ class AltProfileHelper with ChangeNotifier {
                                                 SizedBox(
                                           height: 50,
                                           width: 50,
-                                          child: Lottie.asset(
-                                              "assets/animations/loading.json"),
+                                          child: LoadingWidget(
+                                              constantColors: constantColors),
                                         ),
                                         errorWidget: (context, url, error) =>
                                             const Icon(Icons.error),
@@ -917,8 +917,8 @@ class AltProfileHelper with ChangeNotifier {
                                                 SizedBox(
                                           height: 50,
                                           width: 50,
-                                          child: Lottie.asset(
-                                              "assets/animations/loading.json"),
+                                          child: LoadingWidget(
+                                              constantColors: constantColors),
                                         ),
                                         errorWidget: (context, url, error) =>
                                             const Icon(Icons.error),
@@ -1023,7 +1023,7 @@ class AltProfileHelper with ChangeNotifier {
                             height: 50,
                             width: 50,
                             child:
-                                Lottie.asset("assets/animations/loading.json"),
+                                LoadingWidget(constantColors: constantColors),
                           ),
                           errorWidget: (context, url, error) =>
                               const Icon(Icons.error),

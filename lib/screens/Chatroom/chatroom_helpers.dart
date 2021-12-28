@@ -422,11 +422,7 @@ class ChatroomHelpers with ChangeNotifier {
       builder: (context, chatroomSnaps) {
         if (!chatroomSnaps.hasData) {
           return Center(
-            child: SizedBox(
-              height: 100,
-              width: 100,
-              child: Lottie.asset("assets/animation/loading.json"),
-            ),
+            child: LoadingWidget(constantColors: constantColors),
           );
         } else {
           return ListView(

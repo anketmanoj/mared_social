@@ -69,11 +69,8 @@ class CategoryHelper with ChangeNotifier {
                       fit: BoxFit.fill,
                       imageUrl: headerSnap.data!.docs[0]['image'],
                       progressIndicatorBuilder:
-                          (context, url, downloadProgress) => SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: Lottie.asset("assets/animations/loading.json"),
-                      ),
+                          (context, url, downloadProgress) =>
+                              LoadingWidget(constantColors: constantColors),
                       errorWidget: (context, url, error) =>
                           const Icon(Icons.error),
                     ),
@@ -145,12 +142,8 @@ class CategoryHelper with ChangeNotifier {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
                               return Center(
-                                child: SizedBox(
-                                  height: 500,
-                                  width: 400,
-                                  child: Lottie.asset(
-                                      "assets/animations/loading.json"),
-                                ),
+                                child: LoadingWidget(
+                                    constantColors: constantColors),
                               );
                             } else {
                               if (snapshot.data!.docs.isEmpty) {
@@ -282,12 +275,8 @@ class CategoryHelper with ChangeNotifier {
                                     imageUrl: catDocSnap['categoryimage'],
                                     progressIndicatorBuilder:
                                         (context, url, downloadProgress) =>
-                                            SizedBox(
-                                      height: 50,
-                                      width: 50,
-                                      child: Lottie.asset(
-                                          "assets/animations/loading.json"),
-                                    ),
+                                            LoadingWidget(
+                                                constantColors: constantColors),
                                     errorWidget: (context, url, error) =>
                                         const Icon(Icons.error),
                                   ),

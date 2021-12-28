@@ -51,13 +51,9 @@ class ProfileHelpers with ChangeNotifier {
                             child: CachedNetworkImage(
                               fit: BoxFit.cover,
                               imageUrl: snapshot.data!['userimage'],
-                              progressIndicatorBuilder:
-                                  (context, url, downloadProgress) => SizedBox(
-                                height: 50,
-                                width: 50,
-                                child: Lottie.asset(
-                                    "assets/animations/loading.json"),
-                              ),
+                              progressIndicatorBuilder: (context, url,
+                                      downloadProgress) =>
+                                  LoadingWidget(constantColors: constantColors),
                               errorWidget: (context, url, error) =>
                                   const Icon(Icons.error),
                             ),
@@ -435,12 +431,8 @@ class ProfileHelpers with ChangeNotifier {
                                 imageUrl: followingDocSnap['userimage'],
                                 progressIndicatorBuilder:
                                     (context, url, downloadProgress) =>
-                                        SizedBox(
-                                  height: 50,
-                                  width: 50,
-                                  child: Lottie.asset(
-                                      "assets/animations/loading.json"),
-                                ),
+                                        LoadingWidget(
+                                            constantColors: constantColors),
                                 errorWidget: (context, url, error) =>
                                     const Icon(Icons.error),
                               ),
@@ -536,13 +528,9 @@ class ProfileHelpers with ChangeNotifier {
                           child: CachedNetworkImage(
                             fit: BoxFit.cover,
                             imageUrl: userPostDocSnap['postimage'],
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) => SizedBox(
-                              height: 50,
-                              width: 50,
-                              child: Lottie.asset(
-                                  "assets/animations/loading.json"),
-                            ),
+                            progressIndicatorBuilder: (context, url,
+                                    downloadProgress) =>
+                                LoadingWidget(constantColors: constantColors),
                             errorWidget: (context, url, error) =>
                                 const Icon(Icons.error),
                           ),
@@ -680,14 +668,10 @@ class ProfileHelpers with ChangeNotifier {
                                       child: CachedNetworkImage(
                                         fit: BoxFit.cover,
                                         imageUrl: followingDocSnap['userimage'],
-                                        progressIndicatorBuilder:
-                                            (context, url, downloadProgress) =>
-                                                SizedBox(
-                                          height: 50,
-                                          width: 50,
-                                          child: Lottie.asset(
-                                              "assets/animations/loading.json"),
-                                        ),
+                                        progressIndicatorBuilder: (context, url,
+                                                downloadProgress) =>
+                                            LoadingWidget(
+                                                constantColors: constantColors),
                                         errorWidget: (context, url, error) =>
                                             const Icon(Icons.error),
                                       ),
@@ -806,14 +790,10 @@ class ProfileHelpers with ChangeNotifier {
                                       child: CachedNetworkImage(
                                         fit: BoxFit.cover,
                                         imageUrl: followerDocSnap['userimage'],
-                                        progressIndicatorBuilder:
-                                            (context, url, downloadProgress) =>
-                                                SizedBox(
-                                          height: 50,
-                                          width: 50,
-                                          child: Lottie.asset(
-                                              "assets/animations/loading.json"),
-                                        ),
+                                        progressIndicatorBuilder: (context, url,
+                                                downloadProgress) =>
+                                            LoadingWidget(
+                                                constantColors: constantColors),
                                         errorWidget: (context, url, error) =>
                                             const Icon(Icons.error),
                                       ),
@@ -912,12 +892,8 @@ class ProfileHelpers with ChangeNotifier {
                           fit: BoxFit.cover,
                           imageUrl: documentSnapshot['postimage'],
                           progressIndicatorBuilder:
-                              (context, url, downloadProgress) => SizedBox(
-                            height: 50,
-                            width: 50,
-                            child:
-                                Lottie.asset("assets/animations/loading.json"),
-                          ),
+                              (context, url, downloadProgress) =>
+                                  LoadingWidget(constantColors: constantColors),
                           errorWidget: (context, url, error) =>
                               const Icon(Icons.error),
                         ),

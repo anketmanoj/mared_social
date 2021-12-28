@@ -91,11 +91,7 @@ class CatgeoryFeedHelper with ChangeNotifier {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
-                  child: SizedBox(
-                    height: 500,
-                    width: 400,
-                    child: Lottie.asset("assets/animations/loading.json"),
-                  ),
+                  child: LoadingWidget(constantColors: constantColors),
                 );
               } else if (snapshot.data!.docs.length == 0) {
                 return Padding(
@@ -191,13 +187,9 @@ class CatgeoryFeedHelper with ChangeNotifier {
                           child: CachedNetworkImage(
                             fit: BoxFit.cover,
                             imageUrl: documentSnapshot['userimage'],
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) => SizedBox(
-                              height: 50,
-                              width: 50,
-                              child: Lottie.asset(
-                                  "assets/animations/loading.json"),
-                            ),
+                            progressIndicatorBuilder: (context, url,
+                                    downloadProgress) =>
+                                LoadingWidget(constantColors: constantColors),
                             errorWidget: (context, url, error) =>
                                 const Icon(Icons.error),
                           ),
@@ -319,11 +311,8 @@ class CatgeoryFeedHelper with ChangeNotifier {
                       fit: BoxFit.contain,
                       imageUrl: documentSnapshot['postimage'],
                       progressIndicatorBuilder:
-                          (context, url, downloadProgress) => SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: Lottie.asset("assets/animations/loading.json"),
-                      ),
+                          (context, url, downloadProgress) =>
+                              LoadingWidget(constantColors: constantColors),
                       errorWidget: (context, url, error) =>
                           const Icon(Icons.error),
                     ),

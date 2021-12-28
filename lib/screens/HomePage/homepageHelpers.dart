@@ -57,11 +57,8 @@ class HomepageHelpers with ChangeNotifier {
                       fit: BoxFit.cover,
                       imageUrl: snapshot.data!['userimage'],
                       progressIndicatorBuilder:
-                          (context, url, downloadProgress) => SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: Lottie.asset("assets/animations/loading.json"),
-                      ),
+                          (context, url, downloadProgress) =>
+                              LoadingWidget(constantColors: constantColors),
                       errorWidget: (context, url, error) =>
                           const Icon(Icons.error),
                     ),

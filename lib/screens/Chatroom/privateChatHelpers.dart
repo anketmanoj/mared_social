@@ -69,11 +69,7 @@ class PrivateChatHelpers with ChangeNotifier {
       builder: (context, chatroomSnaps) {
         if (chatroomSnaps.connectionState == ConnectionState.waiting) {
           return Center(
-            child: SizedBox(
-              height: 100,
-              width: 100,
-              child: Lottie.asset("assets/animation/loading.json"),
-            ),
+            child: LoadingWidget(constantColors: constantColors),
           );
         } else if (chatroomSnaps.data!.docs.isEmpty) {
           return Center(

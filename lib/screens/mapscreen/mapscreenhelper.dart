@@ -73,13 +73,9 @@ class MapScreenHelper with ChangeNotifier {
                             child: CachedNetworkImage(
                               fit: BoxFit.cover,
                               imageUrl: documentSnapshot['userimage'],
-                              progressIndicatorBuilder:
-                                  (context, url, downloadProgress) => SizedBox(
-                                height: 50,
-                                width: 50,
-                                child: Lottie.asset(
-                                    "assets/animations/loading.json"),
-                              ),
+                              progressIndicatorBuilder: (context, url,
+                                      downloadProgress) =>
+                                  LoadingWidget(constantColors: constantColors),
                               errorWidget: (context, url, error) =>
                                   const Icon(Icons.error),
                             ),
@@ -219,11 +215,8 @@ class MapScreenHelper with ChangeNotifier {
                         fit: BoxFit.contain,
                         imageUrl: documentSnapshot['postimage'],
                         progressIndicatorBuilder:
-                            (context, url, downloadProgress) => SizedBox(
-                          height: 50,
-                          width: 50,
-                          child: Lottie.asset("assets/animations/loading.json"),
-                        ),
+                            (context, url, downloadProgress) =>
+                                LoadingWidget(constantColors: constantColors),
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),
                       ),
