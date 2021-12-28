@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/Categories/category.dart';
 import 'package:mared_social/screens/Chatroom/chatroom.dart';
@@ -40,7 +41,7 @@ class _HomePageState extends State<HomePage> {
           .initUserData(context)
           .whenComplete(() {
         setState(() {
-          // loading = false;
+          loading = false;
         });
       });
     });
@@ -87,22 +88,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: constantColors.darkColor,
       body: loading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Initializing Mared",
-                    style: TextStyle(
-                      color: constantColors.whiteColor,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  const CircularProgressIndicator(),
-                ],
-              ),
-            )
+          ? LoadingWidget(constantColors: constantColors)
           : PageView(
               controller: homepageController,
               children: [
