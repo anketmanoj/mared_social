@@ -746,8 +746,6 @@ class UploadPost with ChangeNotifier {
                                         context,
                                         listen: false)
                                     .getInitUserEmail,
-                                'postimage': imagesList[
-                                    0], //or chnage to getUploadPostImageUrl
                                 'description': descriptionController.text,
                                 'imageslist': imagesList,
                                 'address': address,
@@ -784,8 +782,6 @@ class UploadPost with ChangeNotifier {
                                           context,
                                           listen: false)
                                       .getInitUserEmail,
-                                  'postimage': imagesList[
-                                      0], //or chnage to getUploadPostImageUrl
                                   'description': descriptionController.text,
                                   'imageslist': imagesList,
                                   'address': address,
@@ -1200,8 +1196,7 @@ class UploadPost with ChangeNotifier {
                                         context,
                                         listen: false)
                                     .getInitUserEmail,
-                                'postimage':
-                                    uploadPostImageUrl, //or chnage to getUploadPostImageUrl
+                                //or chnage to getUploadPostImageUrl
                                 'description': descriptionController.text,
                                 'imageslist': [uploadPostImageUrl],
                                 'address': address,
@@ -1238,8 +1233,7 @@ class UploadPost with ChangeNotifier {
                                           context,
                                           listen: false)
                                       .getInitUserEmail,
-                                  'postimage':
-                                      uploadPostImageUrl, //or chnage to getUploadPostImageUrl
+                                  //or chnage to getUploadPostImageUrl
                                   'description': descriptionController.text,
                                   'imageslist': [uploadPostImageUrl],
                                   'address': address,
