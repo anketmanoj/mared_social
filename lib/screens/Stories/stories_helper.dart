@@ -8,7 +8,6 @@ import 'package:mared_social/screens/Stories/stories_widget.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
 
 class StoriesHelper with ChangeNotifier {
   final picker = ImagePicker();
@@ -18,16 +17,6 @@ class StoriesHelper with ChangeNotifier {
   final StoryWidgets storyWidgets = StoryWidgets();
   late String storyImageUrl;
   String get getStoryImageUrl => storyImageUrl;
-
-  File? _video;
-  VideoPlayerController? _videoPlayerController;
-
-  Future _getVideo() async {
-    XFile? video = await picker.pickVideo(source: ImageSource.gallery);
-    _video = File(video!.path);
-    _videoPlayerController = VideoPlayerController.file(_video!)
-      ..initialize().then((_) {});
-  }
 
   Future selectStoryImage(
       {required BuildContext context, required ImageSource source}) async {
