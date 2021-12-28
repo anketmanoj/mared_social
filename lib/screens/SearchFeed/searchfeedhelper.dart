@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:card_swiper/card_swiper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
@@ -273,14 +274,27 @@ class SearchFeedHelper with ChangeNotifier {
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height * 0.46,
                       width: MediaQuery.of(context).size.width,
-                      child: CachedNetworkImage(
-                        fit: BoxFit.contain,
-                        imageUrl: documentSnapshot['postimage'],
-                        progressIndicatorBuilder:
-                            (context, url, downloadProgress) =>
-                                LoadingWidget(constantColors: constantColors),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
+                      child: Swiper(
+                        itemBuilder: (BuildContext context, int index) {
+                          return CachedNetworkImage(
+                            fit: BoxFit.contain,
+                            imageUrl: documentSnapshot['imageslist'][index],
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) => SizedBox(
+                              height: 50,
+                              width: 50,
+                              child:
+                                  LoadingWidget(constantColors: constantColors),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          );
+                        },
+                        itemCount:
+                            (documentSnapshot['imageslist'] as List).length,
+                        itemHeight: MediaQuery.of(context).size.height * 0.3,
+                        itemWidth: MediaQuery.of(context).size.width,
+                        layout: SwiperLayout.DEFAULT,
                       ),
                     ),
                   ),

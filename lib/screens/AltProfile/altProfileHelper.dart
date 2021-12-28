@@ -1,4 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:card_swiper/card_swiper.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
@@ -635,18 +637,29 @@ class AltProfileHelper with ChangeNotifier {
                       child: Container(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(5),
-                          child: CachedNetworkImage(
-                            fit: BoxFit.cover,
-                            imageUrl: userPostDocSnap['postimage'],
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) => SizedBox(
-                              height: 50,
-                              width: 50,
-                              child:
-                                  LoadingWidget(constantColors: constantColors),
-                            ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
+                          child: Swiper(
+                            itemBuilder: (BuildContext context, int index) {
+                              return CachedNetworkImage(
+                                fit: BoxFit.cover,
+                                imageUrl: userPostDocSnap['imageslist'][index],
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        SizedBox(
+                                  height: 50,
+                                  width: 50,
+                                  child: LoadingWidget(
+                                      constantColors: constantColors),
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                              );
+                            },
+                            itemCount:
+                                (userPostDocSnap['imageslist'] as List).length,
+                            itemHeight:
+                                MediaQuery.of(context).size.height * 0.3,
+                            itemWidth: MediaQuery.of(context).size.width,
+                            layout: SwiperLayout.DEFAULT,
                           ),
                         ),
                       ),
@@ -1012,12 +1025,11 @@ class AltProfileHelper with ChangeNotifier {
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height * 0.3,
                     width: MediaQuery.of(context).size.width,
-                    child: FittedBox(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(30),
-                        child: CachedNetworkImage(
-                          fit: BoxFit.cover,
-                          imageUrl: documentSnapshot['postimage'],
+                    child: Swiper(
+                      itemBuilder: (BuildContext context, int index) {
+                        return CachedNetworkImage(
+                          fit: BoxFit.contain,
+                          imageUrl: documentSnapshot['imageslist'][index],
                           progressIndicatorBuilder:
                               (context, url, downloadProgress) => SizedBox(
                             height: 50,
@@ -1027,8 +1039,13 @@ class AltProfileHelper with ChangeNotifier {
                           ),
                           errorWidget: (context, url, error) =>
                               const Icon(Icons.error),
-                        ),
-                      ),
+                        );
+                      },
+                      itemCount:
+                          (documentSnapshot['imageslist'] as List).length,
+                      itemHeight: MediaQuery.of(context).size.height * 0.3,
+                      itemWidth: MediaQuery.of(context).size.width,
+                      layout: SwiperLayout.DEFAULT,
                     ),
                   ),
                 ),
