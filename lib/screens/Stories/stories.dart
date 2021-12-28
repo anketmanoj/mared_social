@@ -17,6 +17,7 @@ import 'package:mared_social/services/authentication.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:video_player/video_player.dart';
 
 class Stories extends StatefulWidget {
   final AsyncSnapshot<QuerySnapshot> querySnapshot;
@@ -33,17 +34,28 @@ class _StoriesState extends State<Stories> {
   final StoryWidgets storyWidgets = StoryWidgets();
   CountDownController countDownController = CountDownController();
   int indexCheck = 0;
+  VideoPlayerController? _controller;
 
   @override
   void initState() {
+    _controller = VideoPlayerController.network(
+        widget.querySnapshot.data!.docs[widget.snapIndex]['videourl'])
+      ..initialize().then((_) {
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+        setState(() {});
+        _controller!.play();
+        _controller!.addListener(checkVideo);
+      });
     setState(() {
       indexCheck = widget.snapIndex;
     });
+
     super.initState();
   }
 
   @override
   void dispose() {
+    _controller!.dispose();
     super.dispose();
   }
 
@@ -54,7 +66,7 @@ class _StoriesState extends State<Stories> {
       body: SafeArea(
         child: GestureDetector(
           onLongPressEnd: (details) {
-            countDownController.resume();
+            _controller!.play();
           },
           onPanUpdate: (update) {
             if (update.delta.dx > 0) {
@@ -67,7 +79,7 @@ class _StoriesState extends State<Stories> {
             }
           },
           onLongPress: () {
-            countDownController.pause();
+            _controller!.pause();
           },
           child: Stack(
             children: [
@@ -83,20 +95,13 @@ class _StoriesState extends State<Stories> {
                         SizedBox(
                           height: MediaQuery.of(context).size.height,
                           width: MediaQuery.of(context).size.width,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(30),
-                            child: CachedNetworkImage(
-                              fit: BoxFit.contain,
-                              imageUrl: widget.querySnapshot.data!
-                                  .docs[widget.snapIndex]['image'],
-                              progressIndicatorBuilder:
-                                  (context, url, downloadProgress) {
-                                return LoadingWidget(
-                                    constantColors: constantColors);
-                              },
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
-                            ),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: _controller!.value.isInitialized
+                                ? VideoPlayer(
+                                    _controller!,
+                                  )
+                                : LoadingWidget(constantColors: constantColors),
                           ),
                         ),
                       ],
@@ -107,14 +112,30 @@ class _StoriesState extends State<Stories> {
               Positioned(
                 right: 0,
                 child: InkWell(
-                  onTap: () {
-                    if (widget.snapIndex <
+                  onTap: () async {
+                    if (indexCheck ==
                         widget.querySnapshot.data!.docs.length - 1) {
-                      setState(() {
-                        widget.snapIndex = widget.snapIndex + 1;
-                      });
-                      countDownController.restart();
+                      _controller!.dispose();
+                      Navigator.pushReplacement(
+                        context,
+                        PageTransition(
+                            child: const HomePage(),
+                            type: PageTransitionType.topToBottom),
+                      );
                     }
+
+                    _controller!.dispose();
+                    setState(() {
+                      indexCheck = indexCheck + 1;
+                    });
+
+                    _controller = await VideoPlayerController.network(
+                        widget.querySnapshot.data!.docs[indexCheck]['videourl'])
+                      ..initialize().then((_) {
+                        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+                        setState(() {});
+                        _controller!.play();
+                      });
                   },
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height,
@@ -125,13 +146,29 @@ class _StoriesState extends State<Stories> {
               Positioned(
                 left: 0,
                 child: InkWell(
-                  onTap: () {
-                    if (widget.snapIndex > 0) {
-                      setState(() {
-                        widget.snapIndex = widget.snapIndex - 1;
-                      });
-                      countDownController.restart();
+                  onTap: () async {
+                    if (indexCheck == 0) {
+                      _controller!.dispose();
+                      Navigator.pushReplacement(
+                        context,
+                        PageTransition(
+                            child: const HomePage(),
+                            type: PageTransitionType.topToBottom),
+                      );
                     }
+
+                    _controller!.dispose();
+                    setState(() {
+                      indexCheck = indexCheck - 1;
+                    });
+
+                    _controller = await VideoPlayerController.network(
+                        widget.querySnapshot.data!.docs[indexCheck]['videourl'])
+                      ..initialize().then((_) {
+                        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+                        setState(() {});
+                        _controller!.play();
+                      });
                   },
                   child: Container(
                     height: MediaQuery.of(context).size.height,
@@ -140,7 +177,7 @@ class _StoriesState extends State<Stories> {
                 ),
               ),
               Positioned(
-                top: 30,
+                top: 10,
                 child: Container(
                   constraints: BoxConstraints(
                     maxWidth: MediaQuery.of(context).size.width,
@@ -248,32 +285,6 @@ class _StoriesState extends State<Stories> {
                               ],
                             ),
                           ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 30,
-                        width: 30,
-                        child: CircularCountDownTimer(
-                          onComplete: () async {
-                            for (var i = widget.snapIndex;
-                                i < widget.querySnapshot.data!.docs.length;
-                                i++) {
-                              setState(() {
-                                widget.snapIndex = i;
-                              });
-
-                              countDownController.restart();
-                              await Future.delayed(const Duration(seconds: 15));
-                            }
-                          },
-                          autoStart: true,
-                          controller: countDownController,
-                          isTimerTextShown: false,
-                          width: 20,
-                          height: 20,
-                          duration: 15,
-                          fillColor: constantColors.blueColor,
-                          ringColor: constantColors.darkColor,
                         ),
                       ),
                       Visibility(
@@ -470,5 +481,32 @@ class _StoriesState extends State<Stories> {
         ),
       ),
     );
+  }
+
+  void checkVideo() {
+    while (_controller!.value.position == _controller!.value.duration) {
+      if (indexCheck == widget.querySnapshot.data!.docs.length - 1) {
+        _controller!.dispose();
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+              child: const HomePage(), type: PageTransitionType.topToBottom),
+        );
+      }
+
+      _controller!.dispose();
+      setState(() {
+        indexCheck = indexCheck + 1;
+      });
+
+      _controller = VideoPlayerController.network(
+          widget.querySnapshot.data!.docs[indexCheck]['videourl'])
+        ..initialize().then((_) {
+          // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+          setState(() {});
+          _controller!.play();
+        });
+      break;
+    }
   }
 }

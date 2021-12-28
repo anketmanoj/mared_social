@@ -490,7 +490,7 @@ class FeedHelpers with ChangeNotifier {
                                     itemBuilder:
                                         (BuildContext context, int index) {
                                       return CachedNetworkImage(
-                                        fit: BoxFit.contain,
+                                        fit: BoxFit.cover,
                                         imageUrl: documentSnapshot['imageslist']
                                             [index],
                                         progressIndicatorBuilder:
@@ -514,6 +514,18 @@ class FeedHelpers with ChangeNotifier {
                                     itemWidth:
                                         MediaQuery.of(context).size.width,
                                     layout: SwiperLayout.DEFAULT,
+                                    indicatorLayout: PageIndicatorLayout.SCALE,
+                                    pagination: SwiperPagination(
+                                      margin: EdgeInsets.all(10),
+                                      builder: DotSwiperPaginationBuilder(
+                                        color: constantColors.whiteColor
+                                            .withOpacity(0.6),
+                                        activeColor: constantColors.darkColor
+                                            .withOpacity(0.6),
+                                        size: 15,
+                                        activeSize: 15,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),

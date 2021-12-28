@@ -51,7 +51,8 @@ class _HomePageState extends State<HomePage> {
       print('Message data: ${message.data}');
 
       if (message.notification != null) {
-        print('Message also contained a notification: ${message.notification}');
+        print(
+            'Message also contained a notification: ${message.notification!.title}');
       }
     });
     super.initState();

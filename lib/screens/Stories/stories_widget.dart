@@ -103,13 +103,6 @@ class StoryWidgets {
                                       context: context,
                                       storyImage: File(_video!.path));
                                 });
-
-                              //         innerState(() {});
-                              //         _videoPlayerController!.play();
-                              //         previewStoryImage(
-                              //             context: context,
-                              //             storyImage: _video!);
-                              //       });
                             },
                           ),
                           Text(
@@ -132,15 +125,26 @@ class StoryWidgets {
                               color: constantColors.whiteColor,
                             ),
                             onPressed: () async {
-                              await Provider.of<StoriesHelper>(context,
-                                      listen: false)
-                                  .selectStoryImage(
-                                context: context,
-                                source: ImageSource.camera,
-                              )
-                                  .whenComplete(() {
-                                // Navigator.pop(context);
+                              XFile? video = await ImagePicker()
+                                  .pickVideo(source: ImageSource.camera);
+
+                              innerState(() {
+                                _video = video;
                               });
+
+                              print(_video!.path);
+
+                              _videoPlayerController =
+                                  VideoPlayerController.file(
+                                      File(_video!.path));
+
+                              _videoPlayerController!
+                                ..initialize().then((value) {
+                                  _videoPlayerController!.play();
+                                  previewStoryImage(
+                                      context: context,
+                                      storyImage: File(_video!.path));
+                                });
                             },
                           ),
                           Text(
@@ -248,9 +252,6 @@ class StoryWidgets {
                                     .doc(storyId)
                                     .set({
                                   'storyid': storyId,
-                                  'image': Provider.of<StoriesHelper>(context,
-                                          listen: false)
-                                      .getStoryImageUrl,
                                   'videourl': videoUrl,
                                   'username': Provider.of<FirebaseOperations>(
                                           context,
@@ -279,9 +280,6 @@ class StoryWidgets {
                                       .doc(storyId)
                                       .set({
                                     'storyid': storyId,
-                                    'image': Provider.of<StoriesHelper>(context,
-                                            listen: false)
-                                        .getStoryImageUrl,
                                     'videourl': videoUrl,
                                     'username': Provider.of<FirebaseOperations>(
                                             context,
