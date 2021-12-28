@@ -347,220 +347,234 @@ class LandingService with ChangeNotifier {
       builder: (context) {
         return SafeArea(
           bottom: true,
-          child: Container(
-            padding: const EdgeInsets.only(top: 20),
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              color: constantColors.blueGreyColor,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
+          child: Form(
+            key: _formKey,
+            child: Container(
+              padding: const EdgeInsets.only(top: 20),
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: constantColors.blueGreyColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
               ),
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 150),
-                  child: Divider(
-                    thickness: 4,
-                    color: constantColors.whiteColor,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 150),
+                    child: Divider(
+                      thickness: 4,
+                      color: constantColors.whiteColor,
+                    ),
                   ),
-                ),
-                ToggleSwitch(
-                  changeOnTap: true,
-                  minWidth: 130.0,
-                  initialLabelIndex: 0,
-                  borderWidth: 8,
-                  cornerRadius: 20.0,
-                  activeFgColor: Colors.white,
-                  inactiveBgColor: Colors.grey,
-                  inactiveFgColor: Colors.white,
-                  totalSwitches: 2,
-                  labels: const ['Individual', ' Company'],
-                  icons: const [
-                    Icons.person,
-                    FontAwesomeIcons.storeAlt,
-                  ],
-                  activeBgColors: const [
-                    [Colors.blue],
-                    [Colors.pink]
-                  ],
-                  onToggle: (index) {
-                    if (index == 1) {
-                      store = true;
-                    } else {
-                      store = false;
-                    }
-                    print(store);
-                  },
-                ),
-                CircleAvatar(
-                  backgroundImage: FileImage(
-                      Provider.of<LandingUtils>(context, listen: false)
-                          .getUserAvatar),
-                  backgroundColor: constantColors.redColor,
-                  radius: 60,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextField(
-                    controller: userNameController,
-                    decoration: InputDecoration(
-                      hintText: store == true ? "Company Name" : "Name",
-                      hintStyle: TextStyle(
+                  ToggleSwitch(
+                    changeOnTap: true,
+                    minWidth: 130.0,
+                    initialLabelIndex: 0,
+                    borderWidth: 8,
+                    cornerRadius: 20.0,
+                    activeFgColor: Colors.white,
+                    inactiveBgColor: Colors.grey,
+                    inactiveFgColor: Colors.white,
+                    totalSwitches: 2,
+                    labels: const ['Individual', ' Company'],
+                    icons: const [
+                      Icons.person,
+                      FontAwesomeIcons.storeAlt,
+                    ],
+                    activeBgColors: const [
+                      [Colors.blue],
+                      [Colors.pink]
+                    ],
+                    onToggle: (index) {
+                      if (index == 1) {
+                        store = true;
+                      } else {
+                        store = false;
+                      }
+                      print(store);
+                    },
+                  ),
+                  CircleAvatar(
+                    backgroundImage: FileImage(
+                        Provider.of<LandingUtils>(context, listen: false)
+                            .getUserAvatar),
+                    backgroundColor: constantColors.redColor,
+                    radius: 60,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: TextFormField(
+                      controller: userNameController,
+                      decoration: InputDecoration(
+                        hintText: store == true ? "Company Name" : "Name",
+                        hintStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: constantColors.whiteColor,
+                          fontSize: 16,
+                        ),
+                      ),
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: constantColors.whiteColor,
-                        fontSize: 16,
+                        fontSize: 18,
                       ),
                     ),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: constantColors.whiteColor,
-                      fontSize: 18,
-                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextField(
-                    controller: userPhoneNoController,
-                    decoration: InputDecoration(
-                      hintText: "Contact Number",
-                      hintStyle: TextStyle(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: TextFormField(
+                      validator: (value) => value!.isEmpty
+                          ? 'Contact Number cannot be blank'
+                          : null,
+                      controller: userPhoneNoController,
+                      decoration: InputDecoration(
+                        hintText: "Contact Number",
+                        hintStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: constantColors.whiteColor,
+                          fontSize: 16,
+                        ),
+                      ),
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: constantColors.whiteColor,
-                        fontSize: 16,
+                        fontSize: 18,
                       ),
                     ),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: constantColors.whiteColor,
-                      fontSize: 18,
-                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextField(
-                    controller: userEmailController,
-                    decoration: InputDecoration(
-                      hintText: "Email",
-                      hintStyle: TextStyle(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: TextFormField(
+                      validator: (value) =>
+                          value!.isEmpty || !value.contains("@")
+                              ? 'Invalid Email'
+                              : null,
+                      controller: userEmailController,
+                      decoration: InputDecoration(
+                        hintText: "Email",
+                        hintStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: constantColors.whiteColor,
+                          fontSize: 16,
+                        ),
+                      ),
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: constantColors.whiteColor,
-                        fontSize: 16,
+                        fontSize: 18,
                       ),
                     ),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: constantColors.whiteColor,
-                      fontSize: 18,
-                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextField(
-                    controller: userPasswordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      hintText: "Password",
-                      hintStyle: TextStyle(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: TextFormField(
+                      validator: (value) => value!.isEmpty || value.length < 6
+                          ? 'Password must be 6 Characters long'
+                          : null,
+                      controller: userPasswordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: "Password",
+                        hintStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: constantColors.whiteColor,
+                          fontSize: 16,
+                        ),
+                      ),
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: constantColors.whiteColor,
-                        fontSize: 16,
+                        fontSize: 18,
                       ),
-                    ),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: constantColors.whiteColor,
-                      fontSize: 18,
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: FloatingActionButton(
-                      backgroundColor: constantColors.redColor,
-                      child: Icon(
-                        FontAwesomeIcons.check,
-                        color: constantColors.whiteColor,
-                      ),
-                      onPressed: () async {
-                        if (userEmailController.text.isNotEmpty &&
-                            userPasswordController.text.isNotEmpty) {
-                          try {
-                            await Provider.of<Authentication>(context,
-                                    listen: false)
-                                .createAccount(userEmailController.text,
-                                    userPasswordController.text);
-
-                            SharedPreferences.setMockInitialValues({});
-
-                            SharedPreferences prefs =
-                                await SharedPreferences.getInstance();
-
-                            await prefs.setString(
-                                'mydata',
-                                json.encode({
-                                  'userpassword': userPasswordController.text,
-                                  'usercontactnumber':
-                                      userPhoneNoController.text,
-                                  'store': store,
-                                  'useruid': Provider.of<Authentication>(
-                                          context,
-                                          listen: false)
-                                      .getUserId,
-                                  'useremail': userEmailController.text,
-                                  'username': userNameController.text,
-                                  'userimage': Provider.of<LandingUtils>(
-                                          context,
-                                          listen: false)
-                                      .getUserAvatarUrl,
-                                }));
-
-                            await Provider.of<FirebaseOperations>(context,
-                                    listen: false)
-                                .createUserCollection(context, {
-                              'userpassword': userPasswordController.text,
-                              'usercontactnumber': userPhoneNoController.text,
-                              'store': store,
-                              'useruid': Provider.of<Authentication>(context,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: FloatingActionButton(
+                        backgroundColor: constantColors.redColor,
+                        child: Icon(
+                          FontAwesomeIcons.check,
+                          color: constantColors.whiteColor,
+                        ),
+                        onPressed: () async {
+                          if (userEmailController.text.isNotEmpty &&
+                              userPasswordController.text.isNotEmpty &&
+                              _formKey.currentState!.validate()) {
+                            try {
+                              await Provider.of<Authentication>(context,
                                       listen: false)
-                                  .getUserId,
-                              'useremail': userEmailController.text,
-                              'username': userNameController.text,
-                              'userimage': Provider.of<LandingUtils>(context,
-                                      listen: false)
-                                  .getUserAvatarUrl,
-                            });
+                                  .createAccount(userEmailController.text,
+                                      userPasswordController.text);
 
-                            Navigator.pushReplacement(
-                              context,
-                              PageTransition(
-                                  child: HomePage(),
-                                  type: PageTransitionType.bottomToTop),
-                            );
-                          } catch (e) {
+                              SharedPreferences.setMockInitialValues({});
+
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+
+                              await prefs.setString(
+                                  'mydata',
+                                  json.encode({
+                                    'userpassword': userPasswordController.text,
+                                    'usercontactnumber':
+                                        userPhoneNoController.text,
+                                    'store': store,
+                                    'useruid': Provider.of<Authentication>(
+                                            context,
+                                            listen: false)
+                                        .getUserId,
+                                    'useremail': userEmailController.text,
+                                    'username': userNameController.text,
+                                    'userimage': Provider.of<LandingUtils>(
+                                            context,
+                                            listen: false)
+                                        .getUserAvatarUrl,
+                                  }));
+
+                              await Provider.of<FirebaseOperations>(context,
+                                      listen: false)
+                                  .createUserCollection(context, {
+                                'userpassword': userPasswordController.text,
+                                'usercontactnumber': userPhoneNoController.text,
+                                'store': store,
+                                'useruid': Provider.of<Authentication>(context,
+                                        listen: false)
+                                    .getUserId,
+                                'useremail': userEmailController.text,
+                                'username': userNameController.text,
+                                'userimage': Provider.of<LandingUtils>(context,
+                                        listen: false)
+                                    .getUserAvatarUrl,
+                              });
+
+                              Navigator.pushReplacement(
+                                context,
+                                PageTransition(
+                                    child: HomePage(),
+                                    type: PageTransitionType.bottomToTop),
+                              );
+                            } catch (e) {
+                              CoolAlert.show(
+                                context: context,
+                                type: CoolAlertType.error,
+                                title: "Sign In Failed",
+                                text: e.toString(),
+                              );
+                            }
+                          } else {
                             CoolAlert.show(
                               context: context,
                               type: CoolAlertType.error,
-                              title: "Sign In Failed",
-                              text: e.toString(),
+                              title: "Sign Up Failed",
+                              text: "Missing Details",
                             );
                           }
-                        } else {
-                          CoolAlert.show(
-                            context: context,
-                            type: CoolAlertType.error,
-                            title: "Sign Up Failed",
-                            text: "Missing Details",
-                          );
-                        }
-                      }),
-                ),
-              ],
+                        }),
+                  ),
+                ],
+              ),
             ),
           ),
         );

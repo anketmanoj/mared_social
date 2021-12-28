@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
           .initUserData(context)
           .whenComplete(() {
         setState(() {
-          loading = false;
+          // loading = false;
         });
       });
     });

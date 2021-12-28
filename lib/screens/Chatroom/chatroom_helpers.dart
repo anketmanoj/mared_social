@@ -17,9 +17,11 @@ import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatroomHelpers with ChangeNotifier {
+  final _formKey = GlobalKey<FormState>();
   ConstantColors constantColors = ConstantColors();
   late String chatroomAvatarUrl = "";
   late String chatroomId;
+
   String get getChatroomAvatarUrl => chatroomAvatarUrl;
   String get getChatroomId => chatroomId;
   TextEditingController chatroomNameController = TextEditingController();
@@ -239,156 +241,169 @@ class ChatroomHelpers with ChangeNotifier {
         return SafeArea(
           bottom: true,
           child: StatefulBuilder(builder: (context, stateSetter) {
-            return Padding(
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom),
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.25,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  color: constantColors.blueGreyColor,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    topRight: Radius.circular(12),
+            return Form(
+              key: _formKey,
+              child: Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.25,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color: constantColors.blueGreyColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    ),
                   ),
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 150),
-                      child: Divider(
-                        thickness: 4,
-                        color: constantColors.whiteColor,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 150),
+                        child: Divider(
+                          thickness: 4,
+                          color: constantColors.whiteColor,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "Select Chatroom Avatar",
-                      style: TextStyle(
-                        color: constantColors.greenColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                      Text(
+                        "Select Chatroom Avatar",
+                        style: TextStyle(
+                          color: constantColors.greenColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
                       ),
-                    ),
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.1,
-                      width: MediaQuery.of(context).size.width,
-                      child: StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection("chatroomIcons")
-                            .snapshots(),
-                        builder: (context, chatroomIconSnaps) {
-                          if (!chatroomIconSnaps.hasData) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          } else {
-                            return ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: chatroomIconSnaps.data!.docs
-                                  .map((DocumentSnapshot documentSnapshot) {
-                                return InkWell(
-                                  onTap: () {
-                                    stateSetter(() {
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.1,
+                        width: MediaQuery.of(context).size.width,
+                        child: StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection("chatroomIcons")
+                              .snapshots(),
+                          builder: (context, chatroomIconSnaps) {
+                            if (!chatroomIconSnaps.hasData) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              return ListView(
+                                scrollDirection: Axis.horizontal,
+                                children: chatroomIconSnaps.data!.docs
+                                    .map((DocumentSnapshot documentSnapshot) {
+                                  return InkWell(
+                                    onTap: () {
+                                      stateSetter(() {
+                                        chatroomAvatarUrl =
+                                            documentSnapshot['image'];
+                                      });
                                       chatroomAvatarUrl =
                                           documentSnapshot['image'];
-                                    });
-                                    chatroomAvatarUrl =
-                                        documentSnapshot['image'];
-                                    notifyListeners();
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 16.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: getChatroomAvatarUrl ==
-                                                  documentSnapshot['image']
-                                              ? constantColors.blueColor
-                                              : constantColors.transperant,
+                                      notifyListeners();
+                                    },
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 16.0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: getChatroomAvatarUrl ==
+                                                    documentSnapshot['image']
+                                                ? constantColors.blueColor
+                                                : constantColors.transperant,
+                                          ),
                                         ),
+                                        height: 15,
+                                        width: 45,
+                                        child: Image.network(
+                                            documentSnapshot['image'],
+                                            fit: BoxFit.contain),
                                       ),
-                                      height: 15,
-                                      width: 45,
-                                      child: Image.network(
-                                          documentSnapshot['image'],
-                                          fit: BoxFit.contain),
                                     ),
-                                  ),
-                                );
-                              }).toList(),
-                            );
-                          }
-                        },
+                                  );
+                                }).toList(),
+                              );
+                            }
+                          },
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.7,
-                            child: TextField(
-                              textCapitalization: TextCapitalization.sentences,
-                              controller: chatroomNameController,
-                              style: TextStyle(
-                                color: constantColors.whiteColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                              decoration: InputDecoration(
-                                hintText: "Enter Chatroom ID",
-                                hintStyle: TextStyle(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              child: TextFormField(
+                                validator: (value) => value!.isEmpty
+                                    ? 'Field cannot be blank'
+                                    : null,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                controller: chatroomNameController,
+                                style: TextStyle(
                                   color: constantColors.whiteColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
+                                decoration: InputDecoration(
+                                  hintText: "Enter Chatroom ID",
+                                  hintStyle: TextStyle(
+                                    color: constantColors.whiteColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                          FloatingActionButton(
-                            onPressed: () async {
-                              String chatroomIdName = nanoid(14).toString();
-                              Provider.of<FirebaseOperations>(context,
-                                      listen: false)
-                                  .submitChatroomData(
-                                chatroomName: chatroomIdName,
-                                chatroomData: {
-                                  'chatroomid': chatroomIdName,
-                                  'roomAvatar': getChatroomAvatarUrl,
-                                  'time': Timestamp.now(),
-                                  'roomname': chatroomNameController.text,
-                                  'username': Provider.of<FirebaseOperations>(
-                                          context,
+                            FloatingActionButton(
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  String chatroomIdName = nanoid(14).toString();
+                                  Provider.of<FirebaseOperations>(context,
                                           listen: false)
-                                      .getInitUserName,
-                                  'userimage': Provider.of<FirebaseOperations>(
-                                          context,
-                                          listen: false)
-                                      .getInitUserImage,
-                                  'useremail': Provider.of<FirebaseOperations>(
-                                          context,
-                                          listen: false)
-                                      .getInitUserEmail,
-                                  'useruid': Provider.of<Authentication>(
-                                          context,
-                                          listen: false)
-                                      .getUserId,
-                                },
-                              ).whenComplete(() {
-                                Navigator.pop(context);
-                              });
-                            },
-                            backgroundColor: constantColors.darkColor,
-                            child: Icon(
-                              FontAwesomeIcons.plus,
-                              color: constantColors.yellowColor,
+                                      .submitChatroomData(
+                                    chatroomName: chatroomIdName,
+                                    chatroomData: {
+                                      'chatroomid': chatroomIdName,
+                                      'roomAvatar': getChatroomAvatarUrl,
+                                      'time': Timestamp.now(),
+                                      'roomname': chatroomNameController.text,
+                                      'username':
+                                          Provider.of<FirebaseOperations>(
+                                                  context,
+                                                  listen: false)
+                                              .getInitUserName,
+                                      'userimage':
+                                          Provider.of<FirebaseOperations>(
+                                                  context,
+                                                  listen: false)
+                                              .getInitUserImage,
+                                      'useremail':
+                                          Provider.of<FirebaseOperations>(
+                                                  context,
+                                                  listen: false)
+                                              .getInitUserEmail,
+                                      'useruid': Provider.of<Authentication>(
+                                              context,
+                                              listen: false)
+                                          .getUserId,
+                                    },
+                                  ).whenComplete(() {
+                                    Navigator.pop(context);
+                                  });
+                                }
+                              },
+                              backgroundColor: constantColors.darkColor,
+                              child: Icon(
+                                FontAwesomeIcons.plus,
+                                color: constantColors.yellowColor,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
