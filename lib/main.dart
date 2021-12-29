@@ -52,34 +52,6 @@ void main() async {
           AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
-  // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-  //   RemoteNotification? notification = message.notification;
-  //   AndroidNotification? android = message.notification?.android;
-
-  //   // If `onMessage` is triggered with a notification, construct our own
-  //   // local notification to show to users using the created channel.
-  //   if (notification != null && android != null) {
-  //     try {
-  //       flutterLocalNotificationsPlugin.show(
-  //           notification.hashCode,
-  //           notification.title,
-  //           notification.body,
-  //           NotificationDetails(
-  //             android: AndroidNotificationDetails(
-  //               channel.id,
-  //               channel.name,
-
-  //               icon: android.smallIcon,
-  //               // other properties...
-  //             ),
-  //           ));
-  //     } on Exception catch (e) {
-  //       print("ERROR ANKET ==== ${e.toString()}");
-  //       // TODO
-  //     }
-  //   }
-  // });
-
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     alert: true, // Required to display a heads up notification
     badge: true,
@@ -96,7 +68,10 @@ class MyApp extends StatelessWidget {
     ConstantColors constantColors = ConstantColors();
     return MultiProvider(
       child: MaterialApp(
-        home: SplashScreen(),
+        home: WillPopScope(
+          onWillPop: () async => false,
+          child: SplashScreen(),
+        ),
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           accentColor: constantColors.blueColor,

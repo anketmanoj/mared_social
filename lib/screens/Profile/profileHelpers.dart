@@ -15,6 +15,7 @@ import 'package:mared_social/screens/Stories/stories_widget.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/postoptions.dart';
+import 'package:mared_social/utils/uploadpost.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
@@ -40,7 +41,7 @@ class ProfileHelpers with ChangeNotifier {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      storyWidgets.addStory(context: context);
+                      postSelectType(context: context);
                     },
                     child: Stack(
                       children: [
@@ -595,6 +596,84 @@ class ProfileHelpers with ChangeNotifier {
         decorationColor: constantColors.redColor,
       ),
       onCancelBtnTap: () => Navigator.pop(context),
+    );
+  }
+
+  postSelectType({required BuildContext context}) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          bottom: true,
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.15,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              color: constantColors.blueGreyColor,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 150),
+                  child: Divider(
+                    thickness: 4,
+                    color: constantColors.whiteColor,
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton.icon(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            constantColors.blueColor),
+                      ),
+                      onPressed: () {
+                        Provider.of<UploadPost>(context, listen: false)
+                            .selectPostImageType(context);
+                      },
+                      icon: Icon(
+                        EvaIcons.plusSquareOutline,
+                        color: constantColors.whiteColor,
+                      ),
+                      label: Text(
+                        "Add A Post",
+                        style: TextStyle(
+                          color: constantColors.whiteColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    TextButton.icon(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            constantColors.blueColor),
+                      ),
+                      onPressed: () {
+                        storyWidgets.addStory(context: context);
+                      },
+                      icon: Icon(
+                        EvaIcons.videoOutline,
+                        color: constantColors.whiteColor,
+                      ),
+                      label: Text(
+                        "Add A Story",
+                        style: TextStyle(
+                          color: constantColors.whiteColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

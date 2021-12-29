@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/Profile/profileHelpers.dart';
 import 'package:mared_social/services/authentication.dart';
@@ -15,12 +16,6 @@ class Profile extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        leading: IconButton(
-            onPressed: () {},
-            icon: Icon(
-              EvaIcons.settings2Outline,
-              color: constantColors.lightBlueColor,
-            )),
         actions: [
           IconButton(
             onPressed: () {
@@ -53,6 +48,24 @@ class Profile extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: constantColors.darkColor,
+        onPressed: () {
+          Provider.of<ProfileHelpers>(context, listen: false)
+              .postSelectType(context: context);
+        },
+        child: Stack(
+          children: [
+            Center(
+              child: Icon(
+                EvaIcons.plusCircleOutline,
+                color: constantColors.whiteColor,
+              ),
+            ),
+            Lottie.asset("assets/animations/cool.json"),
+          ],
         ),
       ),
       body: SingleChildScrollView(
