@@ -9,6 +9,7 @@ import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/screens/LandingPage/landingServices.dart';
 import 'package:mared_social/screens/LandingPage/landingUtils.dart';
+import 'package:mared_social/screens/splitter/splitter.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:nanoid/nanoid.dart';
@@ -124,7 +125,7 @@ class LandingHelpers with ChangeNotifier {
                         Navigator.pushReplacement(
                             context,
                             PageTransition(
-                                child: HomePage(),
+                                child: SplitPages(),
                                 type: PageTransitionType.rightToLeft));
                       } catch (e) {
                         CoolAlert.show(
@@ -196,7 +197,7 @@ class LandingHelpers with ChangeNotifier {
                         Navigator.pushReplacement(
                             context,
                             PageTransition(
-                                child: HomePage(),
+                                child: SplitPages(),
                                 type: PageTransitionType.rightToLeft));
                       } catch (e) {
                         CoolAlert.show(
@@ -245,7 +246,7 @@ class LandingHelpers with ChangeNotifier {
             Navigator.pushReplacement(
                 context,
                 PageTransition(
-                    child: HomePage(), type: PageTransitionType.rightToLeft));
+                    child: SplitPages(), type: PageTransitionType.rightToLeft));
           } catch (e) {
             CoolAlert.show(
               context: context,

@@ -10,6 +10,7 @@ import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/models/sharedPrefUser.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/screens/LandingPage/landingUtils.dart';
+import 'package:mared_social/screens/splitter/splitter.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:page_transition/page_transition.dart';
@@ -170,7 +171,7 @@ class LandingService with ChangeNotifier {
                             Navigator.pushReplacement(
                               context,
                               PageTransition(
-                                  child: HomePage(),
+                                  child: SplitPages(),
                                   type: PageTransitionType.bottomToTop),
                             );
                           } catch (e) {
@@ -309,7 +310,7 @@ class LandingService with ChangeNotifier {
                                   Navigator.pushReplacement(
                                     context,
                                     PageTransition(
-                                        child: HomePage(),
+                                        child: SplitPages(),
                                         type: PageTransitionType.bottomToTop),
                                   );
                                 } catch (e) {
@@ -552,7 +553,7 @@ class LandingService with ChangeNotifier {
                               Navigator.pushReplacement(
                                 context,
                                 PageTransition(
-                                    child: HomePage(),
+                                    child: SplitPages(),
                                     type: PageTransitionType.bottomToTop),
                               );
                             } catch (e) {

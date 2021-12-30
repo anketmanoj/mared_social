@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     Timer(
         const Duration(
-          seconds: 1,
+          seconds: 3,
         ),
         () => Navigator.pushReplacement(
             context,
