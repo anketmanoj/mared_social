@@ -3,6 +3,8 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/screens/auctionFeed/submitAuction.dart';
+import 'package:page_transition/page_transition.dart';
 
 class CreateAuctionScreen extends StatelessWidget {
   CreateAuctionScreen({Key? key}) : super(key: key);
@@ -85,33 +87,45 @@ class CreateAuctionScreen extends StatelessWidget {
                                   mainAxisSpacing: 10),
                           itemCount: snapshot.data!.docs.length,
                           itemBuilder: (BuildContext ctx, index) {
-                            return Container(
-                              padding: EdgeInsets.all(10),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(15),
-                                    child: SizedBox(
-                                      height: size.height * 0.113,
-                                      child: Lottie.network(
-                                        snapshot.data!.docs[index]["url"],
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        child: SubmitAuctionScreen(
+                                          auctionCategory: snapshot
+                                              .data!.docs[index]["name"],
+                                        ),
+                                        type: PageTransitionType.rightToLeft));
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(15),
+                                      child: SizedBox(
+                                        height: size.height * 0.113,
+                                        child: Lottie.network(
+                                          snapshot.data!.docs[index]["url"],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Text(
-                                    snapshot.data!.docs[index]["name"],
-                                    style: TextStyle(
-                                      color: constantColors.whiteColor,
-                                      fontSize: 14,
+                                    Text(
+                                      snapshot.data!.docs[index]["name"],
+                                      style: TextStyle(
+                                        color: constantColors.whiteColor,
+                                        fontSize: 14,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              decoration: BoxDecoration(
-                                color: constantColors.blueGreyColor,
-                                borderRadius: BorderRadius.circular(20),
+                                  ],
+                                ),
+                                decoration: BoxDecoration(
+                                  color: constantColors.blueGreyColor,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                               ),
                             );
                           }),

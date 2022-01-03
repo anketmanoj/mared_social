@@ -18,6 +18,8 @@ class _SplitPagesState extends State<SplitPages> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
+        leadingWidth: 0,
         elevation: 0,
         backgroundColor: constantColors.darkColor,
         title: Provider.of<SplitPagesHelper>(context, listen: false)

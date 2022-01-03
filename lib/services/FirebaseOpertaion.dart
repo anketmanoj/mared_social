@@ -91,6 +91,13 @@ class FirebaseOperations with ChangeNotifier {
     });
   }
 
+  Future uploadAuctionData(String auctionId, dynamic data) async {
+    return FirebaseFirestore.instance
+        .collection("auctions")
+        .doc(auctionId)
+        .set(data);
+  }
+
   Future uploadPostData(String postId, dynamic data) async {
     return FirebaseFirestore.instance.collection("posts").doc(postId).set(data);
   }
