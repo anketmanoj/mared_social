@@ -101,10 +101,8 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
           .child('posts/${element.path}/${TimeOfDay.now()}');
 
       imagePostUploadTask = imageReference.putFile(File(element.path));
-      await imagePostUploadTask.whenComplete(() {
-        print("Post image uploaded to storage");
-      });
-      imageReference.getDownloadURL().then((imageUrl) {
+      await imagePostUploadTask.whenComplete(() {});
+      await imageReference.getDownloadURL().then((imageUrl) {
         imagesList.add(imageUrl);
       });
     }
@@ -563,6 +561,7 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                                     if (_formKey.currentState!.validate()) {
                                       await uploadAuctionImageToFirebase()
                                           .whenComplete(() {
+                                        print(imagesList.length);
                                         String auctionId =
                                             nanoid(14).toString();
                                         String name =
