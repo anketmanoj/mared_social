@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/Feed/feedhelpers.dart';
@@ -15,28 +14,29 @@ import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class PostFunctions with ChangeNotifier {
-  TextEditingController commentController = TextEditingController();
+class AuctionFuctions with ChangeNotifier {
+  TextEditingController auctionCommentController = TextEditingController();
   ConstantColors constantColors = ConstantColors();
   final FCMNotificationService _fcmNotificationService =
       FCMNotificationService();
   late String imageTimePosted;
   String get getImageTimePosted => imageTimePosted;
-  TextEditingController updateDescriptionController = TextEditingController();
+  TextEditingController updateAuctionDescriptionController =
+      TextEditingController();
 
   getImageDescription(dynamic description) {
-    updateDescriptionController.text = description;
+    updateAuctionDescriptionController.text = description;
   }
 
   showTimeAgo(dynamic timeData) {
     Timestamp time = timeData;
     DateTime dateTime = time.toDate();
     imageTimePosted = timeago.format(dateTime);
-
     notifyListeners();
   }
 
-  showPostOptions({required BuildContext context, required String postId}) {
+  showAuctionOptions(
+      {required BuildContext context, required String auctionId}) {
     return showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -63,11 +63,11 @@ class PostFunctions with ChangeNotifier {
                 ),
                 StreamBuilder<DocumentSnapshot>(
                     stream: FirebaseFirestore.instance
-                        .collection("posts")
-                        .doc(postId)
+                        .collection("auctions")
+                        .doc(auctionId)
                         .snapshots(),
-                    builder: (context, postDocSnap) {
-                      if (postDocSnap.connectionState ==
+                    builder: (context, auctionDocSnap) {
+                      if (auctionDocSnap.connectionState ==
                           ConnectionState.waiting) {
                         return const Center(
                           child: CircularProgressIndicator(),
@@ -144,7 +144,7 @@ class PostFunctions with ChangeNotifier {
                                                         child: TextField(
                                                           maxLines: 5,
                                                           controller:
-                                                              updateDescriptionController,
+                                                              updateAuctionDescriptionController,
                                                           style: TextStyle(
                                                             color:
                                                                 constantColors
@@ -170,14 +170,15 @@ class PostFunctions with ChangeNotifier {
                                                         Provider.of<FirebaseOperations>(
                                                                 context,
                                                                 listen: false)
-                                                            .updateDescription(
-                                                                postDoc:
-                                                                    postDocSnap,
+                                                            .updateAuctionDescription(
+                                                                auctionDoc:
+                                                                    auctionDocSnap,
                                                                 context:
                                                                     context,
-                                                                postId: postId,
+                                                                auctionId:
+                                                                    auctionId,
                                                                 description:
-                                                                    updateDescriptionController
+                                                                    updateAuctionDescriptionController
                                                                         .text)
                                                             .whenComplete(() {
                                                           Navigator.pop(
@@ -222,9 +223,9 @@ class PostFunctions with ChangeNotifier {
                                     await Provider.of<FirebaseOperations>(
                                             context,
                                             listen: false)
-                                        .deletePostData(
-                                      userUid: postDocSnap.data!['useruid'],
-                                      postId: postId,
+                                        .deleteAuctionData(
+                                      userUid: auctionDocSnap.data!['useruid'],
+                                      auctionId: auctionId,
                                     );
                                   },
                                   onCancelBtnTap: () {
@@ -246,15 +247,15 @@ class PostFunctions with ChangeNotifier {
     );
   }
 
-  Future addLike({
+  Future addAuctionLike({
     required BuildContext context,
-    required String postID,
+    required String auctionID,
     required String subDocId,
     required String userUid,
   }) async {
     return FirebaseFirestore.instance
-        .collection('posts')
-        .doc(postID)
+        .collection('auctions')
+        .doc(auctionID)
         .collection('likes')
         .doc(subDocId)
         .set({
@@ -271,8 +272,8 @@ class PostFunctions with ChangeNotifier {
       await FirebaseFirestore.instance
           .collection("users")
           .doc(userUid)
-          .collection('posts')
-          .doc(postID)
+          .collection('auctions')
+          .doc(auctionID)
           .collection('likes')
           .doc(subDocId)
           .set({
@@ -291,15 +292,15 @@ class PostFunctions with ChangeNotifier {
             .collection("users")
             .doc(userUid)
             .get()
-            .then((postUser) async {
+            .then((auctionUser) async {
           await FirebaseFirestore.instance
               .collection("users")
               .doc(subDocId)
               .get()
               .then((likingUser) async {
             await _fcmNotificationService.sendNotificationToUser(
-                to: postUser['fcmToken']!, //To change once set up
-                title: "${likingUser['username']} liked your post",
+                to: auctionUser['fcmToken']!, //To change once set up
+                title: "${likingUser['username']} liked your auction",
                 body: "");
           });
         });
@@ -307,16 +308,16 @@ class PostFunctions with ChangeNotifier {
     });
   }
 
-  Future addComment({
+  Future addAuctionComment({
     required String userUid,
-    required String postId,
+    required String auctionId,
     required String comment,
     required BuildContext context,
   }) async {
     String commentId = nanoid(14).toString();
     await FirebaseFirestore.instance
-        .collection('posts')
-        .doc(postId)
+        .collection('auctions')
+        .doc(auctionId)
         .collection('comments')
         .doc(commentId)
         .set({
@@ -335,14 +336,14 @@ class PostFunctions with ChangeNotifier {
           .collection("users")
           .doc(userUid)
           .get()
-          .then((postUser) async {
+          .then((auctionUser) async {
         await FirebaseFirestore.instance
             .collection("users")
             .doc(Provider.of<Authentication>(context, listen: false).getUserId)
             .get()
             .then((commentingUser) async {
           await _fcmNotificationService.sendNotificationToUser(
-              to: postUser['fcmToken']!, //To change once set up
+              to: auctionUser['fcmToken']!, //To change once set up
               title: "${commentingUser['username']} commented",
               body: comment);
         });
@@ -350,147 +351,11 @@ class PostFunctions with ChangeNotifier {
     });
   }
 
-  showAwardsPresenter({required BuildContext context, required String postId}) {
-    return showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return SafeArea(
-          bottom: true,
-          child: Container(
-            decoration: BoxDecoration(
-              color: constantColors.blueGreyColor,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
-              ),
-            ),
-            height: MediaQuery.of(context).size.height * 0.5,
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 150),
-                  child: Divider(
-                    thickness: 4,
-                    color: constantColors.whiteColor,
-                  ),
-                ),
-                Container(
-                  width: 100,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: constantColors.whiteColor,
-                    ),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Awards",
-                      style: TextStyle(
-                        color: constantColors.blueColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  width: MediaQuery.of(context).size.width,
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('posts')
-                        .doc(postId)
-                        .collection("awards")
-                        .orderBy('time', descending: true)
-                        .snapshots(),
-                    builder: (context, awardSnaps) {
-                      return ListView(
-                        children: awardSnaps.data!.docs.map(
-                          (DocumentSnapshot awardDocSnap) {
-                            return InkWell(
-                              onTap: () {
-                                if (awardDocSnap['useruid'] !=
-                                    Provider.of<Authentication>(context,
-                                            listen: false)
-                                        .getUserId) {
-                                  Navigator.pushReplacement(
-                                      context,
-                                      PageTransition(
-                                          child: AltProfile(
-                                            userUid: awardDocSnap['useruid'],
-                                          ),
-                                          type:
-                                              PageTransitionType.bottomToTop));
-                                }
-                              },
-                              child: ListTile(
-                                leading: SizedBox(
-                                  height: 30,
-                                  width: 30,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(15),
-                                    child: CachedNetworkImage(
-                                      fit: BoxFit.cover,
-                                      imageUrl: awardDocSnap['userimage'],
-                                      progressIndicatorBuilder: (context, url,
-                                              downloadProgress) =>
-                                          LoadingWidget(
-                                              constantColors: constantColors),
-                                      errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
-                                    ),
-                                  ),
-                                ),
-                                trailing: Provider.of<Authentication>(context,
-                                                listen: false)
-                                            .getUserId ==
-                                        awardDocSnap['useruid']
-                                    ? const SizedBox(
-                                        height: 0,
-                                        width: 0,
-                                      )
-                                    : MaterialButton(
-                                        child: Text("Follow",
-                                            style: TextStyle(
-                                              color: constantColors.whiteColor,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
-                                            )),
-                                        onPressed: () {},
-                                        color: constantColors.blueColor,
-                                      ),
-                                title: Text(
-                                  awardDocSnap['username'],
-                                  style: TextStyle(
-                                    color: constantColors.blueColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ).toList(),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   showCommentsSheet({
     required BuildContext context,
     required DocumentSnapshot snapshot,
-    required String postId,
+    required String auctionId,
   }) {
-    print(snapshot['username']);
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -536,8 +401,8 @@ class PostFunctions with ChangeNotifier {
                     width: MediaQuery.of(context).size.width,
                     child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
-                          .collection('posts')
-                          .doc(postId)
+                          .collection('auctions')
+                          .doc(auctionId)
                           .collection("comments")
                           .orderBy('time', descending: true)
                           .snapshots(),
@@ -700,8 +565,9 @@ class PostFunctions with ChangeNotifier {
                                                     Provider.of<FirebaseOperations>(
                                                             context,
                                                             listen: false)
-                                                        .deleteUserComment(
-                                                            postId: postId,
+                                                        .deleteAuctionUserComment(
+                                                            auctionId:
+                                                                auctionId,
                                                             commentId:
                                                                 commentDocSnap[
                                                                     'commentid']);
@@ -750,7 +616,7 @@ class PostFunctions with ChangeNotifier {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            controller: commentController,
+                            controller: auctionCommentController,
                             style: TextStyle(
                               color: constantColors.whiteColor,
                               fontSize: 16,
@@ -769,13 +635,13 @@ class PostFunctions with ChangeNotifier {
                                         listen: false)
                                     .getIsAnon ==
                                 false) {
-                              addComment(
+                              addAuctionComment(
                                       userUid: snapshot['useruid'],
-                                      postId: snapshot['postid'],
-                                      comment: commentController.text,
+                                      auctionId: snapshot['auctionid'],
+                                      comment: auctionCommentController.text,
                                       context: context)
                                   .whenComplete(() {
-                                commentController.clear();
+                                auctionCommentController.clear();
                                 notifyListeners();
                               });
                             } else {
@@ -803,8 +669,9 @@ class PostFunctions with ChangeNotifier {
     );
   }
 
-  showLikes({required BuildContext context, required String postId}) {
+  showLikes({required BuildContext context, required String auctionId}) {
     return showModalBottomSheet(
+      isScrollControlled: true,
       context: context,
       builder: (context) {
         return SafeArea(
@@ -852,8 +719,8 @@ class PostFunctions with ChangeNotifier {
                   width: MediaQuery.of(context).size.width,
                   child: StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
-                        .collection("posts")
-                        .doc(postId)
+                        .collection("auctions")
+                        .doc(auctionId)
                         .collection("likes")
                         .snapshots(),
                     builder: (context, snapshot) {
@@ -940,130 +807,6 @@ class PostFunctions with ChangeNotifier {
                         );
                       }
                     },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  showRewards({
-    required BuildContext context,
-    required String postId,
-  }) {
-    return showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return SafeArea(
-          bottom: true,
-          child: Container(
-            height: MediaQuery.of(context).size.height * 0.3,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              color: constantColors.blueGreyColor,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
-              ),
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 150),
-                  child: Divider(
-                    thickness: 4,
-                    color: constantColors.whiteColor,
-                  ),
-                ),
-                Container(
-                  width: 100,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: constantColors.whiteColor,
-                    ),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Rewards",
-                      style: TextStyle(
-                        color: constantColors.blueColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    width: MediaQuery.of(context).size.width,
-                    child: StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection("awards")
-                          .snapshots(),
-                      builder: (context, awardSnap) {
-                        if (awardSnap.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        } else {
-                          return ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: awardSnap.data!.docs
-                                  .map((DocumentSnapshot awardDocSnap) {
-                                return InkWell(
-                                  onTap: () async {
-                                    if (Provider.of<Authentication>(context,
-                                                listen: false)
-                                            .getIsAnon ==
-                                        false) {
-                                      await Provider.of<FirebaseOperations>(
-                                              context,
-                                              listen: false)
-                                          .addAward(postId: postId, data: {
-                                        'username':
-                                            Provider.of<FirebaseOperations>(
-                                                    context,
-                                                    listen: false)
-                                                .getInitUserName,
-                                        'userimage':
-                                            Provider.of<FirebaseOperations>(
-                                                    context,
-                                                    listen: false)
-                                                .getInitUserImage,
-                                        'useruid': Provider.of<Authentication>(
-                                                context,
-                                                listen: false)
-                                            .getUserId,
-                                        'time': Timestamp.now(),
-                                        'award': awardDocSnap['image'],
-                                      });
-                                    } else {
-                                      Provider.of<FeedHelpers>(context,
-                                              listen: false)
-                                          .IsAnonBottomSheet(context);
-                                    }
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 8.0),
-                                    child: SizedBox(
-                                      height: 50,
-                                      width: 50,
-                                      child:
-                                          Image.network(awardDocSnap['image']),
-                                    ),
-                                  ),
-                                );
-                              }).toList());
-                        }
-                      },
-                    ),
                   ),
                 ),
               ],

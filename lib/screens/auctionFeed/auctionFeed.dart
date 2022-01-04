@@ -9,6 +9,8 @@ class AuctionFeed extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      body: Provider.of<AuctionFeedHelper>(context, listen: false)
+          .auctionFeedBody(context),
       backgroundColor: constantColors.blueGreyColor,
       floatingActionButton:
           Provider.of<AuctionFeedHelper>(context, listen: false)

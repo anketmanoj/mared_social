@@ -27,6 +27,7 @@ import 'package:mared_social/screens/splashscreens/splashscreen.dart';
 import 'package:mared_social/screens/splitter/splitterhelper.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
+import 'package:mared_social/utils/auctionoptions.dart';
 import 'package:mared_social/utils/postoptions.dart';
 import 'package:mared_social/utils/uploadpost.dart';
 import 'package:provider/provider.dart';
@@ -83,6 +84,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       providers: [
+        ChangeNotifierProvider(create: (_) => AuctionFuctions()),
         ChangeNotifierProvider(create: (_) => AuctionFeedHelper()),
         ChangeNotifierProvider(create: (_) => AuctionAppHelper()),
         ChangeNotifierProvider(create: (_) => SplitPagesHelper()),

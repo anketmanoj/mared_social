@@ -559,6 +559,8 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                                   ),
                                   onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
+                                      LoadingWidget(
+                                          constantColors: constantColors);
                                       await uploadAuctionImageToFirebase()
                                           .whenComplete(() {
                                         print(imagesList.length);
@@ -590,6 +592,7 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                                           'auctioncategory':
                                               widget.auctionCategory,
                                           'title': titleController.text,
+                                          'views': 0,
                                           'username':
                                               Provider.of<FirebaseOperations>(
                                                       context,
@@ -641,6 +644,7 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                                             'searchindex': indexList,
                                             'auctioncategory':
                                                 widget.auctionCategory,
+                                            'views': 0,
                                             'title': titleController.text,
                                             'phone': phoneController.text,
                                             'username':

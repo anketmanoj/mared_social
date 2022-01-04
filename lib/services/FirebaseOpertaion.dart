@@ -122,11 +122,37 @@ class FirebaseOperations with ChangeNotifier {
     });
   }
 
+  Future deleteAuctionData(
+      {required String auctionId, required String userUid}) async {
+    return await FirebaseFirestore.instance
+        .collection("auctions")
+        .doc(auctionId)
+        .delete()
+        .whenComplete(() async {
+      return await FirebaseFirestore.instance
+          .collection("users")
+          .doc(userUid)
+          .collection("auctions")
+          .doc(auctionId)
+          .delete();
+    });
+  }
+
   Future deleteUserComment(
       {required String postId, required String commentId}) async {
     return FirebaseFirestore.instance
         .collection("posts")
         .doc(postId)
+        .collection("comments")
+        .doc(commentId)
+        .delete();
+  }
+
+  Future deleteAuctionUserComment(
+      {required String auctionId, required String commentId}) async {
+    return FirebaseFirestore.instance
+        .collection("auctions")
+        .doc(auctionId)
         .collection("comments")
         .doc(commentId)
         .delete();
@@ -167,6 +193,40 @@ class FirebaseOperations with ChangeNotifier {
           .doc(Provider.of<Authentication>(context, listen: false).getUserId)
           .collection("posts")
           .doc(postId)
+          .update({
+        'description': description,
+        'searchindex': indexList,
+      });
+    });
+  }
+
+  Future updateAuctionDescription(
+      {required String auctionId,
+      required AsyncSnapshot<DocumentSnapshot> auctionDoc,
+      String? description,
+      required BuildContext context}) async {
+    String name = "${auctionDoc.data!['title']} ${description}";
+
+    List<String> splitList = name.split(" ");
+    List<String> indexList = [];
+
+    for (int i = 0; i < splitList.length; i++) {
+      for (int j = 0; j < splitList[i].length; j++) {
+        indexList.add(splitList[i].substring(0, j + 1).toLowerCase());
+      }
+    }
+    return await FirebaseFirestore.instance
+        .collection("auctions")
+        .doc(auctionId)
+        .update({
+      'description': description,
+      'searchindex': indexList,
+    }).whenComplete(() async {
+      return await FirebaseFirestore.instance
+          .collection("users")
+          .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+          .collection("auctions")
+          .doc(auctionId)
           .update({
         'description': description,
         'searchindex': indexList,
