@@ -8,6 +8,7 @@ import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/Feed/feedhelpers.dart';
+import 'package:mared_social/screens/auctionFeed/auctionpage.dart';
 import 'package:mared_social/screens/auctionFeed/createAuctionScreen.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/auctionoptions.dart';
@@ -192,27 +193,16 @@ class AuctionFeedHelper with ChangeNotifier {
                             Padding(
                               padding: const EdgeInsets.only(top: 16.0),
                               child: InkWell(
-                                onDoubleTap: () {
-                                  if (Provider.of<Authentication>(context,
-                                              listen: false)
-                                          .getIsAnon ==
-                                      false) {
-                                    Provider.of<AuctionFuctions>(context,
-                                            listen: false)
-                                        .addAuctionLike(
-                                      userUid: documentSnapshot['useruid'],
-                                      context: context,
-                                      auctionID: documentSnapshot['auctionid'],
-                                      subDocId: Provider.of<Authentication>(
-                                              context,
-                                              listen: false)
-                                          .getUserId,
-                                    );
-                                  } else {
-                                    Provider.of<FeedHelpers>(context,
-                                            listen: false)
-                                        .IsAnonBottomSheet(context);
-                                  }
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          child: AuctionPage(
+                                            auctionId:
+                                                documentSnapshot['auctionid'],
+                                          ),
+                                          type:
+                                              PageTransitionType.bottomToTop));
                                 },
                                 child: SizedBox(
                                   height:
@@ -272,6 +262,31 @@ class AuctionFeedHelper with ChangeNotifier {
                                   children: [
                                     InkWell(
                                       onTap: () {
+                                        if (Provider.of<Authentication>(context,
+                                                    listen: false)
+                                                .getIsAnon ==
+                                            false) {
+                                          Provider.of<AuctionFuctions>(context,
+                                                  listen: false)
+                                              .addAuctionLike(
+                                            userUid:
+                                                documentSnapshot['useruid'],
+                                            context: context,
+                                            auctionID:
+                                                documentSnapshot['auctionid'],
+                                            subDocId:
+                                                Provider.of<Authentication>(
+                                                        context,
+                                                        listen: false)
+                                                    .getUserId,
+                                          );
+                                        } else {
+                                          Provider.of<FeedHelpers>(context,
+                                                  listen: false)
+                                              .IsAnonBottomSheet(context);
+                                        }
+                                      },
+                                      onLongPress: () {
                                         Provider.of<AuctionFuctions>(context,
                                                 listen: false)
                                             .showLikes(

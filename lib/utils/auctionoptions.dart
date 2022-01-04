@@ -308,6 +308,50 @@ class AuctionFuctions with ChangeNotifier {
     });
   }
 
+  Future addAuctionView({
+    required BuildContext context,
+    required String auctionID,
+    required String subDocId,
+    required String userUid,
+  }) async {
+    return FirebaseFirestore.instance
+        .collection('auctions')
+        .doc(auctionID)
+        .collection('views')
+        .doc(subDocId)
+        .set({
+      'views': FieldValue.increment(1),
+      'username': Provider.of<FirebaseOperations>(context, listen: false)
+          .getInitUserName,
+      'useruid': Provider.of<Authentication>(context, listen: false).getUserId,
+      'userimage': Provider.of<FirebaseOperations>(context, listen: false)
+          .getInitUserImage,
+      'useremail': Provider.of<FirebaseOperations>(context, listen: false)
+          .getInitUserEmail,
+      'time': Timestamp.now(),
+    }).whenComplete(() async {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(userUid)
+          .collection('auctions')
+          .doc(auctionID)
+          .collection('views')
+          .doc(subDocId)
+          .set({
+        'views': FieldValue.increment(1),
+        'username': Provider.of<FirebaseOperations>(context, listen: false)
+            .getInitUserName,
+        'useruid':
+            Provider.of<Authentication>(context, listen: false).getUserId,
+        'userimage': Provider.of<FirebaseOperations>(context, listen: false)
+            .getInitUserImage,
+        'useremail': Provider.of<FirebaseOperations>(context, listen: false)
+            .getInitUserEmail,
+        'time': Timestamp.now(),
+      });
+    });
+  }
+
   Future addAuctionComment({
     required String userUid,
     required String auctionId,
