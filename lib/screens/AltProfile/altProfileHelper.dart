@@ -25,11 +25,6 @@ class AltProfileHelper with ChangeNotifier {
       leading: IconButton(
         onPressed: () {
           Navigator.pop(context);
-          // Navigator.pushReplacement(
-          //     context,
-          //     PageTransition(
-          //         child: const HomePage(),
-          //         type: PageTransitionType.topToBottom));
         },
         icon: Icon(
           Icons.arrow_back_ios_sharp,
@@ -42,11 +37,6 @@ class AltProfileHelper with ChangeNotifier {
         IconButton(
           onPressed: () {
             Navigator.pop(context);
-            // Navigator.pushReplacement(
-            //     context,
-            //     PageTransition(
-            //         child: const HomePage(),
-            //         type: PageTransitionType.topToBottom));
           },
           icon: Icon(
             EvaIcons.moreVertical,

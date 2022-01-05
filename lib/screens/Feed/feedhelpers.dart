@@ -81,6 +81,7 @@ class FeedHelpers with ChangeNotifier {
     return CustomScrollView(
       slivers: [
         SliverAppBar(
+          automaticallyImplyLeading: false,
           expandedHeight: MediaQuery.of(context).size.height * 0.335,
           flexibleSpace: FlexibleSpaceBar(
             background: Container(

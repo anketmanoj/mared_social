@@ -19,6 +19,7 @@ class Profile extends StatelessWidget {
     return Scaffold(
       backgroundColor: constantColors.blueGreyColor,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         centerTitle: true,
         actions: [
           IconButton(
@@ -75,6 +76,7 @@ class Profile extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+            automaticallyImplyLeading: false,
             expandedHeight: size.height * 0.43,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(

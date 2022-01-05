@@ -118,44 +118,25 @@ class ProfileHelpers with ChangeNotifier {
                             .store,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: InkWell(
-                        onTap: () async {
-                          // await FirebaseFirestore.instance
-                          //     .collection("posts")
-                          //     .get()
-                          //     .then((post) async {
-                          //   post.docs.forEach((postDoc) async {
-                          //     await FirebaseFirestore.instance
-                          //         .collection("posts")
-                          //         .doc(postDoc.id)
-                          //         .update({
-                          //       'address': "",
-                          //       'lat': '',
-                          //       'lng': '',
-                          //     });
-                          //   });
-                          // });
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.storeAlt,
-                              color: constantColors.blueColor,
-                              size: 12,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: Text(
-                                "Store Profile",
-                                style: TextStyle(
-                                  color: constantColors.blueColor,
-                                  fontSize: 12,
-                                ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.storeAlt,
+                            color: constantColors.blueColor,
+                            size: 12,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(
+                              "Store Profile",
+                              style: TextStyle(
+                                color: constantColors.blueColor,
+                                fontSize: 12,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

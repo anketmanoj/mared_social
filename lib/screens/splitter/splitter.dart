@@ -18,6 +18,7 @@ class _SplitPagesState extends State<SplitPages> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         centerTitle: true,
         leadingWidth: 0,
         elevation: 0,
