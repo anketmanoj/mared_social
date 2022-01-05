@@ -16,6 +16,72 @@ class ConstantColors {
   final Color greyColor = Colors.grey.shade600;
 }
 
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1).toLowerCase()}";
+  }
+}
+
+// ignore: must_be_immutable
+class ExpandableText extends StatefulWidget {
+  ExpandableText({required this.text, required this.textStyle, Key? key})
+      : super(key: key);
+
+  final String text;
+  final TextStyle textStyle;
+  bool isExpanded = false;
+
+  @override
+  _ExpandableTextState createState() => _ExpandableTextState();
+}
+
+class _ExpandableTextState extends State<ExpandableText>
+    with TickerProviderStateMixin<ExpandableText> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        AnimatedSize(
+            duration: const Duration(milliseconds: 500),
+            child: ConstrainedBox(
+                constraints: widget.isExpanded
+                    ? const BoxConstraints()
+                    : const BoxConstraints(maxHeight: 50.0),
+                child: Text(
+                  widget.text,
+                  style: widget.textStyle,
+                  softWrap: true,
+                  overflow: TextOverflow.fade,
+                ))),
+        widget.isExpanded
+            ? Column(
+                children: [
+                  ConstrainedBox(constraints: const BoxConstraints()),
+                  TextButton(
+                    child: Text(
+                      'Show Less',
+                      style: widget.textStyle
+                          .copyWith(color: Colors.lightBlue, fontSize: 10),
+                    ),
+                    onPressed: () => setState(() => widget.isExpanded = false),
+                  ),
+                ],
+              )
+            : TextButton(
+                child: Text(
+                  'Show more',
+                  style: widget.textStyle.copyWith(
+                    color: Colors.lightBlue,
+                    fontSize: 10,
+                  ),
+                ),
+                onPressed: () => setState(() => widget.isExpanded = true),
+              ),
+      ],
+    );
+  }
+}
+
 class LoadingWidget extends StatelessWidget {
   const LoadingWidget({
     Key? key,

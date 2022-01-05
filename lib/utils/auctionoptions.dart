@@ -32,6 +32,7 @@ class AuctionFuctions with ChangeNotifier {
     Timestamp time = timeData;
     DateTime dateTime = time.toDate();
     imageTimePosted = timeago.format(dateTime);
+
     notifyListeners();
   }
 

@@ -559,8 +559,10 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                                   ),
                                   onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
-                                      LoadingWidget(
-                                          constantColors: constantColors);
+                                      CoolAlert.show(
+                                          context: context,
+                                          type: CoolAlertType.loading,
+                                          title: "Posting Your Auction");
                                       await uploadAuctionImageToFirebase()
                                           .whenComplete(() {
                                         print(imagesList.length);
@@ -624,11 +626,13 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                                               startingPriceController.text,
                                           'minimumbid':
                                               minimumBidController.text,
+                                          'currentprice':
+                                              startingPriceController.text,
                                           'phone': phoneController.text,
-                                          'startdate': _selectedStartDate!
-                                              .toIso8601String(),
-                                          'enddate': _selectedEndDate!
-                                              .toIso8601String(),
+                                          'startdate': Timestamp.fromDate(
+                                              _selectedStartDate!),
+                                          'enddate': Timestamp.fromDate(
+                                              _selectedEndDate!),
                                         }).whenComplete(() async {
                                           // Add data under user profile
                                           return FirebaseFirestore.instance
@@ -670,6 +674,8 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                                                     .getInitUserEmail,
                                             'description':
                                                 descriptionController.text,
+                                            'currentprice':
+                                                startingPriceController.text,
                                             'imageslist': imagesList,
                                             'address': address,
                                             'lat': lat,
@@ -678,12 +684,13 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                                                 startingPriceController.text,
                                             'minimumbid':
                                                 minimumBidController.text,
-                                            'startdate': _selectedStartDate!
-                                                .toIso8601String(),
-                                            'enddate': _selectedEndDate!
-                                                .toIso8601String(),
+                                            'startdate': Timestamp.fromDate(
+                                                _selectedStartDate!),
+                                            'enddate': Timestamp.fromDate(
+                                                _selectedEndDate!),
                                           });
                                         }).whenComplete(() {
+                                          Navigator.pop(context);
                                           Navigator.pop(context);
                                           Navigator.pop(context);
                                         });

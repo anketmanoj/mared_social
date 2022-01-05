@@ -153,8 +153,6 @@ class CatgeoryFeedHelper with ChangeNotifier {
         Provider.of<PostFunctions>(context, listen: false)
             .showTimeAgo(documentSnapshot['time']);
 
-        print("from db == ${documentSnapshot['postcategory']}");
-
         return SizedBox(
           height: MediaQuery.of(context).size.height * 0.65,
           width: MediaQuery.of(context).size.width,
