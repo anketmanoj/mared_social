@@ -11,7 +11,7 @@ class AuctionFeed extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       body: Provider.of<AuctionFeedHelper>(context, listen: false)
           .auctionFeedBody(context),
-      backgroundColor: constantColors.blueGreyColor,
+      backgroundColor: constantColors.darkColor,
       floatingActionButton:
           Provider.of<AuctionFeedHelper>(context, listen: false)
               .postAuction(context),

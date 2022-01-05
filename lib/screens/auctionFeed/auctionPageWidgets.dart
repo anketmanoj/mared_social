@@ -9,8 +9,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/Feed/feedhelpers.dart';
+import 'package:mared_social/screens/auctionFeed/auctionProductMap.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/auctionoptions.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class AuctionStarted extends StatelessWidget {
@@ -313,10 +315,13 @@ class AuctionStarted extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 5.0),
-                      child: SizedBox(
+                      child: Container(
+                        alignment: Alignment.centerLeft,
                         width: size.width,
                         child: ExpandableText(
-                          text: auctionDocSnap['description'].toString(),
+                          text: auctionDocSnap['description']
+                              .toString()
+                              .capitalize(),
                           textStyle: TextStyle(
                             color: constantColors.whiteColor,
                             fontSize: 16,
@@ -424,38 +429,42 @@ class AuctionStarted extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            SizedBox(
-                              width: size.width,
-                              child: StreamBuilder<QuerySnapshot>(
-                                stream: FirebaseFirestore.instance
-                                    .collection("auctions")
-                                    .doc(auctionDocSnap.id)
-                                    .collection("bids")
-                                    .snapshots(),
-                                builder: (context, bidSnap) {
-                                  if (bidSnap.data!.docs.isEmpty) {
-                                    return Container(
-                                      alignment: Alignment.center,
-                                      height: size.height * 0.264,
-                                      width: size.width,
-                                      decoration: BoxDecoration(
-                                        color: constantColors.darkColor,
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: Text(
-                                        "No Bids Placed Yet",
-                                        style: TextStyle(
-                                          color: constantColors.greenColor,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: SizedBox(
+                                width: size.width,
+                                child: StreamBuilder<QuerySnapshot>(
+                                  stream: FirebaseFirestore.instance
+                                      .collection("auctions")
+                                      .doc(auctionDocSnap.id)
+                                      .collection("bids")
+                                      .snapshots(),
+                                  builder: (context, bidSnap) {
+                                    if (bidSnap.data!.docs.isEmpty) {
+                                      return Container(
+                                        alignment: Alignment.center,
+                                        height: size.height * 0.24,
+                                        width: size.width,
+                                        decoration: BoxDecoration(
+                                          color: constantColors.darkColor,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
                                         ),
-                                      ),
-                                    );
-                                  } else {
-                                    return LoadingWidget(
-                                        constantColors: constantColors);
-                                  }
-                                },
+                                        child: Text(
+                                          "No Bids Placed Yet",
+                                          style: TextStyle(
+                                            color: constantColors.greenColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      return LoadingWidget(
+                                          constantColors: constantColors);
+                                    }
+                                  },
+                                ),
                               ),
                             ),
                           ],
@@ -465,53 +474,134 @@ class AuctionStarted extends StatelessWidget {
                     Divider(
                       color: constantColors.lightColor,
                     ),
-                    StatefulBuilder(builder: (context, innerState) {
-                      Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-                      LatLng _center = LatLng(
-                        double.parse(auctionDocSnap['lat']),
-                        double.parse(auctionDocSnap['lng']),
-                      );
-
-                      void _onMapCreated(GoogleMapController controller) {
-                        googleMapController = controller;
-
-                        final marker = Marker(
-                          markerId: MarkerId(auctionDocSnap.id),
-                          onTap: () {
-                            print("okay");
-                          },
-                          position: LatLng(
-                            double.parse(auctionDocSnap['lat']),
-                            double.parse(auctionDocSnap['lng']),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Icon(
+                            Icons.location_on_rounded,
+                            size: 30,
+                            color: constantColors.blueColor,
                           ),
-                          infoWindow: InfoWindow(
-                            title: 'title',
-                            snippet: 'address',
+                          Expanded(
+                            child: Text(
+                              auctionDocSnap['address'].toString().capitalize(),
+                              style: TextStyle(
+                                color: constantColors.whiteColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
                           ),
+                        ],
+                      ),
+                    ),
+                    StatefulBuilder(
+                      builder: (context, innerState) {
+                        Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+                        LatLng _center = LatLng(
+                          double.parse(auctionDocSnap['lat']),
+                          double.parse(auctionDocSnap['lng']),
                         );
 
-                        innerState(() {
-                          markers[MarkerId(auctionDocSnap.id)] = marker;
-                        });
-                      }
+                        void _onMapCreated(GoogleMapController controller) {
+                          googleMapController = controller;
 
-                      return Container(
-                        height: size.height * 0.4,
-                        width: size.width,
-                        color: constantColors.whiteColor,
-                        child: GoogleMap(
-                          myLocationEnabled: true,
-                          myLocationButtonEnabled: true,
-                          mapToolbarEnabled: true,
-                          onMapCreated: _onMapCreated,
-                          initialCameraPosition: CameraPosition(
-                            target: _center,
-                            zoom: 14.0,
+                          final marker = Marker(
+                            markerId: MarkerId(auctionDocSnap.id),
+                            onTap: () {
+                              print("okay");
+                            },
+                            position: LatLng(
+                              double.parse(auctionDocSnap['lat']),
+                              double.parse(auctionDocSnap['lng']),
+                            ),
+                            infoWindow: InfoWindow(
+                              title: 'title',
+                              snippet: 'address',
+                            ),
+                          );
+
+                          innerState(() {
+                            markers[MarkerId(auctionDocSnap.id)] = marker;
+                          });
+                        }
+
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                PageTransition(
+                                    child: AuctionProductMapScreen(
+                                        docSnap: auctionDocSnap,
+                                        docSnapId: auctionDocSnap.id),
+                                    type: PageTransitionType.leftToRight));
+                          },
+                          child: Stack(
+                            children: [
+                              Container(
+                                height: size.height * 0.3,
+                                width: size.width,
+                                color: constantColors.whiteColor,
+                                child: AbsorbPointer(
+                                  absorbing: true,
+                                  child: GoogleMap(
+                                    myLocationEnabled: true,
+                                    myLocationButtonEnabled: false,
+                                    mapToolbarEnabled: true,
+                                    onMapCreated: _onMapCreated,
+                                    initialCameraPosition: CameraPosition(
+                                      target: _center,
+                                      zoom: 14.0,
+                                    ),
+                                    markers: markers.values.toSet(),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                child: Center(
+                                    child: Icon(
+                                  Icons.location_on_rounded,
+                                  size: 40,
+                                  color: constantColors.redColor,
+                                )),
+                              ),
+                            ],
                           ),
-                          markers: markers.values.toSet(),
+                        );
+                      },
+                    ),
+                    Divider(
+                      color: constantColors.lightColor,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Icon(
+                            Icons.error_outline_rounded,
+                            size: 30,
+                            color: constantColors.blueColor,
+                          ),
                         ),
-                      );
-                    }),
+                        Expanded(
+                          child: Text(
+                            "The legal integrity of the auction is the sole responsibility of the auction owner (${auctionDocSnap['username']}) and we strongly advise not to make any payments to the auction owner before verifying the quality and rightful ownership of the product / service being offered. Mared does not participate in any financial transaction between the auction owner and the bidder.",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),

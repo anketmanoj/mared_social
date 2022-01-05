@@ -275,6 +275,45 @@ class FirebaseOperations with ChangeNotifier {
     });
   }
 
+  Future unfollowUser({
+    required String followingUid,
+    required String followingDocId,
+    required String followerUid,
+    required String followerDocId,
+  }) async {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(followingUid)
+        .collection("followers")
+        .doc(followingDocId)
+        .delete()
+        .whenComplete(() async {
+      return FirebaseFirestore.instance
+          .collection("users")
+          .doc(followerUid)
+          .collection("following")
+          .doc(followerDocId)
+          .delete();
+    }).whenComplete(() async {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(followingUid)
+          .get()
+          .then((postUser) async {
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(followerUid)
+            .get()
+            .then((followingUser) async {
+          await _fcmNotificationService.sendNotificationToUser(
+              to: postUser['fcmToken']!, //To change once set up
+              title: "${followingUser['username']} unfollowed you",
+              body: "");
+        });
+      });
+    });
+  }
+
   Future submitChatroomData({
     required String chatroomName,
     required dynamic chatroomData,

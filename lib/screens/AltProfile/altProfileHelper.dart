@@ -372,140 +372,286 @@ class AltProfileHelper with ChangeNotifier {
               ),
             ],
           ),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.07,
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                MaterialButton(
-                  color: constantColors.blueColor,
-                  child: Text(
-                    "Follow",
-                    style: TextStyle(
-                      color: constantColors.whiteColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+          StreamBuilder<DocumentSnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(userDocSnap.data!['useruid'])
+                  .collection("followers")
+                  .doc(Provider.of<Authentication>(context, listen: false)
+                      .getUserId)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.data!.exists) {
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.07,
+                    width: MediaQuery.of(context).size.width,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        MaterialButton(
+                          color: constantColors.blueColor,
+                          child: Text(
+                            "Follow",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          onPressed: () {
+                            if (Provider.of<Authentication>(context,
+                                        listen: false)
+                                    .getIsAnon ==
+                                false) {
+                              Provider.of<FirebaseOperations>(context,
+                                      listen: false)
+                                  .followUser(
+                                followingUid: userUid,
+                                followingDocId: Provider.of<Authentication>(
+                                        context,
+                                        listen: false)
+                                    .getUserId,
+                                followingData: {
+                                  'username': Provider.of<FirebaseOperations>(
+                                          context,
+                                          listen: false)
+                                      .getInitUserName,
+                                  'userimage': Provider.of<FirebaseOperations>(
+                                          context,
+                                          listen: false)
+                                      .getInitUserImage,
+                                  'useremail': Provider.of<FirebaseOperations>(
+                                          context,
+                                          listen: false)
+                                      .getInitUserEmail,
+                                  'useruid': Provider.of<Authentication>(
+                                          context,
+                                          listen: false)
+                                      .getUserId,
+                                  'time': Timestamp.now(),
+                                },
+                                followerUid: Provider.of<Authentication>(
+                                        context,
+                                        listen: false)
+                                    .getUserId,
+                                followerDocId: userUid,
+                                followerData: {
+                                  'username': userDocSnap.data!['username'],
+                                  'userimage': userDocSnap.data!['userimage'],
+                                  'useremail': userDocSnap.data!['useremail'],
+                                  'useruid': userDocSnap.data!['useruid'],
+                                  'time': Timestamp.now(),
+                                },
+                              )
+                                  .whenComplete(() {
+                                followedNotification(
+                                    context: context,
+                                    name: userDocSnap.data!['username']);
+                              });
+                            } else {
+                              Provider.of<FeedHelpers>(context, listen: false)
+                                  .IsAnonBottomSheet(context);
+                            }
+                          },
+                        ),
+                        MaterialButton(
+                          color: constantColors.blueColor,
+                          child: Text(
+                            "Message",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          onPressed: () async {
+                            if (Provider.of<Authentication>(context,
+                                        listen: false)
+                                    .getIsAnon ==
+                                false) {
+                              await Provider.of<FirebaseOperations>(context,
+                                      listen: false)
+                                  .messageUser(
+                                      messagingUid: userUid,
+                                      messagingDocId:
+                                          Provider.of<Authentication>(context,
+                                                  listen: false)
+                                              .getUserId,
+                                      messagingData: {
+                                        'username':
+                                            Provider.of<FirebaseOperations>(
+                                                    context,
+                                                    listen: false)
+                                                .getInitUserName,
+                                        'userimage':
+                                            Provider.of<FirebaseOperations>(
+                                                    context,
+                                                    listen: false)
+                                                .getInitUserImage,
+                                        'useremail':
+                                            Provider.of<FirebaseOperations>(
+                                                    context,
+                                                    listen: false)
+                                                .getInitUserEmail,
+                                        'useruid': Provider.of<Authentication>(
+                                                context,
+                                                listen: false)
+                                            .getUserId,
+                                        'time': Timestamp.now(),
+                                      },
+                                      messengerUid: Provider.of<Authentication>(
+                                              context,
+                                              listen: false)
+                                          .getUserId,
+                                      messengerDocId: userUid,
+                                      messengerData: {
+                                        'username':
+                                            userDocSnap.data!['username'],
+                                        'userimage':
+                                            userDocSnap.data!['userimage'],
+                                        'useremail':
+                                            userDocSnap.data!['useremail'],
+                                        'useruid': userDocSnap.data!['useruid'],
+                                        'time': Timestamp.now(),
+                                      })
+                                  .whenComplete(() {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        child: PrivateMessage(
+                                            documentSnapshot: (userDocSnap.data
+                                                as DocumentSnapshot)),
+                                        type: PageTransitionType.leftToRight));
+                              });
+                            } else {
+                              Provider.of<FeedHelpers>(context, listen: false)
+                                  .IsAnonBottomSheet(context);
+                            }
+                          },
+                        ),
+                      ],
                     ),
-                  ),
-                  onPressed: () {
-                    if (Provider.of<Authentication>(context, listen: false)
-                            .getIsAnon ==
-                        false) {
-                      Provider.of<FirebaseOperations>(context, listen: false)
-                          .followUser(
-                        followingUid: userUid,
-                        followingDocId:
-                            Provider.of<Authentication>(context, listen: false)
-                                .getUserId,
-                        followingData: {
-                          'username': Provider.of<FirebaseOperations>(context,
-                                  listen: false)
-                              .getInitUserName,
-                          'userimage': Provider.of<FirebaseOperations>(context,
-                                  listen: false)
-                              .getInitUserImage,
-                          'useremail': Provider.of<FirebaseOperations>(context,
-                                  listen: false)
-                              .getInitUserEmail,
-                          'useruid': Provider.of<Authentication>(context,
-                                  listen: false)
-                              .getUserId,
-                          'time': Timestamp.now(),
-                        },
-                        followerUid:
-                            Provider.of<Authentication>(context, listen: false)
-                                .getUserId,
-                        followerDocId: userUid,
-                        followerData: {
-                          'username': userDocSnap.data!['username'],
-                          'userimage': userDocSnap.data!['userimage'],
-                          'useremail': userDocSnap.data!['useremail'],
-                          'useruid': userDocSnap.data!['useruid'],
-                          'time': Timestamp.now(),
-                        },
-                      )
-                          .whenComplete(() {
-                        followedNotification(
-                            context: context,
-                            name: userDocSnap.data!['username']);
-                      });
-                    } else {
-                      Provider.of<FeedHelpers>(context, listen: false)
-                          .IsAnonBottomSheet(context);
-                    }
-                  },
-                ),
-                MaterialButton(
-                  color: constantColors.blueColor,
-                  child: Text(
-                    "Message",
-                    style: TextStyle(
-                      color: constantColors.whiteColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  onPressed: () async {
-                    if (Provider.of<Authentication>(context, listen: false)
-                            .getIsAnon ==
-                        false) {
-                      await Provider.of<FirebaseOperations>(context,
-                              listen: false)
-                          .messageUser(
-                              messagingUid: userUid,
-                              messagingDocId: Provider.of<Authentication>(
+                  );
+                } else {
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.07,
+                    width: MediaQuery.of(context).size.width,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        MaterialButton(
+                          color: constantColors.blueColor,
+                          child: Text(
+                            "Unfollow",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          onPressed: () {
+                            Provider.of<FirebaseOperations>(context,
+                                    listen: false)
+                                .unfollowUser(
+                              followingUid: userUid,
+                              followingDocId: Provider.of<Authentication>(
                                       context,
                                       listen: false)
                                   .getUserId,
-                              messagingData: {
-                                'username': Provider.of<FirebaseOperations>(
-                                        context,
-                                        listen: false)
-                                    .getInitUserName,
-                                'userimage': Provider.of<FirebaseOperations>(
-                                        context,
-                                        listen: false)
-                                    .getInitUserImage,
-                                'useremail': Provider.of<FirebaseOperations>(
-                                        context,
-                                        listen: false)
-                                    .getInitUserEmail,
-                                'useruid': Provider.of<Authentication>(context,
-                                        listen: false)
-                                    .getUserId,
-                                'time': Timestamp.now(),
-                              },
-                              messengerUid: Provider.of<Authentication>(context,
+                              followerUid: Provider.of<Authentication>(context,
                                       listen: false)
                                   .getUserId,
-                              messengerDocId: userUid,
-                              messengerData: {
-                                'username': userDocSnap.data!['username'],
-                                'userimage': userDocSnap.data!['userimage'],
-                                'useremail': userDocSnap.data!['useremail'],
-                                'useruid': userDocSnap.data!['useruid'],
-                                'time': Timestamp.now(),
-                              })
-                          .whenComplete(() {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            PageTransition(
-                                child: PrivateMessage(
-                                    documentSnapshot:
-                                        (userDocSnap.data as DocumentSnapshot)),
-                                type: PageTransitionType.leftToRight));
-                      });
-                    } else {
-                      Provider.of<FeedHelpers>(context, listen: false)
-                          .IsAnonBottomSheet(context);
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
+                              followerDocId: userUid,
+                            )
+                                .whenComplete(() {
+                              unfollowedNotification(
+                                  context: context,
+                                  name: userDocSnap.data!['username']);
+                            });
+                          },
+                        ),
+                        MaterialButton(
+                          color: constantColors.blueColor,
+                          child: Text(
+                            "Message",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          onPressed: () async {
+                            if (Provider.of<Authentication>(context,
+                                        listen: false)
+                                    .getIsAnon ==
+                                false) {
+                              await Provider.of<FirebaseOperations>(context,
+                                      listen: false)
+                                  .messageUser(
+                                      messagingUid: userUid,
+                                      messagingDocId:
+                                          Provider.of<Authentication>(context,
+                                                  listen: false)
+                                              .getUserId,
+                                      messagingData: {
+                                        'username':
+                                            Provider.of<FirebaseOperations>(
+                                                    context,
+                                                    listen: false)
+                                                .getInitUserName,
+                                        'userimage':
+                                            Provider.of<FirebaseOperations>(
+                                                    context,
+                                                    listen: false)
+                                                .getInitUserImage,
+                                        'useremail':
+                                            Provider.of<FirebaseOperations>(
+                                                    context,
+                                                    listen: false)
+                                                .getInitUserEmail,
+                                        'useruid': Provider.of<Authentication>(
+                                                context,
+                                                listen: false)
+                                            .getUserId,
+                                        'time': Timestamp.now(),
+                                      },
+                                      messengerUid: Provider.of<Authentication>(
+                                              context,
+                                              listen: false)
+                                          .getUserId,
+                                      messengerDocId: userUid,
+                                      messengerData: {
+                                        'username':
+                                            userDocSnap.data!['username'],
+                                        'userimage':
+                                            userDocSnap.data!['userimage'],
+                                        'useremail':
+                                            userDocSnap.data!['useremail'],
+                                        'useruid': userDocSnap.data!['useruid'],
+                                        'time': Timestamp.now(),
+                                      })
+                                  .whenComplete(() {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        child: PrivateMessage(
+                                            documentSnapshot: (userDocSnap.data
+                                                as DocumentSnapshot)),
+                                        type: PageTransitionType.leftToRight));
+                              });
+                            } else {
+                              Provider.of<FeedHelpers>(context, listen: false)
+                                  .IsAnonBottomSheet(context);
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              }),
         ],
       ),
     );
@@ -699,6 +845,49 @@ class AltProfileHelper with ChangeNotifier {
                   ),
                   Text(
                     "Followed $name",
+                    style: TextStyle(
+                      color: constantColors.whiteColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  unfollowedNotification(
+      {required BuildContext context, required String name}) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          bottom: true,
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.1,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              color: constantColors.darkColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 150),
+                    child: Divider(
+                      thickness: 4,
+                      color: constantColors.whiteColor,
+                    ),
+                  ),
+                  Text(
+                    "Unfollowed $name",
                     style: TextStyle(
                       color: constantColors.whiteColor,
                       fontWeight: FontWeight.bold,
