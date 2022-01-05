@@ -10,6 +10,7 @@ import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/Feed/feedhelpers.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/screens/mapscreen/categorymapscreen.dart';
+import 'package:mared_social/screens/splitter/splitter.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/postoptions.dart';
 import 'package:page_transition/page_transition.dart';
@@ -42,8 +43,7 @@ class CatgeoryFeedHelper with ChangeNotifier {
             Navigator.pushReplacement(
                 context,
                 PageTransition(
-                    child: const HomePage(),
-                    type: PageTransitionType.rightToLeft));
+                    child: SplitPages(), type: PageTransitionType.rightToLeft));
           },
           icon: Icon(
             Icons.arrow_back_ios_new_rounded,

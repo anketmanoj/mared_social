@@ -12,6 +12,7 @@ import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/screens/Stories/stories_helper.dart';
+import 'package:mared_social/screens/splitter/splitter.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:nanoid/nanoid.dart';
@@ -302,7 +303,7 @@ class StoryWidgets {
                                     Navigator.pushReplacement(
                                         context,
                                         PageTransition(
-                                            child: HomePage(),
+                                            child: SplitPages(),
                                             type: PageTransitionType
                                                 .rightToLeft));
                                   });

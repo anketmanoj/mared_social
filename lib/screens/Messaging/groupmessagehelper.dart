@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
+import 'package:mared_social/screens/splitter/splitter.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/services/fcm_notification_Service.dart';
@@ -43,8 +44,7 @@ class GroupMessageHelper with ChangeNotifier {
           Navigator.pushReplacement(
               context,
               PageTransition(
-                  child: const HomePage(),
-                  type: PageTransitionType.bottomToTop));
+                  child: SplitPages(), type: PageTransitionType.bottomToTop));
         });
       },
     );
@@ -319,7 +319,7 @@ class GroupMessageHelper with ChangeNotifier {
                 Navigator.pushReplacement(
                     context,
                     PageTransition(
-                        child: const HomePage(),
+                        child: SplitPages(),
                         type: PageTransitionType.bottomToTop));
               },
               child: Text(

@@ -340,7 +340,7 @@ class UploadPost with ChangeNotifier {
       await imagePostUploadTask.whenComplete(() {
         print("Post image uploaded to storage");
       });
-      imageReference.getDownloadURL().then((imageUrl) {
+      await imageReference.getDownloadURL().then((imageUrl) {
         imagesList.add(imageUrl);
       });
       notifyListeners();
