@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/Profile/profile.dart';
 import 'package:mared_social/screens/auctionFeed/auctionFeed.dart';
+import 'package:mared_social/screens/auctionMap/auctionMapScreen.dart';
 import 'package:mared_social/screens/auctions/auctionPageHelper.dart';
 import 'package:mared_social/screens/isAnon/isAnon.dart';
 import 'package:mared_social/services/authentication.dart';
@@ -28,6 +29,7 @@ class _AuctionPageState extends State<AuctionPage> {
         controller: auctionAppController,
         children: [
           AuctionFeed(),
+          AuctionMap(),
           Provider.of<Authentication>(context, listen: false).getIsAnon == false
               ? Profile()
               : IsAnonMsg(),

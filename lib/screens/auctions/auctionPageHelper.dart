@@ -43,10 +43,17 @@ class AuctionAppHelper with ChangeNotifier {
             backgroundColor: const Color(0xff040307),
             items: [
               CustomNavigationBarItem(
-                  icon: const Icon(
-                Icons.gavel_outlined,
-                size: 24,
-              )),
+                icon: const Icon(
+                  Icons.gavel_outlined,
+                  size: 24,
+                ),
+              ),
+              CustomNavigationBarItem(
+                icon: const Icon(
+                  Icons.map_outlined,
+                  size: 24,
+                ),
+              ),
               CustomNavigationBarItem(
                 icon: SizedBox(
                   height: 35,
