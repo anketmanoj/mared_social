@@ -30,7 +30,7 @@ class _SplitPagesState extends State<SplitPages> {
         controller: appController,
         children: [
           HomePage(),
-          AuctionPage(),
+          AuctionApp(),
         ],
         physics: const NeverScrollableScrollPhysics(),
         onPageChanged: (page) {

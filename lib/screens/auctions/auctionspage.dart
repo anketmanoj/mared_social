@@ -8,14 +8,14 @@ import 'package:mared_social/screens/isAnon/isAnon.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:provider/provider.dart';
 
-class AuctionPage extends StatefulWidget {
-  const AuctionPage({Key? key}) : super(key: key);
+class AuctionApp extends StatefulWidget {
+  const AuctionApp({Key? key}) : super(key: key);
 
   @override
-  State<AuctionPage> createState() => _AuctionPageState();
+  State<AuctionApp> createState() => _AuctionAppState();
 }
 
-class _AuctionPageState extends State<AuctionPage> {
+class _AuctionAppState extends State<AuctionApp> {
   final PageController auctionAppController = PageController();
   int pageIndex = 0;
   ConstantColors constantColors = ConstantColors();

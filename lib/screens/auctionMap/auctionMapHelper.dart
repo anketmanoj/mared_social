@@ -3,49 +3,56 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_countdown_timer/current_remaining_time.dart';
+import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/Feed/feedhelpers.dart';
+import 'package:mared_social/screens/auctionFeed/auctionpage.dart';
 import 'package:mared_social/services/authentication.dart';
-import 'package:mared_social/utils/postoptions.dart';
+import 'package:mared_social/utils/auctionoptions.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
-class MapScreenHelper with ChangeNotifier {
+class AuctionMapHelper with ChangeNotifier {
   ConstantColors constantColors = ConstantColors();
-  showDetails(
+  showAuctionDetails(
       {required BuildContext context,
       required DocumentSnapshot documentSnapshot}) {
+    Size size = MediaQuery.of(context).size;
     return showModalBottomSheet(
-      context: context,
       isScrollControlled: true,
+      context: context,
       builder: (context) {
-        Provider.of<PostFunctions>(context, listen: false)
+        Provider.of<AuctionFuctions>(context, listen: false)
             .showTimeAgo(documentSnapshot['time']);
+
+        int endTime = (documentSnapshot['enddate'] as Timestamp)
+                .toDate()
+                .millisecondsSinceEpoch +
+            1000 * 30;
+        int startTime = (documentSnapshot['startdate'] as Timestamp)
+                .toDate()
+                .millisecondsSinceEpoch +
+            1000 * 30;
 
         return SafeArea(
           bottom: true,
           child: Container(
             decoration: BoxDecoration(
-                color: constantColors.blueGreyColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                )),
+              color: constantColors.blueGreyColor,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+            ),
             height: MediaQuery.of(context).size.height * 0.7,
             width: MediaQuery.of(context).size.width,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 150),
-                  child: Divider(
-                    thickness: 4,
-                    color: constantColors.whiteColor,
-                  ),
-                ),
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0, left: 8),
                   child: Row(
@@ -94,7 +101,7 @@ class MapScreenHelper with ChangeNotifier {
                                 child: Row(
                                   children: [
                                     Text(
-                                      documentSnapshot['caption'],
+                                      documentSnapshot['title'],
                                       style: TextStyle(
                                         color: constantColors.greenColor,
                                         fontWeight: FontWeight.bold,
@@ -130,7 +137,7 @@ class MapScreenHelper with ChangeNotifier {
                                     children: <TextSpan>[
                                       TextSpan(
                                         text:
-                                            " , ${Provider.of<PostFunctions>(context, listen: false).getImageTimePosted.toString()}",
+                                            " , ${Provider.of<AuctionFuctions>(context, listen: false).getImageTimePosted.toString()}",
                                         style: TextStyle(
                                           color: constantColors.lightColor
                                               .withOpacity(0.8),
@@ -144,106 +151,104 @@ class MapScreenHelper with ChangeNotifier {
                           ),
                         ),
                       ),
-                      InkWell(
-                        onTap: () {
-                          Provider.of<PostFunctions>(context, listen: false)
-                              .showAwardsPresenter(
-                                  context: context,
-                                  postId: documentSnapshot['postid']);
-                        },
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.2,
-                          height: MediaQuery.of(context).size.height * 0.045,
-                          child: StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection("posts")
-                                .doc(documentSnapshot['postid'])
-                                .collection("awards")
-                                .snapshots(),
-                            builder: (context, awardSnaps) {
-                              if (awardSnaps.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              } else {
-                                return ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children: awardSnaps.data!.docs
-                                      .map((DocumentSnapshot awardDocSnaps) {
-                                    return SizedBox(
-                                      height: 30,
-                                      width: 30,
-                                      child:
-                                          Image.network(awardDocSnaps['award']),
-                                    );
-                                  }).toList(),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0),
                   child: InkWell(
-                    onDoubleTap: () {
-                      if (Provider.of<Authentication>(context, listen: false)
-                              .getIsAnon ==
-                          false) {
-                        Provider.of<PostFunctions>(context, listen: false)
-                            .addLike(
-                          userUid: documentSnapshot['useruid'],
-                          context: context,
-                          postID: documentSnapshot['postid'],
-                          subDocId: Provider.of<Authentication>(context,
-                                  listen: false)
-                              .getUserId,
-                        );
-                      } else {
-                        Provider.of<FeedHelpers>(context, listen: false)
-                            .IsAnonBottomSheet(context);
-                      }
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              child: AuctionPage(
+                                auctionId: documentSnapshot['auctionid'],
+                              ),
+                              type: PageTransitionType.bottomToTop));
                     },
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.46,
-                      width: MediaQuery.of(context).size.width,
-                      child: Swiper(
-                        itemBuilder: (BuildContext context, int index) {
-                          return CachedNetworkImage(
-                            fit: BoxFit.contain,
-                            imageUrl: documentSnapshot['imageslist'][index],
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) => SizedBox(
-                              height: 50,
-                              width: 50,
-                              child:
-                                  LoadingWidget(constantColors: constantColors),
+                    child: Stack(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.44,
+                          width: MediaQuery.of(context).size.width,
+                          child: Swiper(
+                            itemBuilder: (BuildContext context, int index) {
+                              return CachedNetworkImage(
+                                fit: BoxFit.cover,
+                                imageUrl: documentSnapshot['imageslist'][index],
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        SizedBox(
+                                  height: 50,
+                                  width: 50,
+                                  child: LoadingWidget(
+                                      constantColors: constantColors),
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                              );
+                            },
+                            itemCount:
+                                (documentSnapshot['imageslist'] as List).length,
+                            itemHeight:
+                                MediaQuery.of(context).size.height * 0.3,
+                            itemWidth: MediaQuery.of(context).size.width,
+                            layout: SwiperLayout.DEFAULT,
+                            indicatorLayout: PageIndicatorLayout.SCALE,
+                            pagination: SwiperPagination(
+                              margin: EdgeInsets.all(10),
+                              builder: DotSwiperPaginationBuilder(
+                                color:
+                                    constantColors.whiteColor.withOpacity(0.6),
+                                activeColor:
+                                    constantColors.darkColor.withOpacity(0.6),
+                                size: 15,
+                                activeSize: 15,
+                              ),
                             ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
-                          );
-                        },
-                        itemCount:
-                            (documentSnapshot['imageslist'] as List).length,
-                        itemHeight: MediaQuery.of(context).size.height * 0.3,
-                        itemWidth: MediaQuery.of(context).size.width,
-                        layout: SwiperLayout.DEFAULT,
-                        indicatorLayout: PageIndicatorLayout.SCALE,
-                        pagination: SwiperPagination(
-                          margin: EdgeInsets.all(10),
-                          builder: DotSwiperPaginationBuilder(
-                            color: constantColors.whiteColor.withOpacity(0.6),
-                            activeColor:
-                                constantColors.darkColor.withOpacity(0.6),
-                            size: 15,
-                            activeSize: 15,
                           ),
                         ),
-                      ),
+                        Positioned(
+                          top: 5,
+                          left: 5,
+                          child: Container(
+                            alignment: Alignment.center,
+                            height: size.height * 0.04,
+                            width: size.width * 0.38,
+                            decoration: BoxDecoration(
+                              color: constantColors.darkColor.withOpacity(0.6),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: DateTime.now().isBefore(
+                                    (documentSnapshot['startdate'] as Timestamp)
+                                        .toDate())
+                                ? CountdownTimer(
+                                    endTime: startTime,
+                                    widgetBuilder:
+                                        (context, CurrentRemainingTime? time) {
+                                      return Text(
+                                        "Starting in ${time!.days} days",
+                                        style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : CountdownTimer(
+                                    endTime: endTime,
+                                    widgetBuilder:
+                                        (context, CurrentRemainingTime? time) {
+                                      return Text(
+                                        "Ending in ${time!.days} days",
+                                        style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -256,15 +261,35 @@ class MapScreenHelper with ChangeNotifier {
                       children: [
                         InkWell(
                           onTap: () {
-                            Provider.of<PostFunctions>(context, listen: false)
+                            if (Provider.of<Authentication>(context,
+                                        listen: false)
+                                    .getIsAnon ==
+                                false) {
+                              Provider.of<AuctionFuctions>(context,
+                                      listen: false)
+                                  .addAuctionLike(
+                                userUid: documentSnapshot['useruid'],
+                                context: context,
+                                auctionID: documentSnapshot['auctionid'],
+                                subDocId: Provider.of<Authentication>(context,
+                                        listen: false)
+                                    .getUserId,
+                              );
+                            } else {
+                              Provider.of<FeedHelpers>(context, listen: false)
+                                  .IsAnonBottomSheet(context);
+                            }
+                          },
+                          onLongPress: () {
+                            Provider.of<AuctionFuctions>(context, listen: false)
                                 .showLikes(
                                     context: context,
-                                    postId: documentSnapshot['postid']);
+                                    auctionId: documentSnapshot['auctionid']);
                           },
                           child: StreamBuilder<QuerySnapshot>(
                               stream: FirebaseFirestore.instance
-                                  .collection("posts")
-                                  .doc(documentSnapshot['postid'])
+                                  .collection("auctions")
+                                  .doc(documentSnapshot['auctionid'])
                                   .collection('likes')
                                   .snapshots(),
                               builder: (context, likeSnap) {
@@ -310,11 +335,11 @@ class MapScreenHelper with ChangeNotifier {
                         ),
                         InkWell(
                           onTap: () {
-                            Provider.of<PostFunctions>(context, listen: false)
+                            Provider.of<AuctionFuctions>(context, listen: false)
                                 .showCommentsSheet(
                                     snapshot: documentSnapshot,
                                     context: context,
-                                    postId: documentSnapshot['postid']);
+                                    auctionId: documentSnapshot['auctionid']);
                           },
                           child: SizedBox(
                             width: 60,
@@ -331,8 +356,8 @@ class MapScreenHelper with ChangeNotifier {
                                   ),
                                   StreamBuilder<QuerySnapshot>(
                                     stream: FirebaseFirestore.instance
-                                        .collection("posts")
-                                        .doc(documentSnapshot['postid'])
+                                        .collection("auctions")
+                                        .doc(documentSnapshot['auctionid'])
                                         .collection('comments')
                                         .snapshots(),
                                     builder: (context, commentSnap) {
@@ -356,69 +381,20 @@ class MapScreenHelper with ChangeNotifier {
                             ),
                           ),
                         ),
-                        InkWell(
-                          onTap: () {
-                            Provider.of<PostFunctions>(context, listen: false)
-                                .showRewards(
-                                    context: context,
-                                    postId: documentSnapshot['postid']);
-                          },
-                          child: SizedBox(
-                            width: 60,
-                            height: 50,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    FontAwesomeIcons.award,
-                                    color: constantColors.yellowColor,
-                                    size: 16,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 8.0),
-                                    child: StreamBuilder<QuerySnapshot>(
-                                      stream: FirebaseFirestore.instance
-                                          .collection("posts")
-                                          .doc(documentSnapshot['postid'])
-                                          .collection('awards')
-                                          .snapshots(),
-                                      builder: (context, awardSnap) {
-                                        return Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 8.0),
-                                          child: Text(
-                                            awardSnap.data!.docs.length
-                                                .toString(),
-                                            style: TextStyle(
-                                              color: constantColors.whiteColor,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
                         const Spacer(),
                         Provider.of<Authentication>(context, listen: false)
                                     .getUserId ==
                                 documentSnapshot['useruid']
                             ? IconButton(
                                 onPressed: () {
-                                  Provider.of<PostFunctions>(context,
+                                  Provider.of<AuctionFuctions>(context,
                                           listen: false)
-                                      .showPostOptions(
+                                      .showAuctionOptions(
                                           context: context,
-                                          postId: documentSnapshot['postid']);
+                                          auctionId:
+                                              documentSnapshot['auctionid']);
 
-                                  Provider.of<PostFunctions>(context,
+                                  Provider.of<AuctionFuctions>(context,
                                           listen: false)
                                       .getImageDescription(
                                           documentSnapshot['description']);

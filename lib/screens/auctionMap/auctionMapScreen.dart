@@ -5,6 +5,9 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'dart:ui' as ui;
 import 'dart:typed_data';
 
+import 'package:mared_social/screens/auctionMap/auctionMapHelper.dart';
+import 'package:provider/provider.dart';
+
 class AuctionMap extends StatefulWidget {
   @override
   _AuctionMapState createState() => _AuctionMapState();
@@ -41,8 +44,8 @@ class _AuctionMapState extends State<AuctionMap> {
       infoWindow: InfoWindow(
         title: specify['title'],
         onTap: () {
-          // Provider.of<AuctionMapHelper>(context, listen: false)
-          //     .showDetails(context: context, documentSnapshot: specify);
+          Provider.of<AuctionMapHelper>(context, listen: false)
+              .showAuctionDetails(context: context, documentSnapshot: specify);
         },
         snippet: specify['description'],
       ),
