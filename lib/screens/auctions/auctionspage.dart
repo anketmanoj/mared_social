@@ -5,6 +5,7 @@ import 'package:mared_social/screens/auctionFeed/auctionFeed.dart';
 import 'package:mared_social/screens/auctionMap/auctionMapScreen.dart';
 import 'package:mared_social/screens/auctions/auctionPageHelper.dart';
 import 'package:mared_social/screens/isAnon/isAnon.dart';
+import 'package:mared_social/screens/myBids/myBids.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +31,7 @@ class _AuctionAppState extends State<AuctionApp> {
         children: [
           AuctionFeed(),
           AuctionMap(),
+          MyBids(),
           Provider.of<Authentication>(context, listen: false).getIsAnon == false
               ? Profile()
               : IsAnonMsg(),

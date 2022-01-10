@@ -61,7 +61,7 @@ class AuctionFeedHelper with ChangeNotifier {
                           .showTimeAgo(documentSnapshot['time']);
 
                       return SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.65,
+                        height: MediaQuery.of(context).size.height * 0.7,
                         width: MediaQuery.of(context).size.width,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -112,46 +112,80 @@ class AuctionFeedHelper with ChangeNotifier {
                                     padding: const EdgeInsets.only(left: 8.0),
                                     child: SizedBox(
                                       width: MediaQuery.of(context).size.width *
-                                          0.65,
+                                          0.8,
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          SizedBox(
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  documentSnapshot['title'],
-                                                  style: TextStyle(
-                                                    color: constantColors
-                                                        .greenColor,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 14,
-                                                  ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                flex: 1,
+                                                child: RichText(
+                                                  text: TextSpan(
+                                                      text:
+                                                          "${documentSnapshot['title']}\n",
+                                                      style: TextStyle(
+                                                        color: constantColors
+                                                            .greenColor,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 14,
+                                                      ),
+                                                      children: [
+                                                        TextSpan(
+                                                          text:
+                                                              documentSnapshot[
+                                                                  'address'],
+                                                          style: TextStyle(
+                                                            color:
+                                                                constantColors
+                                                                    .lightColor,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      ]),
                                                 ),
-                                                SizedBox(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.4,
-                                                  child: Text(
-                                                    ", ${documentSnapshot['address']}",
-                                                    softWrap: true,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: TextStyle(
-                                                      color: constantColors
-                                                          .lightColor,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 12,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                              ),
+                                              // SizedBox(
+                                              //   width: MediaQuery.of(context)
+                                              //           .size
+                                              //           .width *
+                                              //       0.25,
+                                              //   child: Text(
+                                              //     documentSnapshot['title'],
+                                              //     maxLines: 1,
+                                              //     style: TextStyle(
+                                              //       color: constantColors
+                                              //           .greenColor,
+                                              //       fontWeight:
+                                              //           FontWeight.bold,
+                                              //       fontSize: 14,
+                                              //     ),
+                                              //   ),
+                                              // ),
+                                              // SizedBox(
+                                              //   width: MediaQuery.of(context)
+                                              //           .size
+                                              //           .width *
+                                              //       0.4,
+                                              //   child: Text(
+                                              //     ", ${documentSnapshot['address']}",
+                                              //     softWrap: true,
+                                              //     overflow:
+                                              //         TextOverflow.ellipsis,
+                                              //     style: TextStyle(
+                                              //       color: constantColors
+                                              //           .lightColor,
+                                              //       fontWeight:
+                                              //           FontWeight.bold,
+                                              //       fontSize: 12,
+                                              //     ),
+                                              //   ),
+                                              // ),
+                                            ],
                                           ),
                                           SizedBox(
                                             child: RichText(

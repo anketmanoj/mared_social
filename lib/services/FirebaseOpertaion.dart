@@ -157,14 +157,30 @@ class FirebaseOperations with ChangeNotifier {
     return await FirebaseFirestore.instance
         .collection("auctions")
         .doc(auctionId)
-        .delete()
-        .whenComplete(() async {
+        .collection("bids")
+        .get()
+        .then((bidsCollection) {
+      bidsCollection.docs.forEach((bid) async {
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(bid['useruid'])
+            .collection("myBids")
+            .doc(bid['bidid'])
+            .delete();
+      });
+    }).whenComplete(() async {
       return await FirebaseFirestore.instance
-          .collection("users")
-          .doc(userUid)
           .collection("auctions")
           .doc(auctionId)
-          .delete();
+          .delete()
+          .whenComplete(() async {
+        return await FirebaseFirestore.instance
+            .collection("users")
+            .doc(userUid)
+            .collection("auctions")
+            .doc(auctionId)
+            .delete();
+      });
     });
   }
 

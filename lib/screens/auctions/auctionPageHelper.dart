@@ -55,6 +55,12 @@ class AuctionAppHelper with ChangeNotifier {
                 ),
               ),
               CustomNavigationBarItem(
+                icon: const Icon(
+                  EvaIcons.flashOutline,
+                  size: 24,
+                ),
+              ),
+              CustomNavigationBarItem(
                 icon: SizedBox(
                   height: 35,
                   width: 35,

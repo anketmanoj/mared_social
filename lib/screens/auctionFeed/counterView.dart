@@ -197,6 +197,7 @@ class _CounterViewState extends State<CounterView> {
                       context: context,
                       myBidData: {
                         'bidid': bidId,
+                        'time': Timestamp.now(),
                         'bidamount': _auctionCurrentAmount.toString(),
                         'auctionid': widget.auctionDoc.id,
                         'title': widget.auctionDoc['title'],
