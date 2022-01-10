@@ -48,7 +48,7 @@ class AuctionStarted extends StatelessWidget {
         child: Container(
           height: size.height * 0.1,
           decoration: BoxDecoration(
-            color: constantColors.lightColor,
+            color: Colors.pink,
             borderRadius: BorderRadius.circular(25),
           ),
           child: Center(
@@ -467,6 +467,7 @@ class AuctionStarted extends StatelessWidget {
                                       .collection("auctions")
                                       .doc(auctionDocSnap.id)
                                       .collection("bids")
+                                      .orderBy('time', descending: true)
                                       .snapshots(),
                                   builder: (context, bidSnap) {
                                     if (bidSnap.data!.docs.isEmpty) {
@@ -489,8 +490,66 @@ class AuctionStarted extends StatelessWidget {
                                         ),
                                       );
                                     } else {
-                                      return LoadingWidget(
-                                          constantColors: constantColors);
+                                      return Container(
+                                        height: size.height * 0.24,
+                                        width: size.width,
+                                        decoration: BoxDecoration(
+                                          color: constantColors.darkColor,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: ListView.builder(
+                                          itemCount: bidSnap.data!.docs.length,
+                                          itemBuilder: (context, index) {
+                                            var bidSnapData =
+                                                bidSnap.data!.docs[index];
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 8.0),
+                                              child: ListTile(
+                                                trailing: Text(
+                                                  "AED ${bidSnapData['bidamount']}",
+                                                  style: TextStyle(
+                                                    color: constantColors
+                                                        .whiteColor,
+                                                    fontSize: 10,
+                                                  ),
+                                                ),
+                                                leading: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                  child: CachedNetworkImage(
+                                                    fit: BoxFit.cover,
+                                                    imageUrl: bidSnapData[
+                                                        'userimage'],
+                                                    progressIndicatorBuilder:
+                                                        (context, url,
+                                                                downloadProgress) =>
+                                                            SizedBox(
+                                                      height: 50,
+                                                      width: 50,
+                                                      child: LoadingWidget(
+                                                          constantColors:
+                                                              constantColors),
+                                                    ),
+                                                    errorWidget: (context, url,
+                                                            error) =>
+                                                        const Icon(Icons.error),
+                                                  ),
+                                                ),
+                                                title: Text(
+                                                  bidSnapData['username'],
+                                                  style: TextStyle(
+                                                    color: constantColors
+                                                        .whiteColor,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      );
                                     }
                                   },
                                 ),

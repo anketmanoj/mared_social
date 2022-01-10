@@ -127,6 +127,7 @@ class PlaceBidHelpers with ChangeNotifier {
     Size size = MediaQuery.of(context).size;
     return StatefulBuilder(builder: (context, innerState) {
       return CounterView(
+          auctionDoc: auctionDoc,
           auctionCurrentAmount: int.parse(auctionDoc['currentprice']) +
               int.parse(auctionDoc['minimumbid']),
           initNumber: int.parse(auctionDoc['minimumbid']),

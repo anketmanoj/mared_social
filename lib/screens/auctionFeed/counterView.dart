@@ -1,6 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/services/FirebaseOpertaion.dart';
+import 'package:mared_social/services/authentication.dart';
+import 'package:nanoid/nanoid.dart';
+import 'package:provider/provider.dart';
 
 class CounterView extends StatefulWidget {
   final int initNumber;
@@ -9,6 +15,7 @@ class CounterView extends StatefulWidget {
   final Function decreaseCallback;
   final int minNumber;
   final int auctionCurrentAmount;
+  final DocumentSnapshot auctionDoc;
   const CounterView(
       {Key? key,
       required this.initNumber,
@@ -16,7 +23,8 @@ class CounterView extends StatefulWidget {
       required this.increaseCallback,
       required this.decreaseCallback,
       required this.minNumber,
-      required this.auctionCurrentAmount})
+      required this.auctionCurrentAmount,
+      required this.auctionDoc})
       : super(key: key);
   @override
   _CounterViewState createState() => _CounterViewState();
@@ -157,7 +165,63 @@ class _CounterViewState extends State<CounterView> {
                     borderRadius: BorderRadius.circular(50),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () async {
+                  String bidId = nanoid(14).toString();
+                  try {
+                    await Provider.of<FirebaseOperations>(context,
+                            listen: false)
+                        .placeBid(
+                      currentPrice: _auctionCurrentAmount.toString(),
+                      bidId: bidId,
+                      auctionId: widget.auctionDoc.id,
+                      bidderData: {
+                        'bidid': bidId,
+                        'bidamount': _auctionCurrentAmount.toString(),
+                        'username': Provider.of<FirebaseOperations>(context,
+                                listen: false)
+                            .getInitUserName,
+                        'userimage': Provider.of<FirebaseOperations>(context,
+                                listen: false)
+                            .getInitUserImage,
+                        'useruid':
+                            Provider.of<Authentication>(context, listen: false)
+                                .getUserId,
+                        'time': Timestamp.now(),
+                        'useremail': Provider.of<FirebaseOperations>(context,
+                                listen: false)
+                            .getInitUserEmail,
+                        'fcmToken': Provider.of<FirebaseOperations>(context,
+                                listen: false)
+                            .getFcmToken,
+                      },
+                      context: context,
+                      myBidData: {
+                        'bidid': bidId,
+                        'bidamount': _auctionCurrentAmount.toString(),
+                        'auctionid': widget.auctionDoc.id,
+                        'title': widget.auctionDoc['title'],
+                        'description': widget.auctionDoc['description'],
+                        'imageslist': widget.auctionDoc['imageslist'],
+                        'enddate': widget.auctionDoc['enddate'],
+                      },
+                    )
+                        .whenComplete(
+                      () {
+                        Navigator.pop(context);
+                        CoolAlert.show(
+                            context: context,
+                            type: CoolAlertType.success,
+                            title: "Bid Successfully Placed");
+                      },
+                    );
+                  } catch (e) {
+                    CoolAlert.show(
+                        context: context,
+                        type: CoolAlertType.error,
+                        title: "Bid unsuccessful",
+                        text: e.toString());
+                  }
+                },
                 icon: Icon(
                   FontAwesomeIcons.gavel,
                   color: constantColors.whiteColor,
@@ -186,13 +250,21 @@ class _CounterViewState extends State<CounterView> {
   }
 
   void _dicrement() {
-    setState(() {
-      if (_currentCount > widget.minNumber) {
+    if (_currentCount > widget.minNumber) {
+      setState(() {
         _currentCount--;
         _auctionCurrentAmount--;
         _counterCallback(_currentCount);
         _decreaseCallback();
-      }
-    });
+      });
+    } else {
+      CoolAlert.show(
+        context: context,
+        type: CoolAlertType.error,
+        title: "Minimum Bid is AED ${widget.minNumber}",
+        text:
+            "The auction owner has set the minimum bid amount to be AED ${widget.minNumber}. You cannot place a bid lower than this.",
+      );
+    }
   }
 }

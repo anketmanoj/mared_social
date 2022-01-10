@@ -91,6 +91,36 @@ class FirebaseOperations with ChangeNotifier {
     });
   }
 
+  Future placeBid(
+      {required String bidId,
+      required String auctionId,
+      required dynamic bidderData,
+      required BuildContext context,
+      required String currentPrice,
+      required dynamic myBidData}) async {
+    return FirebaseFirestore.instance
+        .collection("auctions")
+        .doc(auctionId)
+        .collection("bids")
+        .doc(bidId)
+        .set(bidderData)
+        .whenComplete(() async {
+      return FirebaseFirestore.instance
+          .collection("users")
+          .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+          .collection("myBids")
+          .doc(bidId)
+          .set(myBidData);
+    }).whenComplete(() async {
+      return FirebaseFirestore.instance
+          .collection("auctions")
+          .doc(auctionId)
+          .update({
+        'currentprice': currentPrice,
+      });
+    });
+  }
+
   Future uploadAuctionData(String auctionId, dynamic data) async {
     return FirebaseFirestore.instance
         .collection("auctions")
