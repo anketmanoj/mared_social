@@ -10,6 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/Feed/feedhelpers.dart';
 import 'package:mared_social/screens/auctionFeed/auctionProductMap.dart';
+import 'package:mared_social/screens/auctionFeed/placebidscreen.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/auctionoptions.dart';
 import 'package:page_transition/page_transition.dart';
@@ -34,6 +35,34 @@ class AuctionStarted extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: InkWell(
+        onTap: () {
+          Navigator.push(
+              context,
+              PageTransition(
+                  child: PlaceBidScreen(
+                    AuctionDocSnap: auctionDocSnap,
+                  ),
+                  type: PageTransitionType.rightToLeft));
+        },
+        child: Container(
+          height: size.height * 0.1,
+          decoration: BoxDecoration(
+            color: constantColors.lightColor,
+            borderRadius: BorderRadius.circular(25),
+          ),
+          child: Center(
+            child: Text(
+              "Place Your Bid",
+              style: TextStyle(
+                color: constantColors.whiteColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ),
+        ),
+      ),
       backgroundColor: constantColors.blueGreyColor,
       body: SingleChildScrollView(
         child: SafeArea(

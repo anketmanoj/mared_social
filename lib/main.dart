@@ -19,6 +19,7 @@ import 'package:mared_social/screens/Profile/profileHelpers.dart';
 import 'package:mared_social/screens/SearchFeed/searchfeedhelper.dart';
 import 'package:mared_social/screens/Stories/stories_helper.dart';
 import 'package:mared_social/screens/auctionFeed/auctionfeedHelper.dart';
+import 'package:mared_social/screens/auctionFeed/placebidhelper.dart';
 import 'package:mared_social/screens/auctionMap/auctionMapHelper.dart';
 import 'package:mared_social/screens/auctions/auctionPageHelper.dart';
 import 'package:mared_social/screens/isAnon/isAnonHelper.dart';
@@ -85,6 +86,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       providers: [
+        ChangeNotifierProvider(create: (_) => PlaceBidHelpers()),
         ChangeNotifierProvider(create: (_) => AuctionMapHelper()),
         ChangeNotifierProvider(create: (_) => AuctionFuctions()),
         ChangeNotifierProvider(create: (_) => AuctionFeedHelper()),
