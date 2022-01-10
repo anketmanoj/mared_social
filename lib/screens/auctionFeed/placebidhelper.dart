@@ -3,7 +3,9 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/screens/auctionFeed/counterView.dart';
 import 'package:mared_social/screens/auctionMap/auctionMapHelper.dart';
 import 'package:provider/provider.dart';
 
@@ -43,7 +45,7 @@ class PlaceBidHelpers with ChangeNotifier {
           ),
           Expanded(
             child: Text(
-              "Attention - The purpose of this bid is to reach an appropriate price for the auction. Any attempts to manipulate or harm the integrity of the auction may results in legal prosecution from Mared or the auction advertiser",
+              "Attention - The purpose of this bid is to reach an appropriate price for the auction. Any attempts to manipulate or harm the integrity of the auction may result in legal prosecution from Mared or the auction advertiser",
               style: TextStyle(color: constantColors.whiteColor),
             ),
           ),
@@ -118,5 +120,24 @@ class PlaceBidHelpers with ChangeNotifier {
         ),
       ),
     );
+  }
+
+  Widget chooseBid(
+      {required BuildContext context, required DocumentSnapshot auctionDoc}) {
+    Size size = MediaQuery.of(context).size;
+    return StatefulBuilder(builder: (context, innerState) {
+      return CounterView(
+          auctionCurrentAmount: int.parse(auctionDoc['currentprice']) +
+              int.parse(auctionDoc['minimumbid']),
+          initNumber: int.parse(auctionDoc['minimumbid']),
+          counterCallback: (int i) {},
+          increaseCallback: () {
+            innerState(() {});
+          },
+          decreaseCallback: () {
+            innerState(() {});
+          },
+          minNumber: int.parse(auctionDoc['minimumbid']));
+    });
   }
 }

@@ -24,11 +24,21 @@ class _PlaceBidScreenState extends State<PlaceBidScreen> {
       backgroundColor: constantColors.darkColor,
       appBar:
           Provider.of<PlaceBidHelpers>(context, listen: false).appBar(context),
-      body: Column(
-        children: [
-          Provider.of<PlaceBidHelpers>(context, listen: false)
-              .warningHeader(context),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Provider.of<PlaceBidHelpers>(context, listen: false)
+                .warningHeader(context),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Provider.of<PlaceBidHelpers>(context, listen: false)
+                  .chooseBid(
+                context: context,
+                auctionDoc: widget.AuctionDocSnap,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
