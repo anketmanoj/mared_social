@@ -168,6 +168,27 @@ class _CounterViewState extends State<CounterView> {
                 onPressed: () async {
                   String bidId = nanoid(14).toString();
                   try {
+                    await FirebaseFirestore.instance
+                        .collection("auctions")
+                        .doc(widget.auctionDoc.id)
+                        .collection("bids")
+                        .orderBy("time", descending: true)
+                        .limit(1)
+                        .get()
+                        .then((bidCollection) async {
+                      var bidVal = bidCollection.docs[0];
+                      if (bidVal.exists &&
+                          bidVal['useruid'] !=
+                              Provider.of<Authentication>(context,
+                                      listen: false)
+                                  .getUserId) {
+                        await Provider.of<FirebaseOperations>(context,
+                                listen: false)
+                            .notifyOverBid(
+                                userToken: bidVal['fcmToken'],
+                                auctionName: widget.auctionDoc['title']);
+                      }
+                    });
                     await Provider.of<FirebaseOperations>(context,
                             listen: false)
                         .placeBid(
@@ -207,8 +228,9 @@ class _CounterViewState extends State<CounterView> {
                       },
                     )
                         .whenComplete(
-                      () {
+                      () async {
                         Navigator.pop(context);
+
                         CoolAlert.show(
                             context: context,
                             type: CoolAlertType.success,

@@ -37,6 +37,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     Future.delayed(Duration.zero, () async {
+      await load();
       await Provider.of<FirebaseOperations>(context, listen: false)
           .initUserData(context)
           .whenComplete(() {
@@ -45,7 +46,7 @@ class _HomePageState extends State<HomePage> {
         });
       });
     });
-    load();
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('Got a message whilst in the foreground!');
       print('Message data: ${message.data}');

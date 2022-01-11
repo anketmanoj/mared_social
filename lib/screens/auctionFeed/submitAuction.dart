@@ -87,6 +87,16 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
             text: "Start date cannot be empty");
         return;
       }
+
+      if (pickedDate.isBefore(DateTime.now())) {
+        CoolAlert.show(
+            context: context,
+            type: CoolAlertType.error,
+            title: "Start date Error",
+            text:
+                "Start date cannot be before ${DateTime.now().toString().substring(0, 10)}");
+        return;
+      }
       setState(() {
         //for rebuilding the ui
         _selectedStartDate = pickedDate;
@@ -257,7 +267,8 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                           maxLines: 1,
                           controller: titleController,
                           header: "Title",
-                          validatorString: "Title cant be empty",
+                          validator: (value) =>
+                              value!.isEmpty ? "Title cant be empty" : null,
                           hintValue: "Example: Incredible S-Class For Auction",
                         ),
                         FieldValue(
@@ -266,7 +277,9 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                           controller: descriptionController,
                           keyboardType: TextInputType.text,
                           header: "Description",
-                          validatorString: "Description cant be empty",
+                          validator: (value) => value!.isEmpty
+                              ? "Description cant be empty"
+                              : null,
                           hintValue:
                               "Example: Great Condition, Top of the line specs, barely used and kept with love. Auctioning off for it find a better home!",
                         ),
@@ -276,7 +289,9 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                           keyboardType: TextInputType.number,
                           controller: startingPriceController,
                           header: "Starting Price",
-                          validatorString: "Starting Price cant be empty",
+                          validator: (value) => value!.isEmpty
+                              ? "Starting Price cant be empty"
+                              : null,
                           hintValue: "Example: AED 100",
                         ),
                         FieldValue(
@@ -285,7 +300,9 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                           keyboardType: TextInputType.number,
                           controller: minimumBidController,
                           header: "Minimum Bid",
-                          validatorString: "Minimum bid amount cant be empty",
+                          validator: (value) => value!.isEmpty
+                              ? "Minimum bid amount cant be empty"
+                              : null,
                           hintValue: "Example: AED 10",
                         ),
                         Visibility(
@@ -295,7 +312,9 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                               constantColors: constantColors,
                               controller: adrController,
                               header: "Location",
-                              validatorString: "Location cant be empty",
+                              validator: (value) => value!.isEmpty
+                                  ? "Location cant be empty"
+                                  : null,
                               hintValue: "Example: The Dubai Mall",
                               maxLines: 1,
                               function: (value) {
@@ -526,7 +545,8 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                           maxLines: 1,
                           controller: emailController,
                           header: "Email",
-                          validatorString: "Email cannot be empty",
+                          validator: (value) =>
+                              value!.isEmpty ? "Email cannot be empty" : null,
                           hintValue: "Example: john.doe@gmail.com",
                           keyboardType: TextInputType.emailAddress,
                         ),
@@ -535,9 +555,13 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                           maxLines: 1,
                           controller: phoneController,
                           header: "Phone Number",
-                          validatorString: "Phone Number cannot be empty",
-                          hintValue: "Example: 9715X XXX XXXX",
+                          validator: (value) =>
+                              value!.isEmpty || value.length < 10
+                                  ? "Error - Must be as 05X XXX XXXX"
+                                  : null,
+                          hintValue: "Example: 05X XXX XXXX",
                           keyboardType: TextInputType.phone,
+                          maxLength: 10,
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 8.0),
@@ -558,7 +582,8 @@ class _SubmitAuctionScreenState extends State<SubmitAuctionScreen> {
                                             constantColors.greenColor),
                                   ),
                                   onPressed: () async {
-                                    if (_formKey.currentState!.validate()) {
+                                    if (_formKey.currentState!.validate() &&
+                                        multipleImages.isNotEmpty) {
                                       CoolAlert.show(
                                           context: context,
                                           type: CoolAlertType.loading,
@@ -741,21 +766,23 @@ class FieldValue extends StatelessWidget {
     required this.constantColors,
     required this.controller,
     required this.header,
-    required this.validatorString,
     this.hintValue,
     required this.maxLines,
     this.keyboardType,
     this.function,
+    this.maxLength,
+    required this.validator,
   }) : super(key: key);
 
   final String header;
-  final String validatorString;
   final String? hintValue;
   final ConstantColors constantColors;
   final TextEditingController controller;
   final TextInputType? keyboardType;
   final int maxLines;
+  final int? maxLength;
   final ValueChanged<String>? function;
+  final FormFieldValidator<String> validator;
 
   @override
   Widget build(BuildContext context) {
@@ -775,11 +802,15 @@ class FieldValue extends StatelessWidget {
           TextFormField(
             keyboardType: keyboardType,
             maxLines: maxLines,
-            validator: (value) => value!.isEmpty ? validatorString : null,
+            maxLength: maxLength,
+            validator: validator,
             controller: controller,
             decoration: InputDecoration(
+              counterStyle: TextStyle(
+                color: constantColors.greenColor,
+              ),
               hintText: hintValue,
-              hintStyle: TextStyle(
+              hintStyle: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
               ),

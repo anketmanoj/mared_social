@@ -61,6 +61,8 @@ class FirebaseOperations with ChangeNotifier {
       initUserImage = doc['userimage'];
       store = doc['store'];
       fcmToken = doc['fcmToken'];
+
+      print(fcmToken);
       print(initUserName);
       notifyListeners();
     });
@@ -150,6 +152,14 @@ class FirebaseOperations with ChangeNotifier {
           .doc(postId)
           .delete();
     });
+  }
+
+  Future notifyOverBid(
+      {required String userToken, required String auctionName}) async {
+    await _fcmNotificationService.sendNotificationToUser(
+        to: userToken, //To change once set up
+        title: "Someone else is winning the auction",
+        body: "You've been overbid for $auctionName");
   }
 
   Future deleteAuctionData(

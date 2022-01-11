@@ -566,11 +566,17 @@ class AuctionFeedHelper with ChangeNotifier {
     return FloatingActionButton.extended(
       backgroundColor: constantColors.darkColor,
       onPressed: () {
-        Navigator.push(
-            context,
-            PageTransition(
-                child: CreateAuctionScreen(),
-                type: PageTransitionType.rightToLeft));
+        if (Provider.of<Authentication>(context, listen: false).getIsAnon ==
+            false) {
+          Navigator.push(
+              context,
+              PageTransition(
+                  child: CreateAuctionScreen(),
+                  type: PageTransitionType.rightToLeft));
+        } else {
+          Provider.of<FeedHelpers>(context, listen: false)
+              .IsAnonBottomSheet(context);
+        }
       },
       label: Text(
         "Post Auction",
