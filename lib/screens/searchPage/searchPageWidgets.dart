@@ -26,7 +26,9 @@ class UserSearch extends StatelessWidget {
           .where('usersearchindex', arrayContains: userSearchVal.toLowerCase())
           .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.data!.docs.isNotEmpty) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return LoadingWidget(constantColors: constantColors);
+        } else if (snapshot.data!.docs.isNotEmpty) {
           return Container(
             padding: const EdgeInsets.only(top: 10),
             height: size.height,
@@ -134,7 +136,9 @@ class VendorSearch extends StatelessWidget {
           .where('store', isEqualTo: true)
           .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.data!.docs.isNotEmpty) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return LoadingWidget(constantColors: constantColors);
+        } else if (snapshot.data!.docs.isNotEmpty) {
           return Container(
             padding: const EdgeInsets.only(top: 10),
             height: size.height,
@@ -247,7 +251,9 @@ class PostSearch extends StatelessWidget {
           .where('searchindex', arrayContains: postSearchVal.toLowerCase())
           .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.data!.docs.isNotEmpty) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return LoadingWidget(constantColors: constantColors);
+        } else if (snapshot.data!.docs.isNotEmpty) {
           return Container(
             padding: const EdgeInsets.only(top: 10),
             height: size.height,
@@ -366,7 +372,9 @@ class AuctionSearch extends StatelessWidget {
           .where('searchindex', arrayContains: auctionSearchVal.toLowerCase())
           .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.data!.docs.isNotEmpty) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return LoadingWidget(constantColors: constantColors);
+        } else if (snapshot.data!.docs.isNotEmpty) {
           return Container(
             padding: const EdgeInsets.only(top: 10),
             height: size.height,

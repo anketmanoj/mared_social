@@ -126,8 +126,7 @@ class FeedHelpers with ChangeNotifier {
                                 style: TextStyle(
                                   color:
                                       constantColors.darkColor.withOpacity(0.5),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                 ),
                               ),
                             ),
