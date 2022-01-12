@@ -16,6 +16,7 @@ import 'package:nanoid/nanoid.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:the_apple_sign_in/the_apple_sign_in.dart';
 
 class LandingHelpers with ChangeNotifier {
   ConstantColors constantColors = ConstantColors();
@@ -98,8 +99,6 @@ class LandingHelpers with ChangeNotifier {
                                 listen: false)
                             .signInWithgoogle();
 
-                        print("creating collection");
-
                         await Provider.of<FirebaseOperations>(context,
                                 listen: false)
                             .createUserCollection(context, {
@@ -141,13 +140,48 @@ class LandingHelpers with ChangeNotifier {
                   //   icon: EvaIcons.facebook,
                   //   color: constantColors.blueColor,
                   // ),
-                  // LoginIcon(
-                  //     icon: FontAwesomeIcons.apple,
-                  //     onTap: () async {
-                  //       Provider.of<Authentication>(context, listen: false)
-                  //           .signInApple();
-                  //     },
-                  //     color: constantColors.whiteColor)
+                  LoginIcon(
+                      icon: FontAwesomeIcons.apple,
+                      onTap: () async {
+                        try {
+                          await Provider.of<Authentication>(context,
+                                  listen: false)
+                              .signInWithApple(context);
+
+                          await Provider.of<FirebaseOperations>(context,
+                                  listen: false)
+                              .createUserCollection(context, {
+                            'usercontactnumber': "No Number",
+                            'store': false,
+                            'useruid': Provider.of<Authentication>(context,
+                                    listen: false)
+                                .getUserId,
+                            'useremail': Provider.of<Authentication>(context,
+                                    listen: false)
+                                .getappleUseremail,
+                            'username': Provider.of<Authentication>(context,
+                                    listen: false)
+                                .getappleUsername,
+                            'userimage': Provider.of<Authentication>(context,
+                                    listen: false)
+                                .getappleUserImage,
+                          });
+
+                          Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                  child: SplitPages(),
+                                  type: PageTransitionType.rightToLeft));
+                        } catch (e) {
+                          CoolAlert.show(
+                            context: context,
+                            type: CoolAlertType.error,
+                            title: "Sign In Failed",
+                            text: e.toString(),
+                          );
+                        }
+                      },
+                      color: constantColors.whiteColor)
                 ],
               ),
             )

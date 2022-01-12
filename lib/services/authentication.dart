@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:the_apple_sign_in/the_apple_sign_in.dart';
 
 class Authentication with ChangeNotifier {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -13,12 +15,19 @@ class Authentication with ChangeNotifier {
       googleUserImage,
       googlePhoneNo;
 
+  late String appleUsername, appleUseremail, appleUserImage, applePhoneNo;
+
   bool get getIsAnon => isAnon;
   String get getUserId => userUid;
   String get getgoogleUsername => googleUsername;
   String get getgoogleUseremail => googleUseremail;
   String get getgoogleUserImage => googleUserImage;
   String get getgooglePhoneNo => googlePhoneNo;
+
+  String get getappleUsername => appleUsername;
+  String get getappleUseremail => appleUseremail;
+  String get getappleUserImage => appleUserImage;
+  String get getapplePhoneNo => applePhoneNo;
 
   Future loginIntoAccount(String email, String password) async {
     UserCredential userCredential = await firebaseAuth
@@ -73,6 +82,73 @@ class Authentication with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<User> signInApple({List<Scope> scopes = const []}) async {
+    // 1. perform the sign-in request
+    final result = await TheAppleSignIn.performRequests(
+        [AppleIdRequest(requestedScopes: scopes)]);
+    // 2. check the result
+    switch (result.status) {
+      case AuthorizationStatus.authorized:
+        final appleIdCredential = result.credential!;
+        final oAuthProvider = OAuthProvider('apple.com');
+        final credential = oAuthProvider.credential(
+          idToken: String.fromCharCodes(appleIdCredential.identityToken!),
+          accessToken:
+              String.fromCharCodes(appleIdCredential.authorizationCode!),
+        );
+        final userCredential =
+            await firebaseAuth.signInWithCredential(credential);
+        final firebaseUser = userCredential.user!;
+
+        if (scopes.contains(Scope.fullName)) {
+          final fullName = appleIdCredential.fullName;
+          final email = appleIdCredential.email;
+
+          if (fullName != null &&
+              fullName.givenName != null &&
+              fullName.familyName != null) {
+            final displayName = '${fullName.givenName} ${fullName.familyName}';
+
+            await firebaseUser.updateDisplayName(displayName);
+            await firebaseUser.updateEmail(email!);
+          }
+        }
+        return firebaseUser;
+      case AuthorizationStatus.error:
+        throw PlatformException(
+          code: 'ERROR_AUTHORIZATION_DENIED',
+          message: result.error.toString(),
+        );
+
+      case AuthorizationStatus.cancelled:
+        throw PlatformException(
+          code: 'ERROR_ABORTED_BY_USER',
+          message: 'Sign in aborted by user',
+        );
+      default:
+        throw UnimplementedError();
+    }
+  }
+
+  Future<void> signInWithApple(BuildContext context) async {
+    try {
+      final user = await signInApple(scopes: [Scope.email, Scope.fullName]);
+      print(user.email);
+      userUid = user.uid;
+      isAnon = false;
+      appleUseremail = user.email!;
+      appleUsername = user.displayName!;
+      appleUserImage =
+          "https://firebasestorage.googleapis.com/v0/b/maredsocial-79a7b.appspot.com/o/userProfileAvatar%2Fprivate%2Fvar%2Fmobile%2FContainers%2FData%2FApplication%2Ficon-mared.png?alt=media&token=eec2b470-f32e-4449-874a-e6929e210c6c";
+      applePhoneNo = "No Number";
+
+      notifyListeners();
+    } catch (e) {
+      // TODO: Show alert here
+      print(e);
+    }
+  }
+
   Future signOutWithGoogle() async {
     return googleSignIn.signOut();
   }
@@ -90,13 +166,4 @@ class Authentication with ChangeNotifier {
       print("FAILED === ${e.toString()}");
     }
   }
-
-  // Future signInApple() async {
-  //   var userCredentials = SignInWithApple.getAppleIDCredential(scopes: [
-  //     AppleIDAuthorizationScopes.email,
-  //     AppleIDAuthorizationScopes.fullName,
-  //   ]);
-
-  //   print(userCredentials);
-  // }
 }

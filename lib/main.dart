@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/constants/appleSignInCheck.dart';
 import 'package:mared_social/screens/AltProfile/altProfileHelper.dart';
 import 'package:mared_social/screens/Categories/categoryHelpers.dart';
 import 'package:mared_social/screens/CategoryFeed/categoryfeedhelper.dart';
@@ -63,7 +64,11 @@ void main() async {
     badge: true,
     sound: true,
   );
-  runApp(const MyApp());
+  final appleSignInAvailable = await AppleSignInAvailable.check();
+  runApp(Provider<AppleSignInAvailable>.value(
+    value: appleSignInAvailable,
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {

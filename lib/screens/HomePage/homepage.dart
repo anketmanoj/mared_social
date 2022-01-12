@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/Categories/category.dart';
@@ -70,6 +71,9 @@ class _HomePageState extends State<HomePage> {
         provisional: false,
         sound: true,
       );
+    } else {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
+          overlays: [SystemUiOverlay.top]);
     }
 
     _fcm.getAPNSToken().then((value) => print("APN Token === $value"));
