@@ -534,6 +534,19 @@ class LandingService with ChangeNotifier {
                                         .getUserAvatarUrl,
                                   }));
 
+                              String name = "${userNameController.text} ";
+
+                              List<String> splitList = name.split(" ");
+                              List<String> indexList = [];
+
+                              for (int i = 0; i < splitList.length; i++) {
+                                for (int j = 0; j < splitList[i].length; j++) {
+                                  indexList.add(splitList[i]
+                                      .substring(0, j + 1)
+                                      .toLowerCase());
+                                }
+                              }
+
                               await Provider.of<FirebaseOperations>(context,
                                       listen: false)
                                   .createUserCollection(context, {
@@ -548,6 +561,7 @@ class LandingService with ChangeNotifier {
                                 'userimage': Provider.of<LandingUtils>(context,
                                         listen: false)
                                     .getUserAvatarUrl,
+                                'usersearchindex': indexList,
                               });
 
                               Navigator.pushReplacement(

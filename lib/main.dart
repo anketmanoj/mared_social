@@ -26,6 +26,7 @@ import 'package:mared_social/screens/auctions/auctionPageHelper.dart';
 import 'package:mared_social/screens/isAnon/isAnonHelper.dart';
 import 'package:mared_social/screens/mapscreen/category_mapscreenhelper.dart';
 import 'package:mared_social/screens/mapscreen/mapscreenhelper.dart';
+import 'package:mared_social/screens/searchPage/searchPageHelper.dart';
 import 'package:mared_social/screens/splashscreens/splashscreen.dart';
 import 'package:mared_social/screens/splitter/splitterhelper.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
@@ -91,6 +92,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       providers: [
+        ChangeNotifierProvider(create: (_) => SearchPageHelper()),
         ChangeNotifierProvider(create: (_) => PlaceBidHelpers()),
         ChangeNotifierProvider(create: (_) => AuctionMapHelper()),
         ChangeNotifierProvider(create: (_) => AuctionFuctions()),

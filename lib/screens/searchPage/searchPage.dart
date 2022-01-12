@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/screens/searchPage/searchPageHelper.dart';
+import 'package:mared_social/screens/searchPage/searchPageWidgets.dart';
+import 'package:provider/provider.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -9,9 +13,14 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final ConstantColors constantColors = ConstantColors();
   final textController = TextEditingController();
+  final PageController pageController = PageController();
+  int pageIndex = 0;
+
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: constantColors.blueGreyColor,
       appBar: AppBar(
         backgroundColor: constantColors.darkColor,
@@ -41,7 +50,7 @@ class _SearchPageState extends State<SearchPage> {
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: constantColors.darkColor,
-                  hintText: "I.e. Air Jordan 1's",
+                  hintText: "What do you desire?",
                   hintStyle: TextStyle(
                     color: constantColors.lightColor.withOpacity(0.6),
                   ),
@@ -55,12 +64,48 @@ class _SearchPageState extends State<SearchPage> {
                   suffixIcon: IconButton(
                     onPressed: () {
                       textController.clear();
+                      setState(() {});
                     },
                     icon: Icon(
                       Icons.clear,
                       color: constantColors.whiteColor,
                     ),
                   ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: SizedBox(
+                    height: size.height * 0.06,
+                    width: size.width,
+                    child: Provider.of<SearchPageHelper>(context, listen: false)
+                        .topNavBar(context, pageIndex, pageController)),
+              ),
+              SizedBox(
+                height: size.height * 0.7,
+                width: size.width,
+                child: PageView(
+                  controller: pageController,
+                  children: [
+                    UserSearch(
+                      userSearchVal: textController.text,
+                    ),
+                    VendorSearch(
+                      vendorSearchVal: textController.text,
+                    ),
+                    PostSearch(
+                      postSearchVal: textController.text,
+                    ),
+                    AuctionSearch(
+                      auctionSearchVal: textController.text,
+                    ),
+                  ],
+                  physics: const NeverScrollableScrollPhysics(),
+                  onPageChanged: (page) {
+                    setState(() {
+                      pageIndex = page;
+                    });
+                  },
                 ),
               ),
             ],

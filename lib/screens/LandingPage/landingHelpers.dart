@@ -99,6 +99,19 @@ class LandingHelpers with ChangeNotifier {
                                 listen: false)
                             .signInWithgoogle();
 
+                        String name =
+                            "${Provider.of<Authentication>(context, listen: false).getgoogleUsername} ";
+
+                        List<String> splitList = name.split(" ");
+                        List<String> indexList = [];
+
+                        for (int i = 0; i < splitList.length; i++) {
+                          for (int j = 0; j < splitList[i].length; j++) {
+                            indexList.add(
+                                splitList[i].substring(0, j + 1).toLowerCase());
+                          }
+                        }
+
                         await Provider.of<FirebaseOperations>(context,
                                 listen: false)
                             .createUserCollection(context, {
@@ -106,6 +119,7 @@ class LandingHelpers with ChangeNotifier {
                                   context,
                                   listen: false)
                               .getgooglePhoneNo,
+                          'usersearchindex': indexList,
                           'store': false,
                           'useruid': Provider.of<Authentication>(context,
                                   listen: false)
@@ -148,6 +162,20 @@ class LandingHelpers with ChangeNotifier {
                                   listen: false)
                               .signInWithApple(context);
 
+                          String name =
+                              "${Provider.of<Authentication>(context, listen: false).getappleUsername} ";
+
+                          List<String> splitList = name.split(" ");
+                          List<String> indexList = [];
+
+                          for (int i = 0; i < splitList.length; i++) {
+                            for (int j = 0; j < splitList[i].length; j++) {
+                              indexList.add(splitList[i]
+                                  .substring(0, j + 1)
+                                  .toLowerCase());
+                            }
+                          }
+
                           await Provider.of<FirebaseOperations>(context,
                                   listen: false)
                               .createUserCollection(context, {
@@ -156,6 +184,7 @@ class LandingHelpers with ChangeNotifier {
                             'useruid': Provider.of<Authentication>(context,
                                     listen: false)
                                 .getUserId,
+                            'usersearchindex': indexList,
                             'useremail': Provider.of<Authentication>(context,
                                     listen: false)
                                 .getappleUseremail,
@@ -204,7 +233,18 @@ class LandingHelpers with ChangeNotifier {
                                 listen: false)
                             .signInWithgoogle();
 
-                        print("creating collection");
+                        String name =
+                            "${Provider.of<Authentication>(context, listen: false).getgoogleUsername} ";
+
+                        List<String> splitList = name.split(" ");
+                        List<String> indexList = [];
+
+                        for (int i = 0; i < splitList.length; i++) {
+                          for (int j = 0; j < splitList[i].length; j++) {
+                            indexList.add(
+                                splitList[i].substring(0, j + 1).toLowerCase());
+                          }
+                        }
 
                         await Provider.of<FirebaseOperations>(context,
                                 listen: false)
@@ -214,6 +254,7 @@ class LandingHelpers with ChangeNotifier {
                                   listen: false)
                               .getgooglePhoneNo,
                           'store': false,
+                          'usersearchindex': indexList,
                           'useruid': Provider.of<Authentication>(context,
                                   listen: false)
                               .getUserId,
@@ -265,6 +306,17 @@ class LandingHelpers with ChangeNotifier {
             await Provider.of<Authentication>(context, listen: false)
                 .signInAnon();
 
+            String name = "$anonUsername";
+
+            List<String> splitList = name.split(" ");
+            List<String> indexList = [];
+
+            for (int i = 0; i < splitList.length; i++) {
+              for (int j = 0; j < splitList[i].length; j++) {
+                indexList.add(splitList[i].substring(0, j + 1).toLowerCase());
+              }
+            }
+
             await Provider.of<FirebaseOperations>(context, listen: false)
                 .createUserCollection(context, {
               'usercontactnumber': "",
@@ -273,6 +325,7 @@ class LandingHelpers with ChangeNotifier {
                   Provider.of<Authentication>(context, listen: false).getUserId,
               'useremail': "$anonUsername@mared.ae",
               'username': "@$anonUsername",
+              'usersearchindex': indexList,
               'userimage':
                   "https://firebasestorage.googleapis.com/v0/b/maredsocial-79a7b.appspot.com/o/userProfileAvatar%2Fprivate%2Fvar%2Fmobile%2FContainers%2FData%2FApplication%2Ficon-mared.png?alt=media&token=eec2b470-f32e-4449-874a-e6929e210c6c",
             });

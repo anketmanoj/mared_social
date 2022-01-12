@@ -122,7 +122,7 @@ class FeedHelpers with ChangeNotifier {
                             ),
                             Expanded(
                               child: Text(
-                                "Search for User or Business...",
+                                "Looking for something?",
                                 style: TextStyle(
                                   color:
                                       constantColors.darkColor.withOpacity(0.5),
