@@ -10,6 +10,7 @@ import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/Stories/stories.dart';
 import 'package:mared_social/screens/isAnon/isAnon.dart';
+import 'package:mared_social/screens/searchPage/searchPage.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/postoptions.dart';
@@ -82,12 +83,59 @@ class FeedHelpers with ChangeNotifier {
       slivers: [
         SliverAppBar(
           automaticallyImplyLeading: false,
-          expandedHeight: MediaQuery.of(context).size.height * 0.335,
+          expandedHeight: MediaQuery.of(context).size.height * 0.42,
           flexibleSpace: FlexibleSpaceBar(
             background: Container(
               color: constantColors.blueGreyColor,
               child: Column(
                 children: [
+                  InkWell(
+                    onTap: () => Navigator.push(
+                      context,
+                      PageTransition(
+                        child: SearchPage(),
+                        type: PageTransitionType.rightToLeft,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 5, 8, 0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        height: MediaQuery.of(context).size.height * 0.065,
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            color: constantColors.whiteColor,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: constantColors.greenColor,
+                              width: 1,
+                            )),
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Icon(
+                                Icons.search_outlined,
+                                size: 25,
+                                color: constantColors.darkColor,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                "Search for User or Business...",
+                                style: TextStyle(
+                                  color:
+                                      constantColors.darkColor.withOpacity(0.5),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                   StatefulBuilder(builder: (context, stateSet) {
                     return Padding(
                       padding: const EdgeInsets.only(top: 8.0),
