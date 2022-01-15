@@ -514,9 +514,24 @@ PODS:
   - sqflite (0.0.2):
     - Flutter
     - FMDB (>= 2.7.5)
+  - Stripe (21.9.1):
+    - Stripe/Stripe3DS2 (= 21.9.1)
+    - StripeCore (= 21.9.1)
+    - StripeUICore (= 21.9.1)
+  - Stripe/Stripe3DS2 (21.9.1):
+    - StripeCore (= 21.9.1)
+    - StripeUICore (= 21.9.1)
+  - stripe_ios (0.0.1):
+    - Flutter
+    - Stripe (~> 21.9.0)
+  - StripeCore (21.9.1)
+  - StripeUICore (21.9.1):
+    - StripeCore (= 21.9.1)
   - the_apple_sign_in (1.0.0):
     - Flutter
   - video_player (0.0.1):
+    - Flutter
+  - webview_flutter_wkwebview (0.0.1):
     - Flutter
 
 DEPENDENCIES:
@@ -534,8 +549,10 @@ DEPENDENCIES:
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
   - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
+  - stripe_ios (from `.symlinks/plugins/stripe_ios/ios`)
   - the_apple_sign_in (from `.symlinks/plugins/the_apple_sign_in/ios`)
   - video_player (from `.symlinks/plugins/video_player/ios`)
+  - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
 
 SPEC REPOS:
   trunk:
@@ -562,6 +579,9 @@ SPEC REPOS:
     - leveldb-library
     - nanopb
     - PromisesObjC
+    - Stripe
+    - StripeCore
+    - StripeUICore
 
 EXTERNAL SOURCES:
   cloud_firestore:
@@ -592,10 +612,14 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_ios/ios"
   sqflite:
     :path: ".symlinks/plugins/sqflite/ios"
+  stripe_ios:
+    :path: ".symlinks/plugins/stripe_ios/ios"
   the_apple_sign_in:
     :path: ".symlinks/plugins/the_apple_sign_in/ios"
   video_player:
     :path: ".symlinks/plugins/video_player/ios"
+  webview_flutter_wkwebview:
+    :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
 
 SPEC CHECKSUMS:
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
@@ -635,9 +659,14 @@ SPEC CHECKSUMS:
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   shared_preferences_ios: aef470a42dc4675a1cdd50e3158b42e3d1232b32
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
+  Stripe: 22c1b8da5ee20a1aaf40fd198160efa72e71644a
+  stripe_ios: fce03ba840e641cc31ff5bdb67f5d5b9c938b897
+  StripeCore: 91ea038ac0abbb72f11014044dfd1e5d39089714
+  StripeUICore: 7edf64b24c9c178bfd97e988f2cffdbb7a7628b0
   the_apple_sign_in: 2e78c83cdb09eba07bb16dcc1f3bc12fcdc8263d
   video_player: ecd305f42e9044793efd34846e1ce64c31ea6fcb
+  webview_flutter_wkwebview: 005fbd90c888a42c5690919a1527ecc6649e1162
 
-PODFILE CHECKSUM: fe0e1ee7f3d1f7d00b11b474b62dd62134535aea
+PODFILE CHECKSUM: cc1f88378b4bfcf93a6ce00d2c587857c6008d3b
 
 COCOAPODS: 1.11.2

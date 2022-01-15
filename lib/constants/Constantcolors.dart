@@ -16,6 +16,45 @@ class ConstantColors {
   final Color greyColor = Colors.grey.shade600;
 }
 
+class ListTileOption extends StatelessWidget {
+  const ListTileOption({
+    Key? key,
+    required this.constantColors,
+    required this.onTap,
+    required this.leadingIcon,
+    required this.trailingIcon,
+    required this.text,
+  }) : super(key: key);
+
+  final ConstantColors constantColors;
+  final GestureTapCallback onTap;
+  final IconData leadingIcon;
+  final IconData trailingIcon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      onTap: onTap,
+      title: Text(
+        text,
+        style: TextStyle(
+          color: constantColors.whiteColor,
+          fontSize: 16,
+        ),
+      ),
+      leading: Icon(
+        leadingIcon,
+        color: constantColors.whiteColor,
+      ),
+      trailing: Icon(
+        trailingIcon,
+        color: constantColors.whiteColor,
+      ),
+    );
+  }
+}
+
 extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${this.substring(1).toLowerCase()}";

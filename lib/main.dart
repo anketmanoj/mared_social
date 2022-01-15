@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/constants/appleSignInCheck.dart';
 import 'package:mared_social/screens/AltProfile/altProfileHelper.dart';
@@ -26,6 +27,7 @@ import 'package:mared_social/screens/auctions/auctionPageHelper.dart';
 import 'package:mared_social/screens/isAnon/isAnonHelper.dart';
 import 'package:mared_social/screens/mapscreen/category_mapscreenhelper.dart';
 import 'package:mared_social/screens/mapscreen/mapscreenhelper.dart';
+import 'package:mared_social/screens/promotePost/promotePostHelper.dart';
 import 'package:mared_social/screens/searchPage/searchPageHelper.dart';
 import 'package:mared_social/screens/splashscreens/splashscreen.dart';
 import 'package:mared_social/screens/splitter/splitterhelper.dart';
@@ -66,6 +68,7 @@ void main() async {
     sound: true,
   );
   final appleSignInAvailable = await AppleSignInAvailable.check();
+
   runApp(Provider<AppleSignInAvailable>.value(
     value: appleSignInAvailable,
     child: const MyApp(),
@@ -92,6 +95,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       providers: [
+        ChangeNotifierProvider(create: (_) => PromotePostHelper()),
         ChangeNotifierProvider(create: (_) => SearchPageHelper()),
         ChangeNotifierProvider(create: (_) => PlaceBidHelpers()),
         ChangeNotifierProvider(create: (_) => AuctionMapHelper()),

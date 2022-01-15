@@ -15,6 +15,7 @@ import 'package:mared_social/screens/LandingPage/landingpage.dart';
 import 'package:mared_social/screens/Stories/stories_widget.dart';
 import 'package:mared_social/screens/auctionFeed/createAuctionScreen.dart';
 import 'package:mared_social/screens/auctionMap/auctionMapHelper.dart';
+import 'package:mared_social/screens/userSettings/usersettings.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/postoptions.dart';
@@ -1153,10 +1154,11 @@ class PostsProfile extends StatelessWidget {
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            CoolAlert.show(
-                context: context,
-                type: CoolAlertType.success,
-                title: "User settings page coming soon!");
+            Navigator.push(
+                context,
+                PageTransition(
+                    child: UserSettingsPage(),
+                    type: PageTransitionType.leftToRight));
           },
           icon: Icon(
             FontAwesomeIcons.cogs,
