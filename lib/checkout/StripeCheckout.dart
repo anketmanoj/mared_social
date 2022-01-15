@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/constants/stripe_const.dart';
+import 'package:mared_social/screens/splitter/splitter.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class StripeCheckoutPage extends StatefulWidget {
@@ -12,11 +15,15 @@ class StripeCheckoutPage extends StatefulWidget {
 
 class _CheckoutPageState extends State<StripeCheckoutPage> {
   WebViewController? _webViewController;
+  ConstantColors constantColors = ConstantColors();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Test"),
+        backgroundColor: constantColors.darkColor,
+        title: Text(
+          "Promote Post",
+        ),
       ),
       body: SafeArea(
         child: WebView(
@@ -30,8 +37,12 @@ class _CheckoutPageState extends State<StripeCheckoutPage> {
             }
           },
           navigationDelegate: (NavigationRequest request) {
-            if (request.url.startsWith('http://success.com')) {
-              Navigator.of(context).pop("success");
+            if (request.url.contains("success")) {
+              Navigator.pushReplacement(
+                  context,
+                  PageTransition(
+                      child: SplitPages(),
+                      type: PageTransitionType.rightToLeft));
             } else if (request.url.startsWith('http://cancel.com')) {
               Navigator.of(context).pop("cancel");
             }

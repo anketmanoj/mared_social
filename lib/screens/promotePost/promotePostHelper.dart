@@ -8,6 +8,8 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mared_social/checkout/StripeCheckout.dart';
+import 'package:mared_social/checkout/server_stub.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:provider/provider.dart';
@@ -231,7 +233,7 @@ class PromotePostHelper with ChangeNotifier {
                           ),
                           onPressed: () {
                             try {
-                              // makePayment();
+                              makePayment(context);
                             } catch (e) {
                               CoolAlert.show(
                                 context: context,
@@ -256,5 +258,32 @@ class PromotePostHelper with ChangeNotifier {
         });
       },
     );
+  }
+
+  makePayment(BuildContext context) async {
+    final sessionID = await Server().createCheckout();
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => StripeCheckoutPage(
+          sessionId: sessionID,
+        ),
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "Congratulations! Your post is now featured on Mared! ⭐️",
+        ),
+      ),
+    );
+
+    if (result.toString() != "cancel") {
+      CoolAlert.show(
+          context: context,
+          type: CoolAlertType.success,
+          title: "Post Promoted!",
+          text:
+              "Your post is now promoted till ${DateTime.now().add(Duration(days: 30)).toString().substring(0, 10)}");
+    }
   }
 }

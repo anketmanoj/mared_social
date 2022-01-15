@@ -7,6 +7,7 @@ import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/Feed/feedhelpers.dart';
+import 'package:mared_social/screens/promotePost/promotePostHelper.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/services/fcm_notification_Service.dart';
@@ -37,13 +38,14 @@ class PostFunctions with ChangeNotifier {
   }
 
   showPostOptions({required BuildContext context, required String postId}) {
+    Size size = MediaQuery.of(context).size;
     return showModalBottomSheet(
       context: context,
       builder: (context) {
         return SafeArea(
           bottom: true,
           child: Container(
-            height: MediaQuery.of(context).size.height * 0.1,
+            height: MediaQuery.of(context).size.height * 0.2,
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
               color: constantColors.blueGreyColor,
@@ -62,183 +64,198 @@ class PostFunctions with ChangeNotifier {
                   ),
                 ),
                 StreamBuilder<DocumentSnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection("posts")
-                        .doc(postId)
-                        .snapshots(),
-                    builder: (context, postDocSnap) {
-                      if (postDocSnap.connectionState ==
-                          ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  stream: FirebaseFirestore.instance
+                      .collection("posts")
+                      .doc(postId)
+                      .snapshots(),
+                  builder: (context, postDocSnap) {
+                    if (postDocSnap.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Column(
                           children: [
-                            MaterialButton(
-                              color: constantColors.blueColor,
-                              child: Text("Edit Caption",
-                                  style: TextStyle(
-                                    color: constantColors.whiteColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  )),
-                              onPressed: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  builder: (context) {
-                                    return SafeArea(
-                                      bottom: true,
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                            bottom: MediaQuery.of(context)
-                                                .viewInsets
-                                                .bottom),
-                                        child: Container(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.3,
-                                          width:
-                                              MediaQuery.of(context).size.width,
-                                          decoration: BoxDecoration(
-                                            color: constantColors.blueGreyColor,
-                                            borderRadius:
-                                                const BorderRadius.only(
-                                              topLeft: Radius.circular(12),
-                                              topRight: Radius.circular(12),
-                                            ),
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 150),
-                                                child: Divider(
-                                                  thickness: 4,
-                                                  color:
-                                                      constantColors.whiteColor,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: MediaQuery.of(context)
-                                                        .size
-                                                        .height *
-                                                    0.05,
-                                              ),
-                                              Center(
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 8.0),
-                                                      child: SizedBox(
-                                                        width: 300,
-                                                        height: 50,
-                                                        child: TextField(
-                                                          maxLines: 5,
-                                                          controller:
-                                                              updateDescriptionController,
-                                                          style: TextStyle(
-                                                            color:
-                                                                constantColors
-                                                                    .whiteColor,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 16,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    FloatingActionButton(
-                                                      backgroundColor:
-                                                          constantColors
-                                                              .greenColor,
-                                                      child: Icon(
-                                                        FontAwesomeIcons
-                                                            .fileUpload,
-                                                        color: constantColors
-                                                            .whiteColor,
-                                                      ),
-                                                      onPressed: () {
-                                                        Provider.of<FirebaseOperations>(
-                                                                context,
-                                                                listen: false)
-                                                            .updateDescription(
-                                                                postDoc:
-                                                                    postDocSnap,
-                                                                context:
-                                                                    context,
-                                                                postId: postId,
-                                                                description:
-                                                                    updateDescriptionController
-                                                                        .text)
-                                                            .whenComplete(() {
-                                                          Navigator.pop(
-                                                              context);
-                                                          Navigator.pop(
-                                                              context);
-                                                        });
-                                                      },
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Expanded(
+                                  child: MaterialButton(
+                                    color: constantColors.blueColor,
+                                    child: Text("Edit Caption",
+                                        style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        )),
+                                    onPressed: () {
+                                      editCaptionText(
+                                          context, postDocSnap, postId);
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: MaterialButton(
+                                    color: constantColors.redColor,
+                                    child: Text("Delete Post",
+                                        style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        )),
+                                    onPressed: () {
+                                      // Navigator.pop(context);
+                                      CoolAlert.show(
+                                        context: context,
+                                        type: CoolAlertType.warning,
+                                        confirmBtnText: "Delete",
+                                        cancelBtnText: "Keep Post",
+                                        showCancelBtn: true,
+                                        title: "Delete this post?",
+                                        onConfirmBtnTap: () async {
+                                          Navigator.pop(context);
+                                          Navigator.pop(context);
+                                          await Provider.of<FirebaseOperations>(
+                                                  context,
+                                                  listen: false)
+                                              .deletePostData(
+                                            userUid:
+                                                postDocSnap.data!['useruid'],
+                                            postId: postId,
+                                          );
+                                        },
+                                        onCancelBtnTap: () {
+                                          Navigator.pop(context);
+                                          Navigator.pop(context);
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
-                            MaterialButton(
-                              color: constantColors.redColor,
-                              child: Text("Delete Post",
-                                  style: TextStyle(
-                                    color: constantColors.whiteColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  )),
-                              onPressed: () {
-                                // Navigator.pop(context);
-                                CoolAlert.show(
-                                  context: context,
-                                  type: CoolAlertType.warning,
-                                  confirmBtnText: "Delete",
-                                  cancelBtnText: "Keep Post",
-                                  showCancelBtn: true,
-                                  title: "Delete this post?",
-                                  onConfirmBtnTap: () async {
-                                    Navigator.pop(context);
-                                    Navigator.pop(context);
-                                    await Provider.of<FirebaseOperations>(
-                                            context,
-                                            listen: false)
-                                        .deletePostData(
-                                      userUid: postDocSnap.data!['useruid'],
-                                      postId: postId,
-                                    );
-                                  },
-                                  onCancelBtnTap: () {
-                                    Navigator.pop(context);
-                                    Navigator.pop(context);
-                                  },
-                                );
-                              },
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: MaterialButton(
+                                      color: constantColors.greenColor,
+                                      child: Text("Promote Post",
+                                          style: TextStyle(
+                                            color: constantColors.whiteColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          )),
+                                      onPressed: () {
+                                        Provider.of<PromotePostHelper>(context,
+                                                listen: false)
+                                            .promotionBottomSheet(context, size,
+                                                postDocSnap.data!);
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
-                        );
-                      }
-                    }),
+                        ),
+                      );
+                    }
+                  },
+                ),
               ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<dynamic> editCaptionText(BuildContext context,
+      AsyncSnapshot<DocumentSnapshot<Object?>> postDocSnap, String postId) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          bottom: true,
+          child: Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.3,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: constantColors.blueGreyColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 150),
+                    child: Divider(
+                      thickness: 4,
+                      color: constantColors.whiteColor,
+                    ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.05,
+                  ),
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: SizedBox(
+                            width: 300,
+                            height: 50,
+                            child: TextField(
+                              maxLines: 5,
+                              controller: updateDescriptionController,
+                              style: TextStyle(
+                                color: constantColors.whiteColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                        FloatingActionButton(
+                          backgroundColor: constantColors.greenColor,
+                          child: Icon(
+                            FontAwesomeIcons.fileUpload,
+                            color: constantColors.whiteColor,
+                          ),
+                          onPressed: () {
+                            Provider.of<FirebaseOperations>(context,
+                                    listen: false)
+                                .updateDescription(
+                                    postDoc: postDocSnap,
+                                    context: context,
+                                    postId: postId,
+                                    description:
+                                        updateDescriptionController.text)
+                                .whenComplete(() {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
