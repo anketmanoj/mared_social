@@ -42,6 +42,16 @@ class FirebaseOperations with ChangeNotifier {
     });
   }
 
+  Future createBannerCollection(
+      {required BuildContext context,
+      required String bannerId,
+      required dynamic data}) async {
+    return FirebaseFirestore.instance
+        .collection("banners")
+        .doc(bannerId)
+        .set(data);
+  }
+
   Future createUserCollection(BuildContext context, dynamic data) async {
     return FirebaseFirestore.instance
         .collection("users")
@@ -150,7 +160,22 @@ class FirebaseOperations with ChangeNotifier {
           .doc(userUid)
           .collection("posts")
           .doc(postId)
-          .delete();
+          .delete()
+          .whenComplete(() async {
+        return await FirebaseFirestore.instance
+            .collection("banners")
+            .get()
+            .then((bannerCollection) {
+          bannerCollection.docs.forEach((element) async {
+            if (element['postid'] == postId) {
+              await FirebaseFirestore.instance
+                  .collection("banners")
+                  .doc(element.id)
+                  .delete();
+            }
+          });
+        });
+      });
     });
   }
 

@@ -11,7 +11,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mared_social/checkout/StripeCheckout.dart';
 import 'package:mared_social/checkout/server_stub.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/screens/splitter/splitter.dart';
+import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
+import 'package:nanoid/nanoid.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
@@ -233,7 +237,7 @@ class PromotePostHelper with ChangeNotifier {
                           ),
                           onPressed: () {
                             try {
-                              makePayment(context);
+                              makePayment(context: context, postData: postData);
                             } catch (e) {
                               CoolAlert.show(
                                 context: context,
@@ -260,7 +264,9 @@ class PromotePostHelper with ChangeNotifier {
     );
   }
 
-  makePayment(BuildContext context) async {
+  makePayment(
+      {required BuildContext context,
+      required DocumentSnapshot<Object?> postData}) async {
     final sessionID = await Server().createCheckout();
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
@@ -269,21 +275,37 @@ class PromotePostHelper with ChangeNotifier {
         ),
       ),
     );
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          "Congratulations! Your post is now featured on Mared! ⭐️",
-        ),
-      ),
-    );
 
     if (result.toString() != "cancel") {
-      CoolAlert.show(
-          context: context,
-          type: CoolAlertType.success,
-          title: "Post Promoted!",
-          text:
-              "Your post is now promoted till ${DateTime.now().add(Duration(days: 30)).toString().substring(0, 10)}");
+      String bannerId = nanoid(14).toString();
+      await Provider.of<FirebaseOperations>(context, listen: false)
+          .createBannerCollection(context: context, bannerId: bannerId, data: {
+        'bannerid': bannerId,
+        'postid': postData['postid'],
+        'imageslist': postData['imageslist'] as List,
+        'username': Provider.of<FirebaseOperations>(context, listen: false)
+            .getInitUserName,
+        'userimage': Provider.of<FirebaseOperations>(context, listen: false)
+            .getInitUserImage,
+        'useruid':
+            Provider.of<Authentication>(context, listen: false).getUserId,
+        'time': Timestamp.now(),
+        'useremail': Provider.of<FirebaseOperations>(context, listen: false)
+            .getInitUserEmail,
+        'enddate':
+            Timestamp.fromDate(DateTime.now().add(const Duration(days: 30))),
+      }).then((value) {
+        Navigator.pushReplacement(
+            context,
+            PageTransition(
+                child: SplitPages(), type: PageTransitionType.rightToLeft));
+        CoolAlert.show(
+            context: context,
+            type: CoolAlertType.success,
+            title: "Post Promoted!",
+            text:
+                "Your post is now promoted till ${DateTime.now().add(Duration(days: 30)).toString().substring(0, 10)}");
+      });
     }
   }
 }

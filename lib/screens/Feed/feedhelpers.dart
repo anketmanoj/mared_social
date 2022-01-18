@@ -8,6 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
 import 'package:mared_social/screens/AltProfile/altProfile.dart';
+import 'package:mared_social/screens/AltProfile/altProfileHelper.dart';
 import 'package:mared_social/screens/Stories/stories.dart';
 import 'package:mared_social/screens/isAnon/isAnon.dart';
 import 'package:mared_social/screens/searchPage/searchPage.dart';
@@ -135,63 +136,172 @@ class FeedHelpers with ChangeNotifier {
                       ),
                     ),
                   ),
-                  StatefulBuilder(builder: (context, stateSet) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Container(
-                        height: MediaQuery.of(context).size.height * 0.2,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color: constantColors.darkColor.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: CarouselSlider(
-                          items: imgList
-                              .map(
-                                (item) => Container(
-                                  child: ClipRRect(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(5.0)),
-                                    child: Stack(
-                                      children: <Widget>[
-                                        ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          child: CachedNetworkImage(
-                                            fit: BoxFit.contain,
-                                            imageUrl: item,
-                                            progressIndicatorBuilder: (context,
-                                                url, downloadProgress) {
-                                              return LoadingWidget(
-                                                  constantColors:
-                                                      constantColors);
-                                            },
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    const Icon(Icons.error),
+                  StatefulBuilder(
+                    builder: (context, stateSet) {
+                      return StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection("banners")
+                            .snapshots(),
+                        builder: (context, bannerSnap) {
+                          if (bannerSnap.connectionState ==
+                              ConnectionState.waiting) {
+                            return LoadingWidget(
+                                constantColors: constantColors);
+                          } else {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Container(
+                                alignment: Alignment.center,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.2,
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  color:
+                                      constantColors.darkColor.withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Swiper(
+                                  itemCount: bannerSnap.data!.docs.length,
+                                  itemBuilder: (context, index) {
+                                    return Stack(
+                                      children: [
+                                        SizedBox(
+                                          height: double.infinity,
+                                          width: double.infinity,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(5.0)),
+                                            child: CachedNetworkImage(
+                                              fit: BoxFit.cover,
+                                              imageUrl: bannerSnap.data!
+                                                  .docs[index]['imageslist'][0],
+                                              progressIndicatorBuilder:
+                                                  (context, url,
+                                                      downloadProgress) {
+                                                return LoadingWidget(
+                                                    constantColors:
+                                                        constantColors);
+                                              },
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                          bottom: 10,
+                                          right: 20,
+                                          left: 20,
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: InkWell(
+                                                  onTap: () async {
+                                                    await FirebaseFirestore
+                                                        .instance
+                                                        .collection("posts")
+                                                        .doc(bannerSnap.data!
+                                                                .docs[index]
+                                                            ['postid'])
+                                                        .get()
+                                                        .then((value) {
+                                                      Provider.of<AltProfileHelper>(
+                                                              context,
+                                                              listen: false)
+                                                          .showPostDetail(
+                                                              context: context,
+                                                              documentSnapshot:
+                                                                  value);
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    height: 30,
+                                                    alignment: Alignment.center,
+                                                    decoration: BoxDecoration(
+                                                      color: constantColors
+                                                          .blueColor
+                                                          .withOpacity(0.9),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15),
+                                                    ),
+                                                    child: Text(
+                                                      "View Post",
+                                                      style: TextStyle(
+                                                        color: constantColors
+                                                            .whiteColor,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Visibility(
+                                                visible: bannerSnap
+                                                            .data!.docs[index]
+                                                        ['useruid'] !=
+                                                    Provider.of<Authentication>(
+                                                            context,
+                                                            listen: false)
+                                                        .getUserId,
+                                                child: Expanded(
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          PageTransition(
+                                                              child: AltProfile(
+                                                                userUid: bannerSnap
+                                                                        .data!
+                                                                        .docs[index]
+                                                                    ['useruid'],
+                                                              ),
+                                                              type: PageTransitionType
+                                                                  .bottomToTop));
+                                                    },
+                                                    child: Container(
+                                                      height: 30,
+                                                      alignment:
+                                                          Alignment.center,
+                                                      decoration: BoxDecoration(
+                                                        color: constantColors
+                                                            .greenColor
+                                                            .withOpacity(0.9),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15),
+                                                      ),
+                                                      child: Text(
+                                                        "Visit Profile",
+                                                        style: TextStyle(
+                                                          color: constantColors
+                                                              .whiteColor,
+                                                          fontSize: 16,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
-                                    ),
-                                  ),
+                                    );
+                                  },
+                                  layout: SwiperLayout.DEFAULT,
                                 ),
-                              )
-                              .toList(),
-                          carouselController: _controller,
-                          options: CarouselOptions(
-                              autoPlay: true,
-                              height: MediaQuery.of(context).size.height,
-                              viewportFraction: 2.0,
-                              enlargeCenterPage: false,
-                              onPageChanged: (index, reason) {
-                                stateSet(() {
-                                  _current = index;
-                                });
-                              }),
-                        ),
-                      ),
-                    );
-                  }),
+                              ),
+                            );
+                          }
+                        },
+                      );
+                    },
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(
                         right: 3.0, left: 3, bottom: 3, top: 3),

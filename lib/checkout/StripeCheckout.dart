@@ -38,11 +38,7 @@ class _CheckoutPageState extends State<StripeCheckoutPage> {
           },
           navigationDelegate: (NavigationRequest request) {
             if (request.url.contains("success")) {
-              Navigator.pushReplacement(
-                  context,
-                  PageTransition(
-                      child: SplitPages(),
-                      type: PageTransitionType.rightToLeft));
+              Navigator.of(context).pop("success");
             } else if (request.url.startsWith('http://cancel.com')) {
               Navigator.of(context).pop("cancel");
             }

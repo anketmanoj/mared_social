@@ -512,7 +512,7 @@ class AltProfileHelper with ChangeNotifier {
                                         child: PrivateMessage(
                                             documentSnapshot: (userDocSnap.data
                                                 as DocumentSnapshot)),
-                                        type: PageTransitionType.leftToRight));
+                                        type: PageTransitionType.leftToRight),);
                               });
                             } else {
                               Provider.of<FeedHelpers>(context, listen: false)
@@ -524,7 +524,7 @@ class AltProfileHelper with ChangeNotifier {
                     ),
                   );
                 } else {
-                  return SizedBox(
+                  return SizedBox( 
                     height: MediaQuery.of(context).size.height * 0.07,
                     width: MediaQuery.of(context).size.width,
                     child: Row(
