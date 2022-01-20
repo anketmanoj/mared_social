@@ -59,6 +59,51 @@ class FirebaseOperations with ChangeNotifier {
         .set(data);
   }
 
+  Future uploadAmbassadorWork(
+      {required BuildContext context,
+      required DocumentSnapshot vendorData,
+      required dynamic inUserDB,
+      required String workId}) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(Provider.of<Authentication>(context, listen: false).getUserId)
+        .collection("ambassadorWork")
+        .doc(workId)
+        .set(inUserDB)
+        .whenComplete(() async {
+      return await FirebaseFirestore.instance
+          .collection("users")
+          .doc(vendorData.id)
+          .collection("submittedWork")
+          .doc(workId)
+          .set(inUserDB);
+    });
+  }
+
+  Future approveBrandVideo(
+      {required BuildContext context,
+      required String userId,
+      required String vendorId,
+      required String workId}) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userId)
+        .collection("ambassadorWork")
+        .doc(workId)
+        .update({
+      'approved': true,
+    }).whenComplete(() async {
+      return await FirebaseFirestore.instance
+          .collection("users")
+          .doc(vendorId)
+          .collection("submittedWork")
+          .doc(workId)
+          .update({
+        'approved': true,
+      });
+    });
+  }
+
   Future initUserData(BuildContext context) async {
     return FirebaseFirestore.instance
         .collection("users")

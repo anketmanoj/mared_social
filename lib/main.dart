@@ -20,6 +20,7 @@ import 'package:mared_social/screens/Messaging/privateMessageHelper.dart';
 import 'package:mared_social/screens/Profile/profileHelpers.dart';
 import 'package:mared_social/screens/SearchFeed/searchfeedhelper.dart';
 import 'package:mared_social/screens/Stories/stories_helper.dart';
+import 'package:mared_social/screens/ambassaborsScreens/previewVideoHelper.dart';
 import 'package:mared_social/screens/auctionFeed/auctionfeedHelper.dart';
 import 'package:mared_social/screens/auctionFeed/placebidhelper.dart';
 import 'package:mared_social/screens/auctionMap/auctionMapHelper.dart';
@@ -95,6 +96,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       providers: [
+        ChangeNotifierProvider(create: (_) => PreviewVideoHelper()),
         ChangeNotifierProvider(create: (_) => PromotePostHelper()),
         ChangeNotifierProvider(create: (_) => SearchPageHelper()),
         ChangeNotifierProvider(create: (_) => PlaceBidHelpers()),

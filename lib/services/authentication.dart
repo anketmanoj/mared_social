@@ -29,6 +29,13 @@ class Authentication with ChangeNotifier {
   String get getappleUserImage => appleUserImage;
   String get getapplePhoneNo => applePhoneNo;
 
+  Future returningUserLogin(String uid) async {
+    userUid = uid;
+    isAnon = false;
+    print("logged in " + userUid);
+    notifyListeners();
+  }
+
   Future loginIntoAccount(String email, String password) async {
     UserCredential userCredential = await firebaseAuth
         .signInWithEmailAndPassword(email: email, password: password);

@@ -13,6 +13,7 @@ import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/Feed/feedhelpers.dart';
 import 'package:mared_social/screens/LandingPage/landingpage.dart';
 import 'package:mared_social/screens/Stories/stories_widget.dart';
+import 'package:mared_social/screens/ambassaborsScreens/companiesScreen.dart';
 import 'package:mared_social/screens/auctionFeed/createAuctionScreen.dart';
 import 'package:mared_social/screens/auctionMap/auctionMapHelper.dart';
 import 'package:mared_social/screens/userSettings/usersettings.dart';
@@ -380,6 +381,38 @@ class ProfileHelpers with ChangeNotifier {
       items: [
         CustomNavigationBarItem(icon: const Icon(FontAwesomeIcons.idBadge)),
         CustomNavigationBarItem(icon: const Icon(FontAwesomeIcons.gavel)),
+        CustomNavigationBarItem(icon: const Icon(FontAwesomeIcons.streetView)),
+      ],
+    );
+  }
+
+  Widget storeProfileNavBar(
+      {required BuildContext context,
+      required int index,
+      required PageController pageController}) {
+    return CustomNavigationBar(
+      currentIndex: index,
+      bubbleCurve: Curves.bounceIn,
+      scaleCurve: Curves.decelerate,
+      selectedColor: constantColors.greenColor,
+      unSelectedColor: constantColors.whiteColor,
+      strokeColor: constantColors.blueColor,
+      scaleFactor: 0.1,
+      iconSize: 30,
+      onTap: (val) {
+        index = val;
+        pageController.jumpToPage(
+          index,
+        );
+        notifyListeners();
+      },
+      backgroundColor: constantColors.transperant,
+      items: [
+        CustomNavigationBarItem(icon: const Icon(FontAwesomeIcons.idBadge)),
+        CustomNavigationBarItem(icon: const Icon(FontAwesomeIcons.gavel)),
+        CustomNavigationBarItem(icon: const Icon(FontAwesomeIcons.streetView)),
+        CustomNavigationBarItem(
+            icon: const Icon(FontAwesomeIcons.networkWired)),
       ],
     );
   }
@@ -1557,6 +1590,340 @@ class AuctionsProfile extends StatelessWidget {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class AmbassadorProfile extends StatelessWidget {
+  const AmbassadorProfile({
+    Key? key,
+    required this.constantColors,
+    required this.size,
+  }) : super(key: key);
+
+  final ConstantColors constantColors;
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: constantColors.blueGreyColor,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Provider.of<ProfileHelpers>(context, listen: false)
+                  .logOutDialog(context);
+            },
+            icon: Icon(
+              EvaIcons.logOutOutline,
+              color: constantColors.greenColor,
+            ),
+          ),
+        ],
+        backgroundColor: constantColors.blueGreyColor.withOpacity(0.4),
+        title: RichText(
+          text: TextSpan(
+            text: "Mared ",
+            style: TextStyle(
+              color: constantColors.whiteColor,
+              fontSize: 20,
+            ),
+            children: <TextSpan>[
+              TextSpan(
+                text: " Ambassador",
+                style: TextStyle(
+                  color: constantColors.blueColor,
+                  fontSize: 20,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Colors.pink,
+        onPressed: () {
+          Navigator.push(
+              context,
+              PageTransition(
+                  child: CompaniesScreen(),
+                  type: PageTransitionType.rightToLeft));
+        },
+        label: Text(
+          "Create Brand Video",
+          style: TextStyle(
+            color: constantColors.whiteColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
+        ),
+        icon: Icon(FontAwesomeIcons.video,
+            size: 20, color: constantColors.whiteColor),
+      ),
+      body: SingleChildScrollView(
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection("users")
+              .doc(
+                  Provider.of<Authentication>(context, listen: false).getUserId)
+              .collection("ambassadorWork")
+              .orderBy("time", descending: true)
+              .snapshots(),
+          builder: (context, userWorkSnap) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                height: size.height * 0.75,
+                width: size.width,
+                child: GridView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: userWorkSnap.data!.docs.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    mainAxisExtent: 256,
+                  ),
+                  itemBuilder: (context, index) {
+                    DocumentSnapshot workData = userWorkSnap.data!.docs[index];
+                    return Stack(
+                      children: [
+                        Container(
+                          height: double.infinity,
+                          width: double.infinity,
+                          color: constantColors.blueGreyColor,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: CachedNetworkImage(
+                              fit: BoxFit.cover,
+                              imageUrl: workData['thumbnail'],
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) => SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: LoadingWidget(
+                                    constantColors: constantColors),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 5,
+                          right: 5,
+                          child: SizedBox(
+                            height: 30,
+                            child: Lottie.asset("assets/animations/video.json"),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class UserSubmittedWorkProfile extends StatelessWidget {
+  const UserSubmittedWorkProfile({
+    Key? key,
+    required this.constantColors,
+    required this.size,
+  }) : super(key: key);
+
+  final ConstantColors constantColors;
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: constantColors.blueGreyColor,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Provider.of<ProfileHelpers>(context, listen: false)
+                  .logOutDialog(context);
+            },
+            icon: Icon(
+              EvaIcons.logOutOutline,
+              color: constantColors.greenColor,
+            ),
+          ),
+        ],
+        backgroundColor: constantColors.blueGreyColor.withOpacity(0.4),
+        title: RichText(
+          text: TextSpan(
+            text: "Mared ",
+            style: TextStyle(
+              color: constantColors.whiteColor,
+              fontSize: 20,
+            ),
+            children: <TextSpan>[
+              TextSpan(
+                text: " Brands Works",
+                style: TextStyle(
+                  color: constantColors.blueColor,
+                  fontSize: 20,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection("users")
+              .doc(
+                  Provider.of<Authentication>(context, listen: false).getUserId)
+              .collection("submittedWork")
+              .orderBy("time", descending: true)
+              .snapshots(),
+          builder: (context, userWorkSnap) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                height: size.height * 0.75,
+                width: size.width,
+                child: GridView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: userWorkSnap.data!.docs.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    mainAxisExtent: 256,
+                  ),
+                  itemBuilder: (context, index) {
+                    DocumentSnapshot workData = userWorkSnap.data!.docs[index];
+                    bool approved = workData['approved'] == true ? true : false;
+                    return InkWell(
+                      onTap: () {
+                        Provider.of<FirebaseOperations>(context, listen: false)
+                            .approveBrandVideo(
+                                context: context,
+                                userId: workData['useruid'],
+                                vendorId: Provider.of<Authentication>(context,
+                                        listen: false)
+                                    .getUserId,
+                                workId: workData.id);
+                      },
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: double.infinity,
+                            width: double.infinity,
+                            color: constantColors.blueGreyColor,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: CachedNetworkImage(
+                                fit: BoxFit.cover,
+                                imageUrl: workData['thumbnail'],
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        SizedBox(
+                                  height: 50,
+                                  width: 50,
+                                  child: LoadingWidget(
+                                      constantColors: constantColors),
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                              ),
+                            ),
+                          ),
+                          Visibility(
+                            visible: approved,
+                            replacement: Positioned(
+                              top: 10,
+                              right: 5,
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: 30,
+                                width: size.width * 0.33,
+                                decoration: BoxDecoration(
+                                  color: constantColors.redColor,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.clear,
+                                      color: constantColors.whiteColor,
+                                    ),
+                                    Text(
+                                      "Unapproved",
+                                      style: TextStyle(
+                                        color: constantColors.whiteColor,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            child: Positioned(
+                              top: 10,
+                              right: 5,
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: 30,
+                                width: size.width * 0.33,
+                                decoration: BoxDecoration(
+                                  color: constantColors.greenColor,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.check,
+                                      color: constantColors.whiteColor,
+                                    ),
+                                    Text(
+                                      "Approved",
+                                      style: TextStyle(
+                                        color: constantColors.whiteColor,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 5,
+                            right: 5,
+                            child: SizedBox(
+                              height: 30,
+                              child:
+                                  Lottie.asset("assets/animations/video.json"),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
