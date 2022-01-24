@@ -45,6 +45,7 @@ class PromotePostHelper with ChangeNotifier {
             .collection("users")
             .doc(Provider.of<Authentication>(context, listen: false).getUserId)
             .collection("posts")
+            .orderBy("time", descending: true)
             .snapshots(),
         builder: (context, postSnaps) {
           if (postSnaps.connectionState == ConnectionState.waiting) {
@@ -76,7 +77,7 @@ class PromotePostHelper with ChangeNotifier {
                       borderRadius: BorderRadius.circular(10),
                       child: CachedNetworkImage(
                         fit: BoxFit.cover,
-                        imageUrl: postData['imageslist'][index],
+                        imageUrl: postData['imageslist'][0],
                         progressIndicatorBuilder:
                             (context, url, downloadProgress) => SizedBox(
                           height: 50,

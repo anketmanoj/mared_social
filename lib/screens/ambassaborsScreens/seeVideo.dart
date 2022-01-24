@@ -25,18 +25,18 @@ class _SeeVideoState extends State<SeeVideo> {
   bool? approved;
   bool loading = true;
 
+  finishLoading() async {
+    _controller =
+        VideoPlayerController.network(widget.documentSnapshot['video']);
+
+    await _controller!.initialize().whenComplete(() async {
+      await _controller!.play();
+    });
+  }
+
   @override
   void initState() {
-    _controller =
-        VideoPlayerController.network(widget.documentSnapshot['video'])
-          ..initialize().then((_) async {
-            setState(() {});
-            await _controller!.play().then((value) {
-              setState(() {
-                loading = false;
-              });
-            });
-          });
+    finishLoading();
 
     setState(() {
       approved = widget.documentSnapshot['approved'];
@@ -83,16 +83,35 @@ class _SeeVideoState extends State<SeeVideo> {
                           width: MediaQuery.of(context).size.width,
                           child: AspectRatio(
                             aspectRatio: 16 / 9,
-                            child: loading == false
-                                ? VideoPlayer(
-                                    _controller!,
-                                  )
-                                : LoadingWidget(constantColors: constantColors),
+                            child: VideoPlayer(
+                              _controller!,
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
+                ),
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                left: 0,
+                bottom: 0,
+                child: ValueListenableBuilder(
+                  valueListenable: _controller!,
+                  builder: (context, VideoPlayerValue value, child) {
+                    //Do Something with the value.
+                    return value.position.inSeconds < 1
+                        ? Center(
+                            child:
+                                LoadingWidget(constantColors: constantColors),
+                          )
+                        : const SizedBox(
+                            height: 0,
+                            width: 0,
+                          );
+                  },
                 ),
               ),
               Positioned(

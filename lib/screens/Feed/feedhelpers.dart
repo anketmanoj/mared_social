@@ -70,15 +70,6 @@ class FeedHelpers with ChangeNotifier {
     );
   }
 
-  final List<String> imgList = [
-    'https://firebasestorage.googleapis.com/v0/b/maredsocial-79a7b.appspot.com/o/homeBannerAds%2FI-Pace-Banner-.jpeg?alt=media&token=58ef89fa-8ef1-496d-ad33-c432d176bd31',
-    'https://firebasestorage.googleapis.com/v0/b/maredsocial-79a7b.appspot.com/o/homeBannerAds%2F9618972704798.jpeg?alt=media&token=b669c502-257a-454c-b75a-57c00e114c08',
-    'https://firebasestorage.googleapis.com/v0/b/maredsocial-79a7b.appspot.com/o/homeBannerAds%2Fdoublefest-banner.jpeg?alt=media&token=7fae91b5-e7d7-4fb2-a9a9-b779d8010d1a',
-    'https://firebasestorage.googleapis.com/v0/b/maredsocial-79a7b.appspot.com/o/homeBannerAds%2Fthe-must-have-bodybuilding-supplements-banner.jpeg?alt=media&token=ed35f54b-8d02-42e2-ba98-69e40a49c204',
-  ];
-  int _current = 0;
-  final CarouselController _controller = CarouselController();
-
   Widget feedBody(BuildContext context) {
     return CustomScrollView(
       slivers: [
@@ -141,6 +132,9 @@ class FeedHelpers with ChangeNotifier {
                       return StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection("banners")
+                            .where("enddate",
+                                isGreaterThan:
+                                    Timestamp.fromDate(DateTime.now()))
                             .snapshots(),
                         builder: (context, bannerSnap) {
                           if (bannerSnap.connectionState ==
@@ -294,6 +288,9 @@ class FeedHelpers with ChangeNotifier {
                                     );
                                   },
                                   layout: SwiperLayout.DEFAULT,
+                                  autoplay: true,
+                                  duration: 5,
+                                  curve: Curves.fastOutSlowIn,
                                 ),
                               ),
                             );
