@@ -14,6 +14,7 @@ import 'package:mared_social/screens/Feed/feedhelpers.dart';
 import 'package:mared_social/screens/LandingPage/landingpage.dart';
 import 'package:mared_social/screens/Stories/stories_widget.dart';
 import 'package:mared_social/screens/ambassaborsScreens/companiesScreen.dart';
+import 'package:mared_social/screens/ambassaborsScreens/seeVideo.dart';
 import 'package:mared_social/screens/auctionFeed/createAuctionScreen.dart';
 import 'package:mared_social/screens/auctionMap/auctionMapHelper.dart';
 import 'package:mared_social/screens/userSettings/usersettings.dart';
@@ -419,33 +420,44 @@ class ProfileHelpers with ChangeNotifier {
 
   Widget middleProfile(BuildContext context, dynamic snapshot) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.only(top: 3.0, left: 0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 150,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(2),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Icon(
-                  FontAwesomeIcons.userAstronaut,
-                  color: constantColors.yellowColor,
-                  size: 16,
-                ),
-                Text(
-                  "Recently Added",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: constantColors.whiteColor,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0, bottom: 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Icon(
+                      FontAwesomeIcons.userAstronaut,
+                      color: constantColors.yellowColor,
+                      size: 16,
+                    ),
                   ),
-                )
-              ],
+                  Expanded(
+                    child: Text(
+                      Provider.of<FirebaseOperations>(context, listen: false)
+                                  .store ==
+                              false
+                          ? "Recently Added"
+                          : "Mared Ambassador Promotions",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: constantColors.whiteColor,
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
           Container(
@@ -455,53 +467,125 @@ class ProfileHelpers with ChangeNotifier {
               color: constantColors.darkColor.withOpacity(0.4),
               borderRadius: BorderRadius.circular(15),
             ),
-            child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(snapshot.data!['useruid'])
-                    .collection("following")
-                    .snapshots(),
-                builder: (context, followingSnap) {
-                  if (followingSnap.hasData) {
-                    return ListView(
-                      scrollDirection: Axis.horizontal,
-                      children:
-                          followingSnap.data!.docs.map((followingDocSnap) {
-                        return Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: SizedBox(
-                            height: 60,
-                            width: 60,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(30),
-                              child: CachedNetworkImage(
-                                fit: BoxFit.cover,
-                                imageUrl: followingDocSnap['userimage'],
-                                progressIndicatorBuilder:
-                                    (context, url, downloadProgress) =>
-                                        LoadingWidget(
-                                            constantColors: constantColors),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
+            child: Provider.of<FirebaseOperations>(context, listen: false)
+                        .store ==
+                    false
+                ? StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("users")
+                        .doc(snapshot.data!['useruid'])
+                        .collection("following")
+                        .snapshots(),
+                    builder: (context, followingSnap) {
+                      if (followingSnap.hasData) {
+                        return ListView(
+                          scrollDirection: Axis.horizontal,
+                          children:
+                              followingSnap.data!.docs.map((followingDocSnap) {
+                            return Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: SizedBox(
+                                height: 60,
+                                width: 60,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(30),
+                                  child: CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    imageUrl: followingDocSnap['userimage'],
+                                    progressIndicatorBuilder:
+                                        (context, url, downloadProgress) =>
+                                            LoadingWidget(
+                                                constantColors: constantColors),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                  ),
+                                ),
                               ),
+                            );
+                          }).toList(),
+                        );
+                      } else {
+                        return Center(
+                          child: Text(
+                            "No Recent Followers",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 28,
                             ),
                           ),
                         );
-                      }).toList(),
-                    );
-                  } else {
-                    return Center(
-                      child: Text(
-                        "No Recent Followers",
-                        style: TextStyle(
-                          color: constantColors.whiteColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 28,
-                        ),
-                      ),
-                    );
-                  }
-                }),
+                      }
+                    })
+                : StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("users")
+                        .doc(snapshot.data!['useruid'])
+                        .collection("submittedWork")
+                        .orderBy("time", descending: true)
+                        .snapshots(),
+                    builder: (context, followingSnap) {
+                      if (followingSnap.hasData) {
+                        return ListView(
+                          scrollDirection: Axis.horizontal,
+                          children:
+                              followingSnap.data!.docs.map((followingDocSnap) {
+                            return followingDocSnap['approved']
+                                ? InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          PageTransition(
+                                              child: SeeVideo(
+                                                  documentSnapshot:
+                                                      followingDocSnap),
+                                              type: PageTransitionType
+                                                  .bottomToTop));
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: SizedBox(
+                                        height: 60,
+                                        width: 60,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          child: CachedNetworkImage(
+                                            fit: BoxFit.cover,
+                                            imageUrl:
+                                                followingDocSnap['thumbnail'],
+                                            progressIndicatorBuilder: (context,
+                                                    url, downloadProgress) =>
+                                                LoadingWidget(
+                                                    constantColors:
+                                                        constantColors),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(Icons.error),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : const SizedBox(
+                                    height: 0,
+                                    width: 0,
+                                  );
+                          }).toList(),
+                        );
+                      } else {
+                        return Center(
+                          child: Text(
+                            "No Ambassador Promotions",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 28,
+                            ),
+                          ),
+                        );
+                      }
+                    }),
           ),
         ],
       ),
@@ -1812,14 +1896,11 @@ class UserSubmittedWorkProfile extends StatelessWidget {
                     bool approved = workData['approved'] == true ? true : false;
                     return InkWell(
                       onTap: () {
-                        Provider.of<FirebaseOperations>(context, listen: false)
-                            .approveBrandVideo(
-                                context: context,
-                                userId: workData['useruid'],
-                                vendorId: Provider.of<Authentication>(context,
-                                        listen: false)
-                                    .getUserId,
-                                workId: workData.id);
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                child: SeeVideo(documentSnapshot: workData),
+                                type: PageTransitionType.bottomToTop));
                       },
                       child: Stack(
                         children: [

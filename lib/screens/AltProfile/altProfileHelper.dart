@@ -11,6 +11,7 @@ import 'package:mared_social/screens/AltProfile/altProfile.dart';
 import 'package:mared_social/screens/Feed/feedhelpers.dart';
 import 'package:mared_social/screens/HomePage/homepage.dart';
 import 'package:mared_social/screens/Messaging/privateMessage.dart';
+import 'package:mared_social/screens/ambassaborsScreens/seeVideo.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:mared_social/utils/postoptions.dart';
@@ -507,12 +508,13 @@ class AltProfileHelper with ChangeNotifier {
                                   .whenComplete(() {
                                 Navigator.pop(context);
                                 Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        child: PrivateMessage(
-                                            documentSnapshot: (userDocSnap.data
-                                                as DocumentSnapshot)),
-                                        type: PageTransitionType.leftToRight),);
+                                  context,
+                                  PageTransition(
+                                      child: PrivateMessage(
+                                          documentSnapshot: (userDocSnap.data
+                                              as DocumentSnapshot)),
+                                      type: PageTransitionType.leftToRight),
+                                );
                               });
                             } else {
                               Provider.of<FeedHelpers>(context, listen: false)
@@ -524,7 +526,7 @@ class AltProfileHelper with ChangeNotifier {
                     ),
                   );
                 } else {
-                  return SizedBox( 
+                  return SizedBox(
                     height: MediaQuery.of(context).size.height * 0.07,
                     width: MediaQuery.of(context).size.width,
                     child: Row(
@@ -659,7 +661,9 @@ class AltProfileHelper with ChangeNotifier {
     );
   }
 
-  Widget middleProfile({required BuildContext context, dynamic snapshot}) {
+  Widget middleProfile(
+      {required BuildContext context,
+      required AsyncSnapshot<DocumentSnapshot<Object?>> snapshot}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -667,27 +671,36 @@ class AltProfileHelper with ChangeNotifier {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 150,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(2),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Icon(
-                  FontAwesomeIcons.userAstronaut,
-                  color: constantColors.yellowColor,
-                  size: 16,
-                ),
-                Text(
-                  "Recently Added",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: constantColors.whiteColor,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0, bottom: 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Icon(
+                      FontAwesomeIcons.userAstronaut,
+                      color: constantColors.yellowColor,
+                      size: 16,
+                    ),
                   ),
-                )
-              ],
+                  Expanded(
+                    child: Text(
+                      snapshot.data!['store'] == false
+                          ? "Recently Added"
+                          : "Mared Ambassador Promotions",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: constantColors.whiteColor,
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
           Container(
@@ -697,6 +710,123 @@ class AltProfileHelper with ChangeNotifier {
               color: constantColors.darkColor.withOpacity(0.4),
               borderRadius: BorderRadius.circular(15),
             ),
+            child: snapshot.data!['store'] == false
+                ? StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("users")
+                        .doc(snapshot.data!.id)
+                        .collection("following")
+                        .snapshots(),
+                    builder: (context, followingSnap) {
+                      if (followingSnap.hasData) {
+                        return ListView(
+                          scrollDirection: Axis.horizontal,
+                          children:
+                              followingSnap.data!.docs.map((followingDocSnap) {
+                            return Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: SizedBox(
+                                height: 60,
+                                width: 60,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(30),
+                                  child: CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    imageUrl: followingDocSnap['userimage'],
+                                    progressIndicatorBuilder:
+                                        (context, url, downloadProgress) =>
+                                            LoadingWidget(
+                                                constantColors: constantColors),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      } else {
+                        return Center(
+                          child: Text(
+                            "No Recent Followers",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 28,
+                            ),
+                          ),
+                        );
+                      }
+                    })
+                : StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("users")
+                        .doc(snapshot.data!.id)
+                        .collection("submittedWork")
+                        .orderBy("time", descending: true)
+                        .snapshots(),
+                    builder: (context, followingSnap) {
+                      if (followingSnap.hasData) {
+                        return ListView(
+                          scrollDirection: Axis.horizontal,
+                          children:
+                              followingSnap.data!.docs.map((followingDocSnap) {
+                            return followingDocSnap['approved']
+                                ? InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          PageTransition(
+                                              child: SeeVideo(
+                                                  documentSnapshot:
+                                                      followingDocSnap),
+                                              type: PageTransitionType
+                                                  .bottomToTop));
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: SizedBox(
+                                        height: 60,
+                                        width: 60,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          child: CachedNetworkImage(
+                                            fit: BoxFit.cover,
+                                            imageUrl:
+                                                followingDocSnap['thumbnail'],
+                                            progressIndicatorBuilder: (context,
+                                                    url, downloadProgress) =>
+                                                LoadingWidget(
+                                                    constantColors:
+                                                        constantColors),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(Icons.error),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : const SizedBox(
+                                    height: 0,
+                                    width: 0,
+                                  );
+                          }).toList(),
+                        );
+                      } else {
+                        return Center(
+                          child: Text(
+                            "No Ambassador Promotions",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 28,
+                            ),
+                          ),
+                        );
+                      }
+                    }),
           ),
         ],
       ),

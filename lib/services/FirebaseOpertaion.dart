@@ -104,6 +104,51 @@ class FirebaseOperations with ChangeNotifier {
     });
   }
 
+  Future unapproveBrandVideo(
+      {required BuildContext context,
+      required String userId,
+      required String vendorId,
+      required String workId}) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userId)
+        .collection("ambassadorWork")
+        .doc(workId)
+        .update({
+      'approved': false,
+    }).whenComplete(() async {
+      return await FirebaseFirestore.instance
+          .collection("users")
+          .doc(vendorId)
+          .collection("submittedWork")
+          .doc(workId)
+          .update({
+        'approved': false,
+      });
+    });
+  }
+
+  Future deleteBrandVideo(
+      {required BuildContext context,
+      required String userId,
+      required String vendorId,
+      required String workId}) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userId)
+        .collection("ambassadorWork")
+        .doc(workId)
+        .delete()
+        .whenComplete(() async {
+      return await FirebaseFirestore.instance
+          .collection("users")
+          .doc(vendorId)
+          .collection("submittedWork")
+          .doc(workId)
+          .delete();
+    });
+  }
+
   Future initUserData(BuildContext context) async {
     return FirebaseFirestore.instance
         .collection("users")

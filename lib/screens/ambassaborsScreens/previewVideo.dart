@@ -371,6 +371,13 @@ class _PreviewAndSubmitState extends State<PreviewAndSubmit> {
                                         context: context,
                                         vendorData: widget.vendor,
                                         inUserDB: {
+                                          'vendorname':
+                                              widget.vendor['username'],
+                                          'vendoremail':
+                                              widget.vendor['useremail'],
+                                          'vendorid': widget.vendor['useruid'],
+                                          'vendorimage':
+                                              widget.vendor['userimage'],
                                           'wokrid': workId,
                                           'description':
                                               descriptionController.text,
