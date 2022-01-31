@@ -57,6 +57,9 @@ class AuctionFeedHelper with ChangeNotifier {
                                   .millisecondsSinceEpoch +
                               1000 * 30;
 
+                      bool auctionEnded = endTime <
+                          DateTime.now().millisecondsSinceEpoch + 1000 * 30;
+
                       Provider.of<AuctionFuctions>(context, listen: false)
                           .showTimeAgo(documentSnapshot['time']);
 
@@ -78,14 +81,16 @@ class AuctionFeedHelper with ChangeNotifier {
                                                   listen: false)
                                               .getUserId) {
                                         Navigator.push(
-                                            context,
-                                            PageTransition(
-                                                child: AltProfile(
-                                                  userUid: documentSnapshot[
-                                                      'useruid'],
-                                                ),
-                                                type: PageTransitionType
-                                                    .bottomToTop));
+                                          context,
+                                          PageTransition(
+                                            child: AltProfile(
+                                              userUid:
+                                                  documentSnapshot['useruid'],
+                                            ),
+                                            type:
+                                                PageTransitionType.bottomToTop,
+                                          ),
+                                        );
                                       }
                                     },
                                     child: SizedBox(
@@ -319,20 +324,30 @@ class AuctionFeedHelper with ChangeNotifier {
                                                   );
                                                 },
                                               )
-                                            : CountdownTimer(
-                                                endTime: endTime,
-                                                widgetBuilder: (context,
-                                                    CurrentRemainingTime?
-                                                        time) {
-                                                  return Text(
-                                                    "Ending in ${time!.days} days",
-                                                    style: TextStyle(
-                                                      color: constantColors
-                                                          .whiteColor,
+                                            : auctionEnded
+                                                ? Center(
+                                                    child: Text(
+                                                      "Auction Ended",
+                                                      style: TextStyle(
+                                                        color: constantColors
+                                                            .whiteColor,
+                                                      ),
                                                     ),
-                                                  );
-                                                },
-                                              ),
+                                                  )
+                                                : CountdownTimer(
+                                                    endTime: endTime,
+                                                    widgetBuilder: (context,
+                                                        CurrentRemainingTime?
+                                                            time) {
+                                                      return Text(
+                                                        "Ending in ${time!.days} days",
+                                                        style: TextStyle(
+                                                          color: constantColors
+                                                              .whiteColor,
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
                                       ),
                                     ),
                                   ],

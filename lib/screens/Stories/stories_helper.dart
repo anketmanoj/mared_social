@@ -40,9 +40,7 @@ class StoriesHelper with ChangeNotifier {
         .child('stories/${getStoryImage.path}/${Timestamp.now()}');
 
     imageUploadTask = imageReference.putFile(getStoryImage);
-    await imageUploadTask.whenComplete(() {
-      print("story image uploaded");
-    });
+    await imageUploadTask.whenComplete(() {});
     await imageReference.getDownloadURL().then((url) {
       storyImageUrl = url;
       print(storyImageUrl);

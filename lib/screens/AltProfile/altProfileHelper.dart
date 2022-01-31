@@ -34,17 +34,6 @@ class AltProfileHelper with ChangeNotifier {
       ),
       backgroundColor: constantColors.blueGreyColor,
       centerTitle: true,
-      actions: [
-        IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(
-            EvaIcons.moreVertical,
-            color: constantColors.whiteColor,
-          ),
-        ),
-      ],
       title: RichText(
         text: TextSpan(
             text: "The",
