@@ -42,23 +42,19 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: constantColors.darkColor,
+      backgroundColor: constantColors.lightBlueColor,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          RichText(
-            text: TextSpan(
-              text: "Mared",
-              style: TextStyle(
-                fontFamily: "Poppins",
-                color: constantColors.blueColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 34.0,
-              ),
+          Container(
+            color: constantColors.lightBlueColor,
+            height: 500,
+            child: Image.asset(
+              "assets/logo/animatedLogo.gif",
+              fit: BoxFit.fitWidth,
             ),
           ),
-          LoadingWidget(constantColors: constantColors),
         ],
       ),
     );

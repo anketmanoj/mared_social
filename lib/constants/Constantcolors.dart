@@ -133,21 +133,16 @@ class LoadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Stack(
-        children: [
-          Container(
-              alignment: Alignment.bottomCenter,
-              height: MediaQuery.of(context).size.height * 0.236,
-              width: MediaQuery.of(context).size.width * 0.717,
-              color: constantColors.transperant,
-              child: Image.asset("assets/animations/lamp.png")),
-          Lottie.asset(
-            "assets/animations/smoke.json",
-            fit: BoxFit.fitHeight,
-            height: MediaQuery.of(context).size.height * 0.14,
-            width: MediaQuery.of(context).size.width * 0.15,
-          )
-        ],
+      child: Container(
+        decoration: BoxDecoration(
+          color: constantColors.whiteColor,
+          borderRadius: BorderRadius.circular(200),
+        ),
+        height: 250,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(250),
+          child: Image.asset('assets/logo/loadingLogo.gif'),
+        ),
       ),
     );
   }

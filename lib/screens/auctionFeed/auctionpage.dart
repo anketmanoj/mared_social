@@ -55,11 +55,20 @@ class _AuctionPageState extends State<AuctionPage> {
                     .toDate()
                     .millisecondsSinceEpoch +
                 1000 * 30;
-            return AuctionStarted(
-                constantColors: constantColors,
-                size: size,
-                auctionDocSnap: auctionDocSnap,
-                endTime: endTime);
+
+            bool auctionEnded =
+                endTime < DateTime.now().millisecondsSinceEpoch + 1000 * 30;
+            return auctionEnded
+                ? Container(
+                    height: 10,
+                    width: 10,
+                    color: constantColors.yellowColor,
+                  )
+                : AuctionStarted(
+                    constantColors: constantColors,
+                    size: size,
+                    auctionDocSnap: auctionDocSnap,
+                    endTime: endTime);
           }
         }
       },
