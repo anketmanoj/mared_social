@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>781834378277-aco3riktknugtv6tbk0jcqs6qv1pegpn.apps.googleusercontent.com</string>
+	<string>781834378277-k5frnrl6okb7cgl2ugrdl8aqadq05g13.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.781834378277-aco3riktknugtv6tbk0jcqs6qv1pegpn</string>
+	<string>com.googleusercontent.apps.781834378277-k5frnrl6okb7cgl2ugrdl8aqadq05g13</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>781834378277-3hq5k1vm8jjg8j5emtcahhe610j0h3g5.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.maredSocial</string>
+	<string>com.anket.mared</string>
 	<key>PROJECT_ID</key>
 	<string>maredsocial-79a7b</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:781834378277:ios:b87498e62279b8d6f9b3cc</string>
+	<string>1:781834378277:ios:f4ddd10483205cf6f9b3cc</string>
 </dict>
 </plist>
