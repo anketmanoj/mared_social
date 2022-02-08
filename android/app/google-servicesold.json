@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "781834378277-i2qa1dt8802r99u8pgot7k68m8nqbedl.apps.googleusercontent.com",
+          "client_id": "781834378277-c1cdrjpioo4b3se2c1pupinullvi13sg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.mared_social",
-            "certificate_hash": "0d7a07fd1973c24401ecd6faabb25d1146aa2e28"
+            "certificate_hash": "18658317ffbb85a88e45e6d52d5490b368413bcd"
           }
         },
         {

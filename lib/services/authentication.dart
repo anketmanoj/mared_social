@@ -144,10 +144,12 @@ class Authentication with ChangeNotifier {
       userUid = user.uid;
       isAnon = false;
       appleUseremail = user.email!;
-      appleUsername = user.displayName!;
+      appleUsername = user.email!;
       appleUserImage =
           "https://firebasestorage.googleapis.com/v0/b/maredsocial-79a7b.appspot.com/o/userProfileAvatar%2Fprivate%2Fvar%2Fmobile%2FContainers%2FData%2FApplication%2Ficon-mared.png?alt=media&token=eec2b470-f32e-4449-874a-e6929e210c6c";
       applePhoneNo = "No Number";
+
+      print("appleUsername == ${appleUsername}");
 
       notifyListeners();
     } catch (e) {

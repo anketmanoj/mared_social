@@ -160,47 +160,48 @@ class LandingHelpers with ChangeNotifier {
                         try {
                           await Provider.of<Authentication>(context,
                                   listen: false)
-                              .signInWithApple(context);
+                              .signInWithApple(context)
+                              .whenComplete(() async {
+                            String name =
+                                "${Provider.of<Authentication>(context, listen: false).getappleUsername} ";
 
-                          String name =
-                              "${Provider.of<Authentication>(context, listen: false).getappleUsername} ";
+                            List<String> splitList = name.split(" ");
+                            List<String> indexList = [];
 
-                          List<String> splitList = name.split(" ");
-                          List<String> indexList = [];
-
-                          for (int i = 0; i < splitList.length; i++) {
-                            for (int j = 0; j < splitList[i].length; j++) {
-                              indexList.add(splitList[i]
-                                  .substring(0, j + 1)
-                                  .toLowerCase());
+                            for (int i = 0; i < splitList.length; i++) {
+                              for (int j = 0; j < splitList[i].length; j++) {
+                                indexList.add(splitList[i]
+                                    .substring(0, j + 1)
+                                    .toLowerCase());
+                              }
                             }
-                          }
 
-                          await Provider.of<FirebaseOperations>(context,
-                                  listen: false)
-                              .createUserCollection(context, {
-                            'usercontactnumber': "No Number",
-                            'store': false,
-                            'useruid': Provider.of<Authentication>(context,
+                            await Provider.of<FirebaseOperations>(context,
                                     listen: false)
-                                .getUserId,
-                            'usersearchindex': indexList,
-                            'useremail': Provider.of<Authentication>(context,
-                                    listen: false)
-                                .getappleUseremail,
-                            'username': Provider.of<Authentication>(context,
-                                    listen: false)
-                                .getappleUsername,
-                            'userimage': Provider.of<Authentication>(context,
-                                    listen: false)
-                                .getappleUserImage,
+                                .createUserCollection(context, {
+                              'usercontactnumber': "No Number",
+                              'store': false,
+                              'useruid': Provider.of<Authentication>(context,
+                                      listen: false)
+                                  .getUserId,
+                              'usersearchindex': indexList,
+                              'useremail': Provider.of<Authentication>(context,
+                                      listen: false)
+                                  .getappleUseremail,
+                              'username': Provider.of<Authentication>(context,
+                                      listen: false)
+                                  .getappleUsername,
+                              'userimage': Provider.of<Authentication>(context,
+                                      listen: false)
+                                  .getappleUserImage,
+                            });
+
+                            Navigator.pushReplacement(
+                                context,
+                                PageTransition(
+                                    child: SplitPages(),
+                                    type: PageTransitionType.rightToLeft));
                           });
-
-                          Navigator.pushReplacement(
-                              context,
-                              PageTransition(
-                                  child: SplitPages(),
-                                  type: PageTransitionType.rightToLeft));
                         } catch (e) {
                           CoolAlert.show(
                             context: context,
