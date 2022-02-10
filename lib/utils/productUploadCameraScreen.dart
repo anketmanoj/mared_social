@@ -42,7 +42,7 @@ class _PostUploadCameraScreenState extends State<PostUploadCameraScreen> {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController adrController = TextEditingController();
   GooglePlace googlePlace =
-      GooglePlace("AIzaSyAKugaPQrpO312dC39hlXgP_IYfRGdhvxc");
+      GooglePlace("AIzaSyCHjJlqqJ-eLChGmUX0RH2iJH5TtdU3RrI");
 
   late String lat;
   late String lng;
@@ -228,7 +228,8 @@ class _PostUploadCameraScreenState extends State<PostUploadCameraScreen> {
                                     color: constantColors.whiteColor,
                                     child: PlacePicker(
                                       apiKey:
-                                          "AIzaSyAKugaPQrpO312dC39hlXgP_IYfRGdhvxc",
+                                          // "AIzaSyAKugaPQrpO312dC39hlXgP_IYfRGdhvxc",
+                                          "AIzaSyCHjJlqqJ-eLChGmUX0RH2iJH5TtdU3RrI",
                                       hintText: "Find a place ...",
                                       searchingText: "Please wait ...",
                                       selectText: "Select place",
