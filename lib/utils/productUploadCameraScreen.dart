@@ -11,9 +11,11 @@ import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:google_place/google_place.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/screens/splitter/splitter.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:nanoid/nanoid.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class PostUploadCameraScreen extends StatefulWidget {
@@ -439,9 +441,11 @@ class _PostUploadCameraScreenState extends State<PostUploadCameraScreen> {
                             'lng': lng,
                           });
                         }).whenComplete(() {
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  child: SplitPages(),
+                                  type: PageTransitionType.bottomToTop));
                         });
                       } else {
                         CoolAlert.show(

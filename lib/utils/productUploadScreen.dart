@@ -11,16 +11,19 @@ import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:google_place/google_place.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mared_social/constants/Constantcolors.dart';
+import 'package:mared_social/screens/splitter/splitter.dart';
 import 'package:mared_social/services/FirebaseOpertaion.dart';
 import 'package:mared_social/services/authentication.dart';
 import 'package:nanoid/nanoid.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:google_maps_webservice/places.dart' as google_maps_api;
 
 class PostUploadScreen extends StatefulWidget {
-  final List<String> imagesList;
+  late List<String> imagesList;
   final List<XFile> multipleImages;
 
-  const PostUploadScreen(
+  PostUploadScreen(
       {Key? key, required this.imagesList, required this.multipleImages})
       : super(key: key);
 
@@ -35,6 +38,11 @@ class _PostUploadScreenState extends State<PostUploadScreen> {
   late UploadTask imagePostUploadTask;
 
   PickResult? selectedPlace;
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   TextEditingController captionController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
@@ -234,6 +242,10 @@ class _PostUploadScreenState extends State<PostUploadScreen> {
                                   return Container(
                                     color: constantColors.whiteColor,
                                     child: PlacePicker(
+                                      autocompleteComponents: [
+                                        google_maps_api.Component(
+                                            "country", "ae")
+                                      ],
                                       apiKey:
                                           "AIzaSyCHjJlqqJ-eLChGmUX0RH2iJH5TtdU3RrI",
                                       hintText: "Find a place ...",
@@ -445,9 +457,15 @@ class _PostUploadScreenState extends State<PostUploadScreen> {
                             'lng': lng,
                           });
                         }).whenComplete(() {
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                          Navigator.pop(context);
+                          setState(() {
+                            widget.imagesList.clear();
+                            widget.multipleImages.clear();
+                          });
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  child: SplitPages(),
+                                  type: PageTransitionType.bottomToTop));
                         });
                       } else {
                         CoolAlert.show(

@@ -39,25 +39,19 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>This app requires access to the camera.</string>
+	<string>Mared requires access to your camera / gallery in order to select or capture images of items you'd like to post on Mared</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Location always on</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Mared need your location on at all times</string>
+	<string>In order to show all the posts / auctions / stores in the surrounding area to you, Mared requests to access your location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Mared need to access your location</string>
+	<string>In order to show all the posts / auctions / stores in the surrounding area to you, Mared requests to access your location</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>This app does not require access to the microphone.</string>
+	<string>Mared requires access to your camera and microphone to capture video and audio when you're taking a video to publish on Mared</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requires access to the photo library.</string>
+	<string>Mared requires access to your camera / gallery in order to select or capture images of items you'd like to post on Mared</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>This identifier will be used to deliver personalized ads to you.</string>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>fetch</string>
-		<string>location</string>
-		<string>remote-notification</string>
-	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

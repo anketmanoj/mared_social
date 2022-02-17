@@ -204,18 +204,17 @@ class UploadPost with ChangeNotifier {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        onPressed: () {
-                          uploadPostImageToFirebase().whenComplete(() {
-                            Navigator.push(
-                                context,
-                                PageTransition(
-                                    child: PostUploadScreen(
-                                      multipleImages: multipleImages,
-                                      imagesList: imagesList,
-                                    ),
-                                    type: PageTransitionType.bottomToTop));
-                            // print("image uploaded");
-                          });
+                        onPressed: () async {
+                          await uploadPostImageToFirebase();
+
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  child: PostUploadScreen(
+                                    multipleImages: multipleImages,
+                                    imagesList: imagesList,
+                                  ),
+                                  type: PageTransitionType.bottomToTop));
                         },
                       ),
                     ],
@@ -292,19 +291,19 @@ class UploadPost with ChangeNotifier {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        onPressed: () {
-                          uploadPostCameraImageToFirebase().whenComplete(() {
-                            Navigator.push(
-                                context,
-                                PageTransition(
-                                    child: PostUploadCameraScreen(
-                                      uploadPostImage: uploadPostImage,
-                                      uploadPostImageUrl: uploadPostImageUrl,
-                                    ),
-                                    type: PageTransitionType.bottomToTop));
-                            // editPostCameraSheet(context);
-                            // print("image uploaded");
-                          });
+                        onPressed: () async {
+                          await uploadPostCameraImageToFirebase();
+
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  child: PostUploadCameraScreen(
+                                    uploadPostImage: uploadPostImage,
+                                    uploadPostImageUrl: uploadPostImageUrl,
+                                  ),
+                                  type: PageTransitionType.bottomToTop));
+                          // editPostCameraSheet(context);
+                          // print("image uploaded");
                         },
                       ),
                     ],
@@ -344,7 +343,7 @@ class UploadPost with ChangeNotifier {
     await imagePostUploadTask.whenComplete(() {
       print("Post image uploaded to storage");
     });
-    imageReference.getDownloadURL().then((imageUrl) {
+    await imageReference.getDownloadURL().then((imageUrl) {
       uploadPostImageUrl = imageUrl;
       print(uploadPostImageUrl);
     });
